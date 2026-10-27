@@ -1,6 +1,7 @@
 ﻿namespace DestilatechPlatform.API.Shared.Domain.Model;
 
-public class IAuditableEntity
+public interface IAuditableEntity
 {
-    
+    DateTimeOffset? CreatedAt { get; set; }
+    DateTimeOffset? UpdatedAt { get; set; }
 }
