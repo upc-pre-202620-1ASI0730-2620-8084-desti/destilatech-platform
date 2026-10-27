@@ -1,10 +1,40 @@
+using DestilatechPlatform.API.Shared.Domain.Repositories;
+using DestilatechPlatform.API.Shared.Infrastructure.Interfaces.Asp.Configuration;
+using DestilatechPlatform.API.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
+using DestilatechPlatform.API.Shared.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
+builder.Services.AddControllers(options => options.Conventions.Add(new KebabCaseRouteNamingConvention()));
 
-builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+// Add Database Connection
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+if (connectionString is null) throw new InvalidOperationException("Connection string not found.");
+
+// Configure Database Context and Logging Levels
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    if (builder.Environment.IsDevelopment())
+        options.UseMySQL(connectionString)
+            .LogTo(Console.WriteLine, LogLevel.Information)
+            .EnableSensitiveDataLogging()
+            .EnableDetailedErrors();
+    else if (builder.Environment.IsProduction())
+        options.UseMySQL(connectionString)
+            .LogTo(Console.WriteLine, LogLevel.Error);
+});
+
+// Configure dependency injection
+
+// Shared Bounded Context Injection Configuration
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
 
