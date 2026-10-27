@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DestilatechPlatform.API", "DestilatechPlatform.API\DestilatechPlatform.API.csproj", "{D83CB577-7D14-4079-8261-6E9DDD26EE51}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D83CB577-7D14-4079-8261-6E9DDD26EE51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D83CB577-7D14-4079-8261-6E9DDD26EE51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D83CB577-7D14-4079-8261-6E9DDD26EE51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D83CB577-7D14-4079-8261-6E9DDD26EE51}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
