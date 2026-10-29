@@ -1,10 +1,4 @@
-using DestilatechPlatform.API.AlertsNotifications.Application.ACL;
-using DestilatechPlatform.API.AlertsNotifications.Application.Internal.CommandServices;
-using DestilatechPlatform.API.AlertsNotifications.Application.Internal.QueryServices;
-using DestilatechPlatform.API.AlertsNotifications.Application.Services;
-using DestilatechPlatform.API.AlertsNotifications.Domain.Repositories;
-using DestilatechPlatform.API.AlertsNotifications.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
-using DestilatechPlatform.API.AlertsNotifications.Interfaces.ACL;
+
 using DestilatechPlatform.API.Resources;
 using DestilatechPlatform.API.Shared.Domain.Repositories;
 using DestilatechPlatform.API.Shared.Infrastructure.Interfaces.Asp.Configuration;
@@ -63,13 +57,7 @@ builder.Services.AddProblemDetails(options =>
 // Generate the OpenAPI document with ASP.NET Core's built-in support.
 builder.Services.AddOpenApi(options =>
 {
-    // Alerts & Notifications localized documentation
-    options.AddOperationTransformer(
-        DestilatechPlatform.API.AlertsNotifications.Interfaces.Rest.Transform.LocalizedOpenApiAssembler
-            .TransformOperationAsync);
-    options.AddSchemaTransformer(
-        DestilatechPlatform.API.AlertsNotifications.Interfaces.Rest.Transform.LocalizedOpenApiAssembler
-            .TransformSchemaAsync);
+
 });
 
 // Configure Database Context and route EF logs through the app logger pipeline.
@@ -95,12 +83,6 @@ builder.Services.AddDbContext<AppDbContext>((serviceProvider, options) =>
 
 // Shared Bounded Context Injection Configuration
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-// Alerts & Notifications Bounded Context Injection Configuration
-builder.Services.AddScoped<IAlertRepository, AlertRepository>();
-builder.Services.AddScoped<IAlertCommandService, AlertCommandService>();
-builder.Services.AddScoped<IAlertQueryService, AlertQueryService>();
-builder.Services.AddScoped<IAlertsContextFacade, AlertsContextFacade>();
 
 var app = builder.Build();
 
