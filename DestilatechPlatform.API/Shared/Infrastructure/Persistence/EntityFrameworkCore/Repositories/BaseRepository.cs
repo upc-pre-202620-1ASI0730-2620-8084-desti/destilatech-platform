@@ -48,7 +48,6 @@ public class BaseRepository<TEntity>(AppDbContext context) : IBaseRepository<TEn
             .ToListAsync(cancellationToken);
     }
 
-    // Primary keys may be a plain int or a strongly typed id (e.g. AlertId) constructed from an int.
     private object ToKeyValue(int id)
     {
         var keyType = Context.Model.FindEntityType(typeof(TEntity))!.FindPrimaryKey()!.Properties[0].ClrType;
