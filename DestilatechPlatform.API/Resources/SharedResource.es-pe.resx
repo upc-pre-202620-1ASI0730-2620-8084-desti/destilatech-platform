@@ -24,4 +24,133 @@
     <data name="InvalidModelStateTitle" xml:space="preserve">
         <value>La solicitud contiene valores no válidos.</value>
     </data>
+    <data name="AlertDuplicated" xml:space="preserve">
+        <value>Ya existe una alerta pendiente para este origen.</value>
+    </data>
+    <data name="AlertNotFound" xml:space="preserve">
+        <value>No se encontró la alerta.</value>
+    </data>
+    <data name="AlertAlreadyAttended" xml:space="preserve">
+        <value>La alerta ya fue atendida.</value>
+    </data>
+    <data name="InvalidAlertRequest" xml:space="preserve">
+        <value>La solicitud de alerta contiene valores no válidos.</value>
+    </data>
+    <data name="InvalidAlertQuery" xml:space="preserve">
+        <value>Los parámetros de consulta de alertas contienen valores no válidos.</value>
+    </data>
+    <data name="UnexpectedErrorRaisingAlert" xml:space="preserve">
+        <value>Ocurrió un error inesperado al registrar la alerta.</value>
+    </data>
+    <data name="UnexpectedErrorAttendingAlert" xml:space="preserve">
+        <value>Ocurrió un error inesperado al atender la alerta.</value>
+    </data>
+    <data name="InvalidAlertAccountId" xml:space="preserve">
+        <value>El ID de la cuenta debe ser un número positivo.</value>
+    </data>
+    <data name="RequiredAlertType" xml:space="preserve">
+        <value>El tipo de alerta es obligatorio.</value>
+    </data>
+    <data name="InvalidAlertSourceId" xml:space="preserve">
+        <value>El ID de origen debe ser un número positivo.</value>
+    </data>
+    <data name="RequiredAlertMessage" xml:space="preserve">
+        <value>El mensaje de la alerta es obligatorio.</value>
+    </data>
+    <data name="InvalidAlertMessageLength" xml:space="preserve">
+        <value>El mensaje de la alerta no puede superar los 255 caracteres.</value>
+    </data>
+    <data name="RaiseAlertSummary" xml:space="preserve">
+        <value>Registrar una alerta</value>
+    </data>
+    <data name="RaiseAlertDescription" xml:space="preserve">
+        <value>Registra una alerta de stock bajo o de anomalía para una cuenta. Se rechaza una segunda alerta pendiente del mismo tipo y origen.</value>
+    </data>
+    <data name="RaiseAlertCreated" xml:space="preserve">
+        <value>La alerta fue registrada.</value>
+    </data>
+    <data name="RaiseAlertBadRequest" xml:space="preserve">
+        <value>El contenido de la solicitud no es válido.</value>
+    </data>
+    <data name="RaiseAlertConflict" xml:space="preserve">
+        <value>Ya existe una alerta pendiente para este origen.</value>
+    </data>
+    <data name="RaiseAlertServerError" xml:space="preserve">
+        <value>Ocurrió un error inesperado en el servidor.</value>
+    </data>
+    <data name="GetAlertsQuerySummary" xml:space="preserve">
+        <value>Obtener las alertas de una cuenta</value>
+    </data>
+    <data name="GetAlertsQueryDescription" xml:space="preserve">
+        <value>Envíe accountId para listar sus alertas, de la más reciente a la más antigua. Opcionalmente filtre por type (LOW_STOCK, ANOMALY) y status (PENDING, ATTENDED).</value>
+    </data>
+    <data name="GetAlertsQuerySuccess" xml:space="preserve">
+        <value>Las alertas de la cuenta (una lista vacía si no hay ninguna).</value>
+    </data>
+    <data name="GetAlertsQueryBadRequest" xml:space="preserve">
+        <value>Los parámetros de consulta no son válidos.</value>
+    </data>
+    <data name="GetAlertByIdSummary" xml:space="preserve">
+        <value>Obtener una alerta por ID</value>
+    </data>
+    <data name="GetAlertByIdDescription" xml:space="preserve">
+        <value>Obtiene una alerta por su identificador.</value>
+    </data>
+    <data name="GetAlertByIdSuccess" xml:space="preserve">
+        <value>Se encontró la alerta.</value>
+    </data>
+    <data name="GetAlertByIdNotFound" xml:space="preserve">
+        <value>No se encontró la alerta.</value>
+    </data>
+    <data name="MarkAlertAsAttendedSummary" xml:space="preserve">
+        <value>Marcar una alerta como atendida</value>
+    </data>
+    <data name="MarkAlertAsAttendedDescription" xml:space="preserve">
+        <value>Marca una alerta pendiente como atendida y registra cuándo fue atendida.</value>
+    </data>
+    <data name="MarkAlertAsAttendedSuccess" xml:space="preserve">
+        <value>La alerta fue marcada como atendida.</value>
+    </data>
+    <data name="MarkAlertAsAttendedNotFound" xml:space="preserve">
+        <value>No se encontró la alerta.</value>
+    </data>
+    <data name="MarkAlertAsAttendedConflict" xml:space="preserve">
+        <value>La alerta ya fue atendida.</value>
+    </data>
+    <data name="MarkAlertAsAttendedServerError" xml:space="preserve">
+        <value>Ocurrió un error inesperado en el servidor.</value>
+    </data>
+    <data name="RaiseAlertSchema" xml:space="preserve">
+        <value>Datos necesarios para registrar una alerta.</value>
+    </data>
+    <data name="AlertSchema" xml:space="preserve">
+        <value>Una alerta del contexto Alerts &amp; Notifications.</value>
+    </data>
+    <data name="AlertId" xml:space="preserve">
+        <value>Identificador de la alerta.</value>
+    </data>
+    <data name="AlertAccountId" xml:space="preserve">
+        <value>Identificador de la cuenta dueña de la alerta.</value>
+    </data>
+    <data name="AlertType" xml:space="preserve">
+        <value>Tipo de alerta: LOW_STOCK o ANOMALY.</value>
+    </data>
+    <data name="AlertSourceId" xml:space="preserve">
+        <value>Identificador del producto (LOW_STOCK) o de la variable de proceso (ANOMALY) que originó la alerta.</value>
+    </data>
+    <data name="AlertMessage" xml:space="preserve">
+        <value>Mensaje de la alerta que se muestra al usuario.</value>
+    </data>
+    <data name="AlertSeverity" xml:space="preserve">
+        <value>Severidad de la alerta: WARNING (por defecto) o CRITICAL.</value>
+    </data>
+    <data name="AlertStatus" xml:space="preserve">
+        <value>Estado de la alerta: PENDING o ATTENDED.</value>
+    </data>
+    <data name="AlertCreatedAt" xml:space="preserve">
+        <value>Fecha y hora en que se registró la alerta.</value>
+    </data>
+    <data name="AlertAttendedAt" xml:space="preserve">
+        <value>Fecha y hora en que se atendió la alerta (nulo mientras está pendiente).</value>
+    </data>
 </root>
