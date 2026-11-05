@@ -4,6 +4,13 @@ using DestilatechPlatform.API.Shared.Domain.Repositories;
 using DestilatechPlatform.API.Shared.Infrastructure.Interfaces.Asp.Configuration;
 using DestilatechPlatform.API.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
 using DestilatechPlatform.API.Shared.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+
+using DestilatechPlatform.API.Iam.Application.CommandServices;
+using DestilatechPlatform.API.Iam.Application.Internal.CommandServices;
+using DestilatechPlatform.API.Iam.Application.Internal.QueryServices;
+using DestilatechPlatform.API.Iam.Application.QueryServices;
+using DestilatechPlatform.API.Iam.Domain.Repositories;
+using DestilatechPlatform.API.Iam.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -83,6 +90,10 @@ builder.Services.AddDbContext<AppDbContext>((serviceProvider, options) =>
 
 // Shared Bounded Context Injection Configuration
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+// IAM Bounded Context Injection Configuration
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserCommandService, UserCommandService>();
+builder.Services.AddScoped<IUserQueryService, UserQueryService>();
 
 var app = builder.Build();
 
