@@ -8,8 +8,13 @@ using DestilatechPlatform.API.AlertsNotifications.Interfaces.ACL;
 using DestilatechPlatform.API.Resources;
 using DestilatechPlatform.API.Shared.Domain.Repositories;
 using DestilatechPlatform.API.Shared.Infrastructure.Interfaces.Asp.Configuration;
+using DestilatechPlatform.API.Shared.Infrastructure.Mediator.Cortex.Configuration;
 using DestilatechPlatform.API.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
+using DestilatechPlatform.API.Shared.Infrastructure.Persistence.EntityFrameworkCore.Interceptors;
 using DestilatechPlatform.API.Shared.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using DestilatechPlatform.API.Shared.Infrastructure.Pipeline.Middleware.Components;
+using Cortex.Mediator.Commands;
+using Cortex.Mediator.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -60,6 +65,12 @@ builder.Services.AddProblemDetails(options =>
     };
 });
 
+// Turn unhandled exceptions into localized ProblemDetails responses.
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
+// Localized ProblemDetails for failed application results (bounded context error enums).
+builder.Services.AddSingleton<DestilatechPlatform.API.Shared.Interfaces.Rest.ProblemDetails.ProblemDetailsFactory>();
+
 // Generate the OpenAPI document with ASP.NET Core's built-in support.
 builder.Services.AddOpenApi(options =>
 {
@@ -85,6 +96,7 @@ builder.Services.AddDbContext<AppDbContext>((serviceProvider, options) =>
 
     options.UseMySQL(connectionString)
         .UseLoggerFactory(serviceProvider.GetRequiredService<ILoggerFactory>())
+        .AddInterceptors(serviceProvider.GetRequiredService<DispatchDomainEventsInterceptor>())
         .EnableDetailedErrors();
 
     if (builder.Environment.IsDevelopment())
@@ -95,12 +107,22 @@ builder.Services.AddDbContext<AppDbContext>((serviceProvider, options) =>
 
 // Shared Bounded Context Injection Configuration
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<DispatchDomainEventsInterceptor>();
 
 // Alerts & Notifications Bounded Context Injection Configuration
 builder.Services.AddScoped<IAlertRepository, AlertRepository>();
 builder.Services.AddScoped<IAlertCommandService, AlertCommandService>();
 builder.Services.AddScoped<IAlertQueryService, AlertQueryService>();
 builder.Services.AddScoped<IAlertsContextFacade, AlertsContextFacade>();
+
+// Mediator Configuration
+// Command pipeline behaviors (logging, exception logging, unit of work commit)
+builder.Services.AddScoped(typeof(ICommandPipelineBehavior<>), typeof(LoggingCommandBehavior<>));
+builder.Services.AddScoped(typeof(ICommandPipelineBehavior<>), typeof(ExceptionHandlingCommandBehavior<>));
+builder.Services.AddScoped(typeof(ICommandPipelineBehavior<>), typeof(TransactionCommandBehavior<>));
+
+// Cortex Mediator publishes domain events to every IEventHandler found in this assembly
+builder.Services.AddCortexMediator([typeof(Program)]);
 
 var app = builder.Build();
 

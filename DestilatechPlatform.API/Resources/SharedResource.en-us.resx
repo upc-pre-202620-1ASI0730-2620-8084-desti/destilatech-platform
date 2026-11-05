@@ -153,4 +153,19 @@
     <data name="AlertAttendedAt" xml:space="preserve">
         <value>Date and time when the alert was attended (null while pending).</value>
     </data>
+    <data name="DuplicatePendingAlert" xml:space="preserve">
+        <value>Alerta pendiente duplicada</value>
+    </data>
+    <data name="InvalidAlertData" xml:space="preserve">
+        <value>Datos de alerta inválidos</value>
+    </data>
+    <data name="OperationCancelled" xml:space="preserve">
+        <value>La operación fue cancelada.</value>
+    </data>
+    <data name="DatabaseError" xml:space="preserve">
+        <value>Error de base de datos</value>
+    </data>
+    <data name="InternalServerError" xml:space="preserve">
+        <value>Error interno del servidor</value>
+    </data>
 </root>
