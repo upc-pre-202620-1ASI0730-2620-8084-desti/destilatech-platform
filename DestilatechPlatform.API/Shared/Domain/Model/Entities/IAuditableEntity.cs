@@ -1,4 +1,4 @@
-﻿namespace DestilatechPlatform.API.Shared.Domain.Model;
+﻿namespace DestilatechPlatform.API.Shared.Domain.Model.Entities;
 
 public interface IAuditableEntity
 {
