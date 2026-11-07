@@ -6,7 +6,7 @@ namespace DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Entities;
 /// </summary>
 public class OrderLine
 {
-    public int Id { get; }
+    public int Id { get; private set; }
 
     public int OrderId { get; private set; }
 
