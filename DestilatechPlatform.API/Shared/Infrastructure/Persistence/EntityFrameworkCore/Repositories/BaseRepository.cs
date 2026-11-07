@@ -1,4 +1,5 @@
-﻿using DestilatechPlatform.API.Shared.Domain.Repositories;
+﻿using System.Linq.Expressions;
+using DestilatechPlatform.API.Shared.Domain.Repositories;
 using DestilatechPlatform.API.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,7 +16,14 @@ public class BaseRepository<TEntity>(AppDbContext context) : IBaseRepository<TEn
 
     public async Task<TEntity?> FindByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        return await Context.Set<TEntity>().FindAsync([id], cancellationToken);
+        return await Context.Set<TEntity>().FindAsync([ToKeyValue(id)], cancellationToken);
+    }
+
+    public async Task<TEntity?> FindByIdAsNoTrackingAsync(int id, CancellationToken cancellationToken = default)
+    {
+        return await Context.Set<TEntity>()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(BuildKeyPredicate(id), cancellationToken);
     }
 
     public void Update(TEntity entity)
@@ -31,5 +39,28 @@ public class BaseRepository<TEntity>(AppDbContext context) : IBaseRepository<TEn
     public async Task<IEnumerable<TEntity>> ListAsync(CancellationToken cancellationToken = default)
     {
         return await Context.Set<TEntity>().ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<TEntity>> ListAsNoTrackingAsync(CancellationToken cancellationToken = default)
+    {
+        return await Context.Set<TEntity>()
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+    }
+
+    private object ToKeyValue(int id)
+    {
+        var keyType = Context.Model.FindEntityType(typeof(TEntity))!.FindPrimaryKey()!.Properties[0].ClrType;
+        return keyType == typeof(int) ? id : Activator.CreateInstance(keyType, id)!;
+    }
+
+    private Expression<Func<TEntity, bool>> BuildKeyPredicate(int id)
+    {
+        var keyProperty = Context.Model.FindEntityType(typeof(TEntity))!.FindPrimaryKey()!.Properties[0];
+        var parameter = Expression.Parameter(typeof(TEntity), "e");
+        var body = Expression.Equal(
+            Expression.Property(parameter, keyProperty.Name),
+            Expression.Constant(ToKeyValue(id), keyProperty.ClrType));
+        return Expression.Lambda<Func<TEntity, bool>>(body, parameter);
     }
 }

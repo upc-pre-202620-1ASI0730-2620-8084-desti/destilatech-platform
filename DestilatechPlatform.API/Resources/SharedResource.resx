@@ -24,4 +24,148 @@
     <data name="InvalidModelStateTitle" xml:space="preserve">
         <value>The request contains invalid values.</value>
     </data>
+    <data name="AlertDuplicated" xml:space="preserve">
+        <value>There is already a pending alert for this source.</value>
+    </data>
+    <data name="AlertNotFound" xml:space="preserve">
+        <value>The alert was not found.</value>
+    </data>
+    <data name="AlertAlreadyAttended" xml:space="preserve">
+        <value>The alert was already attended.</value>
+    </data>
+    <data name="InvalidAlertRequest" xml:space="preserve">
+        <value>The alert request contains invalid values.</value>
+    </data>
+    <data name="InvalidAlertQuery" xml:space="preserve">
+        <value>The query parameters for alerts contain invalid values.</value>
+    </data>
+    <data name="UnexpectedErrorRaisingAlert" xml:space="preserve">
+        <value>An unexpected error occurred while raising the alert.</value>
+    </data>
+    <data name="UnexpectedErrorAttendingAlert" xml:space="preserve">
+        <value>An unexpected error occurred while attending the alert.</value>
+    </data>
+    <data name="InvalidAlertAccountId" xml:space="preserve">
+        <value>Account ID must be a positive number.</value>
+    </data>
+    <data name="RequiredAlertType" xml:space="preserve">
+        <value>Alert type is required.</value>
+    </data>
+    <data name="InvalidAlertSourceId" xml:space="preserve">
+        <value>Source ID must be a positive number.</value>
+    </data>
+    <data name="RequiredAlertMessage" xml:space="preserve">
+        <value>Alert message is required.</value>
+    </data>
+    <data name="InvalidAlertMessageLength" xml:space="preserve">
+        <value>Alert message cannot exceed 255 characters.</value>
+    </data>
+    <data name="RaiseAlertSummary" xml:space="preserve">
+        <value>Raise an alert</value>
+    </data>
+    <data name="RaiseAlertDescription" xml:space="preserve">
+        <value>Raise a low stock or anomaly alert for an account. A second pending alert for the same type and source is rejected.</value>
+    </data>
+    <data name="RaiseAlertCreated" xml:space="preserve">
+        <value>The alert was raised.</value>
+    </data>
+    <data name="RaiseAlertBadRequest" xml:space="preserve">
+        <value>The request payload is invalid.</value>
+    </data>
+    <data name="RaiseAlertConflict" xml:space="preserve">
+        <value>There is already a pending alert for this source.</value>
+    </data>
+    <data name="RaiseAlertServerError" xml:space="preserve">
+        <value>An unexpected server error occurred.</value>
+    </data>
+    <data name="GetAlertsQuerySummary" xml:space="preserve">
+        <value>Get the alerts of an account</value>
+    </data>
+    <data name="GetAlertsQueryDescription" xml:space="preserve">
+        <value>Provide accountId to list its alerts, newest first. Optionally filter by type (LOW_STOCK, ANOMALY) and status (PENDING, ATTENDED).</value>
+    </data>
+    <data name="GetAlertsQuerySuccess" xml:space="preserve">
+        <value>The alerts of the account (an empty list if none exist).</value>
+    </data>
+    <data name="GetAlertsQueryBadRequest" xml:space="preserve">
+        <value>The query parameters are invalid.</value>
+    </data>
+    <data name="GetAlertByIdSummary" xml:space="preserve">
+        <value>Get an alert by ID</value>
+    </data>
+    <data name="GetAlertByIdDescription" xml:space="preserve">
+        <value>Retrieve one alert by its identifier.</value>
+    </data>
+    <data name="GetAlertByIdSuccess" xml:space="preserve">
+        <value>The alert was found.</value>
+    </data>
+    <data name="GetAlertByIdNotFound" xml:space="preserve">
+        <value>The alert was not found.</value>
+    </data>
+    <data name="MarkAlertAsAttendedSummary" xml:space="preserve">
+        <value>Mark an alert as attended</value>
+    </data>
+    <data name="MarkAlertAsAttendedDescription" xml:space="preserve">
+        <value>Mark a pending alert as attended and record when it was attended.</value>
+    </data>
+    <data name="MarkAlertAsAttendedSuccess" xml:space="preserve">
+        <value>The alert was marked as attended.</value>
+    </data>
+    <data name="MarkAlertAsAttendedNotFound" xml:space="preserve">
+        <value>The alert was not found.</value>
+    </data>
+    <data name="MarkAlertAsAttendedConflict" xml:space="preserve">
+        <value>The alert was already attended.</value>
+    </data>
+    <data name="MarkAlertAsAttendedServerError" xml:space="preserve">
+        <value>An unexpected server error occurred.</value>
+    </data>
+    <data name="RaiseAlertSchema" xml:space="preserve">
+        <value>Data required to raise an alert.</value>
+    </data>
+    <data name="AlertSchema" xml:space="preserve">
+        <value>An alert of the Alerts &amp; Notifications context.</value>
+    </data>
+    <data name="AlertId" xml:space="preserve">
+        <value>Alert identifier.</value>
+    </data>
+    <data name="AlertAccountId" xml:space="preserve">
+        <value>Identifier of the account that owns the alert.</value>
+    </data>
+    <data name="AlertType" xml:space="preserve">
+        <value>Alert type: LOW_STOCK or ANOMALY.</value>
+    </data>
+    <data name="AlertSourceId" xml:space="preserve">
+        <value>Identifier of the product (LOW_STOCK) or process variable (ANOMALY) that raised the alert.</value>
+    </data>
+    <data name="AlertMessage" xml:space="preserve">
+        <value>Alert message shown to the user.</value>
+    </data>
+    <data name="AlertSeverity" xml:space="preserve">
+        <value>Alert severity: WARNING (default) or CRITICAL.</value>
+    </data>
+    <data name="AlertStatus" xml:space="preserve">
+        <value>Alert status: PENDING or ATTENDED.</value>
+    </data>
+    <data name="AlertCreatedAt" xml:space="preserve">
+        <value>Date and time when the alert was raised.</value>
+    </data>
+    <data name="AlertAttendedAt" xml:space="preserve">
+        <value>Date and time when the alert was attended (null while pending).</value>
+    </data>
+    <data name="DuplicatePendingAlert" xml:space="preserve">
+        <value>Alerta pendiente duplicada</value>
+    </data>
+    <data name="InvalidAlertData" xml:space="preserve">
+        <value>Datos de alerta inválidos</value>
+    </data>
+    <data name="OperationCancelled" xml:space="preserve">
+        <value>La operación fue cancelada.</value>
+    </data>
+    <data name="DatabaseError" xml:space="preserve">
+        <value>Error de base de datos</value>
+    </data>
+    <data name="InternalServerError" xml:space="preserve">
+        <value>Error interno del servidor</value>
+    </data>
 </root>

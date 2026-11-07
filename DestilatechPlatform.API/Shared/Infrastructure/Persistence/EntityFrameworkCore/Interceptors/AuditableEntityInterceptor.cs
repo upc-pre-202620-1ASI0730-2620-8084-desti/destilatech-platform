@@ -1,4 +1,4 @@
-﻿using DestilatechPlatform.API.Shared.Domain.Model;
+﻿using DestilatechPlatform.API.Shared.Domain.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
