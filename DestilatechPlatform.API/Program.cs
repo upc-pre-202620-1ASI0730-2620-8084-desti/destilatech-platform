@@ -5,6 +5,13 @@ using DestilatechPlatform.API.AlertsNotifications.Application.Services;
 using DestilatechPlatform.API.AlertsNotifications.Domain.Repositories;
 using DestilatechPlatform.API.AlertsNotifications.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 using DestilatechPlatform.API.AlertsNotifications.Interfaces.ACL;
+using DestilatechPlatform.API.AnalyticsEstimations.Application.Internal.CommandServices;
+using DestilatechPlatform.API.AnalyticsEstimations.Application.Internal.OutboundServices;
+using DestilatechPlatform.API.AnalyticsEstimations.Application.Internal.OutboundServices.ACL;
+using DestilatechPlatform.API.AnalyticsEstimations.Application.Internal.QueryServices;
+using DestilatechPlatform.API.AnalyticsEstimations.Application.Services;
+using DestilatechPlatform.API.AnalyticsEstimations.Domain.Repositories;
+using DestilatechPlatform.API.AnalyticsEstimations.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 using DestilatechPlatform.API.OrdersReplenishment.Application.ACL;
 using DestilatechPlatform.API.OrdersReplenishment.Application.Internal.CommandServices;
 using DestilatechPlatform.API.OrdersReplenishment.Application.Internal.OutboundServices;
@@ -136,6 +143,15 @@ builder.Services.AddScoped<IReplenishmentOrderCommandService, ReplenishmentOrder
 builder.Services.AddScoped<IReplenishmentOrderQueryService, ReplenishmentOrderQueryService>();
 builder.Services.AddScoped<IInventoryPort, ExternalInventoryService>();
 builder.Services.AddScoped<IOrdersContextFacade, OrdersContextFacade>();
+
+// Analytics & Estimations Bounded Context Injection Configuration
+builder.Services.AddScoped<IReplenishmentEstimateRepository, ReplenishmentEstimateRepository>();
+builder.Services.AddScoped<IReplenishmentEstimateCommandService, ReplenishmentEstimateCommandService>();
+builder.Services.AddScoped<IReplenishmentEstimateQueryService, ReplenishmentEstimateQueryService>();
+builder.Services.AddScoped<IHistoricalIndicatorQueryService, HistoricalIndicatorQueryService>();
+builder.Services.AddScoped<IInventoryHistoryReadPort, ExternalInventoryHistoryService>();
+builder.Services.AddScoped<ISalesHistoryReadPort, ExternalSalesHistoryService>();
+builder.Services.AddScoped<IProductionHistoryReadPort, EmptyProductionHistoryService>();
 
 // Mediator Configuration
 // Command pipeline behaviors (logging, exception logging, unit of work commit)
