@@ -1,5 +1,4 @@
 using DestilatechPlatform.API.AnalyticsEstimations.Domain.Model.ValueObjects;
-using DestilatechPlatform.API.Shared.Domain.Model;
 
 namespace DestilatechPlatform.API.AnalyticsEstimations.Domain.Model.Aggregates;
 
@@ -12,7 +11,7 @@ namespace DestilatechPlatform.API.AnalyticsEstimations.Domain.Model.Aggregates;
 /// and waste in the last <see cref="AnalysisWindowDays"/> days and needs at least
 /// <see cref="MinExitMovements"/> of them to give an estimate.
 /// </remarks>
-public class ReplenishmentEstimate : IAuditableEntity
+public partial class ReplenishmentEstimate
 {
     public const int AnalysisWindowDays = 30;
     public const int CoverageDays = 30;
@@ -24,7 +23,7 @@ public class ReplenishmentEstimate : IAuditableEntity
 
     private static readonly string[] ConsumptionReasons = ["SALE", "ORDER", "WASTE"];
 
-    public int Id { get; }
+    public int Id { get; private set; }
 
     public int UserId { get; private set; }
 
@@ -55,10 +54,6 @@ public class ReplenishmentEstimate : IAuditableEntity
     public int LowStockThresholdSnapshot { get; private set; }
 
     public DateTimeOffset CalculatedAt { get; private set; }
-
-    public DateTimeOffset? CreatedAt { get; set; }
-
-    public DateTimeOffset? UpdatedAt { get; set; }
 
     /// <summary>
     /// Constructor required by Entity Framework Core.
