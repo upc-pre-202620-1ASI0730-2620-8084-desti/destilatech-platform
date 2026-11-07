@@ -1,7 +1,6 @@
 using System.Globalization;
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Commands;
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.ValueObjects;
-using DestilatechPlatform.API.Shared.Domain.Model;
 
 namespace DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates;
 
@@ -9,11 +8,11 @@ namespace DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates;
 /// Order placed with a supplier to replenish a product. When it is received,
 /// its units are added to stock.
 /// </summary>
-public class ReplenishmentOrder : IAuditableEntity
+public partial class ReplenishmentOrder
 {
     private const string CodePrefix = "RP-";
 
-    public int Id { get; }
+    public int Id { get; private set; }
 
     public int UserId { get; private set; }
 
@@ -40,10 +39,6 @@ public class ReplenishmentOrder : IAuditableEntity
     public ReplenishmentStatus Status { get; private set; }
 
     public string Notes { get; private set; }
-
-    public DateTimeOffset? CreatedAt { get; set; }
-
-    public DateTimeOffset? UpdatedAt { get; set; }
 
     /// <summary>
     /// Constructor required by Entity Framework Core.
