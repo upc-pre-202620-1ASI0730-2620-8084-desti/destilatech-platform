@@ -38,6 +38,9 @@ public sealed record OrdersReplenishmentError(string Code, string Message)
     public static OrdersReplenishmentError OrderClosed() =>
         new("order-closed", "The order is already closed.");
 
+    public static OrdersReplenishmentError InvalidStatusTransition(string from, string to) =>
+        new("invalid-status-transition", $"An order cannot change from {from} to {to}.");
+
     public static OrdersReplenishmentError SupplierRequired() =>
         new("supplier-required", "Enter the supplier.");
 
