@@ -1,6 +1,5 @@
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Commands;
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.ValueObjects;
-using DestilatechPlatform.API.Shared.Domain.Model;
 
 namespace DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates;
 
@@ -8,9 +7,9 @@ namespace DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates;
 /// Customer of a producer or trader (US17). A customer needs a name and at least
 /// a phone number or an email to be contacted.
 /// </summary>
-public class Customer : IAuditableEntity
+public partial class Customer
 {
-    public int Id { get; }
+    public int Id { get; private set; }
 
     public int UserId { get; private set; }
 
@@ -25,10 +24,6 @@ public class Customer : IAuditableEntity
     public string Address { get; private set; }
 
     public CustomerType CustomerType { get; private set; }
-
-    public DateTimeOffset? CreatedAt { get; set; }
-
-    public DateTimeOffset? UpdatedAt { get; set; }
 
     /// <summary>
     /// Constructor required by Entity Framework Core.
