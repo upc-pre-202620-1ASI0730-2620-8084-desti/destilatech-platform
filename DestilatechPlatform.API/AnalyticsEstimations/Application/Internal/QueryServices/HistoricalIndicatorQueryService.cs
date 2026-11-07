@@ -26,7 +26,7 @@ public class HistoricalIndicatorQueryService(
     /// <summary>Peru time, used when the query does not give a time zone offset.</summary>
     private static readonly TimeSpan DefaultUtcOffset = TimeSpan.FromHours(-5);
 
-    public async Task<Result<HistoricalIndicators, AnalyticsEstimationsError>> HandleAsync(
+    public async Task<Result<HistoricalIndicators, AnalyticsEstimationsError>> Handle(
         GetHistoricalIndicatorsQuery query, CancellationToken cancellationToken = default)
     {
         if (query.Days is < MinDays or > MaxDays)
@@ -76,7 +76,7 @@ public class HistoricalIndicatorQueryService(
         return new Result<HistoricalIndicators, AnalyticsEstimationsError>.Success(indicators);
     }
 
-    public async Task<Result<IReadOnlyList<ProductConsumption>, AnalyticsEstimationsError>> HandleAsync(
+    public async Task<Result<IReadOnlyList<ProductConsumption>, AnalyticsEstimationsError>> Handle(
         GetTopConsumedProductsQuery query, CancellationToken cancellationToken = default)
     {
         if (query.Days is < MinDays or > MaxDays)

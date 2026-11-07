@@ -5,12 +5,12 @@ namespace DestilatechPlatform.API.AnalyticsEstimations.Application.Services;
 
 public interface IReplenishmentEstimateQueryService
 {
-    Task<ReplenishmentEstimate?> HandleAsync(GetLatestReplenishmentEstimateByProductIdQuery query,
+    Task<ReplenishmentEstimate?> Handle(GetLatestReplenishmentEstimateByProductIdQuery query,
         CancellationToken cancellationToken = default);
 
-    Task<IEnumerable<ReplenishmentEstimate>> HandleAsync(GetLatestReplenishmentEstimatesByUserIdQuery query,
+    Task<IEnumerable<ReplenishmentEstimate>> Handle(GetLatestReplenishmentEstimatesByUserIdQuery query,
         CancellationToken cancellationToken = default);
 
-    Task<IEnumerable<ReplenishmentEstimate>> HandleAsync(GetUrgentReplenishmentEstimatesQuery query,
+    Task<IEnumerable<ReplenishmentEstimate>> Handle(GetUrgentReplenishmentEstimatesQuery query,
         CancellationToken cancellationToken = default);
 }

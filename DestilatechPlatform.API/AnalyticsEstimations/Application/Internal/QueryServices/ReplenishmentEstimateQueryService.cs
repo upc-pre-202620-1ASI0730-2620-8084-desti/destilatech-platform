@@ -8,19 +8,19 @@ namespace DestilatechPlatform.API.AnalyticsEstimations.Application.Internal.Quer
 public class ReplenishmentEstimateQueryService(IReplenishmentEstimateRepository estimateRepository)
     : IReplenishmentEstimateQueryService
 {
-    public async Task<ReplenishmentEstimate?> HandleAsync(GetLatestReplenishmentEstimateByProductIdQuery query,
+    public async Task<ReplenishmentEstimate?> Handle(GetLatestReplenishmentEstimateByProductIdQuery query,
         CancellationToken cancellationToken = default)
     {
         return await estimateRepository.FindLatestByProductIdAsync(query.UserId, query.ProductId, cancellationToken);
     }
 
-    public async Task<IEnumerable<ReplenishmentEstimate>> HandleAsync(GetLatestReplenishmentEstimatesByUserIdQuery query,
+    public async Task<IEnumerable<ReplenishmentEstimate>> Handle(GetLatestReplenishmentEstimatesByUserIdQuery query,
         CancellationToken cancellationToken = default)
     {
         return await estimateRepository.FindLatestByUserIdAsync(query.UserId, cancellationToken);
     }
 
-    public async Task<IEnumerable<ReplenishmentEstimate>> HandleAsync(GetUrgentReplenishmentEstimatesQuery query,
+    public async Task<IEnumerable<ReplenishmentEstimate>> Handle(GetUrgentReplenishmentEstimatesQuery query,
         CancellationToken cancellationToken = default)
     {
         var estimates = await estimateRepository.FindLatestByUserIdAsync(query.UserId, cancellationToken);

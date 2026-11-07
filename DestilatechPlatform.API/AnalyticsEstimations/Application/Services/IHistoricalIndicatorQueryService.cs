@@ -7,9 +7,9 @@ namespace DestilatechPlatform.API.AnalyticsEstimations.Application.Services;
 
 public interface IHistoricalIndicatorQueryService
 {
-    Task<Result<HistoricalIndicators, AnalyticsEstimationsError>> HandleAsync(GetHistoricalIndicatorsQuery query,
+    Task<Result<HistoricalIndicators, AnalyticsEstimationsError>> Handle(GetHistoricalIndicatorsQuery query,
         CancellationToken cancellationToken = default);
 
-    Task<Result<IReadOnlyList<ProductConsumption>, AnalyticsEstimationsError>> HandleAsync(
+    Task<Result<IReadOnlyList<ProductConsumption>, AnalyticsEstimationsError>> Handle(
         GetTopConsumedProductsQuery query, CancellationToken cancellationToken = default);
 }

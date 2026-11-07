@@ -7,9 +7,9 @@ namespace DestilatechPlatform.API.AnalyticsEstimations.Application.Services;
 
 public interface IReplenishmentEstimateCommandService
 {
-    Task<Result<ReplenishmentEstimate, AnalyticsEstimationsError>> HandleAsync(
+    Task<Result<ReplenishmentEstimate, AnalyticsEstimationsError>> Handle(
         CalculateReplenishmentEstimateCommand command, CancellationToken cancellationToken = default);
 
-    Task<Result<IReadOnlyCollection<ReplenishmentEstimate>, AnalyticsEstimationsError>> HandleAsync(
+    Task<Result<IReadOnlyCollection<ReplenishmentEstimate>, AnalyticsEstimationsError>> Handle(
         RecalculateReplenishmentEstimatesCommand command, CancellationToken cancellationToken = default);
 }

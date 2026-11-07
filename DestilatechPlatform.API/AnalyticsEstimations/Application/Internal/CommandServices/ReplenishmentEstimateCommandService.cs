@@ -18,7 +18,7 @@ public class ReplenishmentEstimateCommandService(
     IInventoryHistoryReadPort inventoryHistory,
     IUnitOfWork unitOfWork) : IReplenishmentEstimateCommandService
 {
-    public async Task<Result<ReplenishmentEstimate, AnalyticsEstimationsError>> HandleAsync(
+    public async Task<Result<ReplenishmentEstimate, AnalyticsEstimationsError>> Handle(
         CalculateReplenishmentEstimateCommand command, CancellationToken cancellationToken = default)
     {
         var stockLevel = await inventoryHistory.ReadStockLevelAsync(command.UserId, command.ProductId,
@@ -48,7 +48,7 @@ public class ReplenishmentEstimateCommandService(
         return new Result<ReplenishmentEstimate, AnalyticsEstimationsError>.Success(estimate);
     }
 
-    public async Task<Result<IReadOnlyCollection<ReplenishmentEstimate>, AnalyticsEstimationsError>> HandleAsync(
+    public async Task<Result<IReadOnlyCollection<ReplenishmentEstimate>, AnalyticsEstimationsError>> Handle(
         RecalculateReplenishmentEstimatesCommand command, CancellationToken cancellationToken = default)
     {
         var calculatedAt = DateTimeOffset.UtcNow;
