@@ -49,9 +49,9 @@ public partial class ReplenishmentEstimate
 
     public int ExitsAnalyzed { get; private set; }
 
-    public int CurrentQuantitySnapshot { get; private set; }
+    public decimal CurrentQuantitySnapshot { get; private set; }
 
-    public int LowStockThresholdSnapshot { get; private set; }
+    public decimal LowStockThresholdSnapshot { get; private set; }
 
     public DateTimeOffset CalculatedAt { get; private set; }
 

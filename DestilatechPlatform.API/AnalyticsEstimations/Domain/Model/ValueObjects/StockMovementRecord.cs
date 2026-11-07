@@ -12,11 +12,11 @@ public readonly record struct StockMovementRecord(
     int ProductId,
     MovementDirection Direction,
     string Reason,
-    int Quantity,
+    decimal Quantity,
     DateTimeOffset Date)
 {
     /// <summary>
     /// Quantity with sign: positive for entries, negative for exits.
     /// </summary>
-    public int SignedQuantity => Direction == MovementDirection.In ? Quantity : -Quantity;
+    public decimal SignedQuantity => Direction == MovementDirection.In ? Quantity : -Quantity;
 }

@@ -53,10 +53,10 @@ public class HistoricalIndicatorQueryService(
 
         var entries = movements
             .Where(movement => movement.Direction == MovementDirection.In)
-            .Select(movement => (movement.Date, (decimal)movement.Quantity));
+            .Select(movement => (movement.Date, movement.Quantity));
         var exits = movements
             .Where(movement => movement.Direction == MovementDirection.Out)
-            .Select(movement => (movement.Date, (decimal)movement.Quantity));
+            .Select(movement => (movement.Date, movement.Quantity));
         var salesAmounts = sales
             .Where(sale => !sale.Cancelled)
             .Select(sale => (sale.Date, sale.Total));

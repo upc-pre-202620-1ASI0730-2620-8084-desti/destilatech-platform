@@ -89,7 +89,7 @@ public static class HistoricalIndicatorCalculator
     /// Rebuilds the total stock at the end of each period by undoing, from the current total,
     /// the movements that happened after that period.
     /// </summary>
-    public static IReadOnlyList<HistoricalIndicator> StockLevelSeries(int currentTotal,
+    public static IReadOnlyList<HistoricalIndicator> StockLevelSeries(decimal currentTotal,
         IEnumerable<StockMovementRecord> movements, IReadOnlyList<DateTimeOffset> periods)
     {
         var movementList = movements.ToList();
@@ -100,7 +100,7 @@ public static class HistoricalIndicatorCalculator
                 var laterChange = movementList
                     .Where(movement => movement.Date >= periodEnd)
                     .Sum(movement => movement.SignedQuantity);
-                return new HistoricalIndicator(MetricType.StockLevel, period, Math.Max(0, currentTotal - laterChange));
+                return new HistoricalIndicator(MetricType.StockLevel, period, Math.Max(0m, currentTotal - laterChange));
             })
             .ToList();
     }
