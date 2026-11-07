@@ -13,7 +13,9 @@ public class ReplenishmentOrderQueryService(IReplenishmentOrderRepository replen
     {
         var replenishmentOrders = await replenishmentOrderRepository.FindByUserIdAsync(query.UserId,
             cancellationToken);
-        return replenishmentOrders.OrderByDescending(replenishmentOrder => replenishmentOrder.OrderDate);
+        return replenishmentOrders
+            .OrderByDescending(replenishmentOrder => replenishmentOrder.OrderDate)
+            .ThenByDescending(replenishmentOrder => replenishmentOrder.Id);
     }
 
     public async Task<ReplenishmentOrder?> Handle(GetReplenishmentOrderByIdQuery query,

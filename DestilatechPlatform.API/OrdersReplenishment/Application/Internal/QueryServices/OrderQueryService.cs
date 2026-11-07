@@ -11,7 +11,9 @@ public class OrderQueryService(IOrderRepository orderRepository) : IOrderQuerySe
         CancellationToken cancellationToken = default)
     {
         var orders = await orderRepository.FindByUserIdAsync(query.UserId, cancellationToken);
-        return orders.OrderByDescending(order => order.OrderDate);
+        return orders
+            .OrderByDescending(order => order.OrderDate)
+            .ThenByDescending(order => order.Id);
     }
 
     public async Task<IEnumerable<Order>> Handle(GetOrdersByCustomerIdQuery query,
@@ -20,7 +22,8 @@ public class OrderQueryService(IOrderRepository orderRepository) : IOrderQuerySe
         var orders = await orderRepository.FindByCustomerIdAsync(query.CustomerId, cancellationToken);
         return orders
             .Where(order => order.BelongsTo(query.UserId))
-            .OrderByDescending(order => order.OrderDate);
+            .OrderByDescending(order => order.OrderDate)
+            .ThenByDescending(order => order.Id);
     }
 
     public async Task<Order?> Handle(GetOrderByIdQuery query, CancellationToken cancellationToken = default)
