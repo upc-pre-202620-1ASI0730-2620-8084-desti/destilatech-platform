@@ -1,7 +1,7 @@
 using DestilatechPlatform.API.AnalyticsEstimations.Domain.Model.Aggregates;
 using DestilatechPlatform.API.AnalyticsEstimations.Domain.Model.Queries;
 
-namespace DestilatechPlatform.API.AnalyticsEstimations.Domain.Services;
+namespace DestilatechPlatform.API.AnalyticsEstimations.Application.Services;
 
 public interface IReplenishmentEstimateQueryService
 {

@@ -3,7 +3,7 @@ using DestilatechPlatform.API.AnalyticsEstimations.Domain.Model.Aggregates;
 using DestilatechPlatform.API.AnalyticsEstimations.Domain.Model.Commands;
 using DestilatechPlatform.API.Shared.Application.Patterns;
 
-namespace DestilatechPlatform.API.AnalyticsEstimations.Domain.Services;
+namespace DestilatechPlatform.API.AnalyticsEstimations.Application.Services;
 
 public interface IReplenishmentEstimateCommandService
 {

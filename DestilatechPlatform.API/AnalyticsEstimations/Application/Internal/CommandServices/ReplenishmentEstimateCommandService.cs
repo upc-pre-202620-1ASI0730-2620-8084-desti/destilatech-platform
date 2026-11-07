@@ -1,9 +1,9 @@
 using DestilatechPlatform.API.AnalyticsEstimations.Application.Internal.OutboundServices;
+using DestilatechPlatform.API.AnalyticsEstimations.Application.Services;
 using DestilatechPlatform.API.AnalyticsEstimations.Domain.Model;
 using DestilatechPlatform.API.AnalyticsEstimations.Domain.Model.Aggregates;
 using DestilatechPlatform.API.AnalyticsEstimations.Domain.Model.Commands;
 using DestilatechPlatform.API.AnalyticsEstimations.Domain.Repositories;
-using DestilatechPlatform.API.AnalyticsEstimations.Domain.Services;
 using DestilatechPlatform.API.Shared.Application.Patterns;
 using DestilatechPlatform.API.Shared.Domain.Repositories;
 
