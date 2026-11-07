@@ -20,7 +20,7 @@ public class ReplenishmentOrderCommandService(
     IInventoryPort inventoryPort,
     IUnitOfWork unitOfWork) : IReplenishmentOrderCommandService
 {
-    public async Task<ReplenishmentResult> HandleAsync(RequestReplenishmentOrderCommand command,
+    public async Task<ReplenishmentResult> Handle(RequestReplenishmentOrderCommand command,
         CancellationToken cancellationToken = default)
     {
         var product = await inventoryPort.FindProductAsync(command.UserId, command.ProductId, cancellationToken);
@@ -46,7 +46,7 @@ public class ReplenishmentOrderCommandService(
         return new ReplenishmentResult.Success(replenishmentOrder);
     }
 
-    public async Task<ReplenishmentResult> HandleAsync(ReceiveReplenishmentOrderCommand command,
+    public async Task<ReplenishmentResult> Handle(ReceiveReplenishmentOrderCommand command,
         CancellationToken cancellationToken = default)
     {
         var replenishmentOrder =
@@ -73,7 +73,7 @@ public class ReplenishmentOrderCommandService(
         return new ReplenishmentResult.Success(replenishmentOrder);
     }
 
-    public async Task<ReplenishmentResult> HandleAsync(CancelReplenishmentOrderCommand command,
+    public async Task<ReplenishmentResult> Handle(CancelReplenishmentOrderCommand command,
         CancellationToken cancellationToken = default)
     {
         var replenishmentOrder =

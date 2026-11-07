@@ -5,8 +5,8 @@ namespace DestilatechPlatform.API.OrdersReplenishment.Application.Services;
 
 public interface ICustomerQueryService
 {
-    Task<IEnumerable<Customer>> HandleAsync(GetAllCustomersByUserIdQuery query,
+    Task<IEnumerable<Customer>> Handle(GetAllCustomersByUserIdQuery query,
         CancellationToken cancellationToken = default);
 
-    Task<Customer?> HandleAsync(GetCustomerByIdQuery query, CancellationToken cancellationToken = default);
+    Task<Customer?> Handle(GetCustomerByIdQuery query, CancellationToken cancellationToken = default);
 }

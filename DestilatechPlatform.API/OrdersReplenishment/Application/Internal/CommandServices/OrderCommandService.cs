@@ -22,7 +22,7 @@ public class OrderCommandService(
     IInventoryPort inventoryPort,
     IUnitOfWork unitOfWork) : IOrderCommandService
 {
-    public async Task<OrderResult> HandleAsync(RegisterOrderCommand command,
+    public async Task<OrderResult> Handle(RegisterOrderCommand command,
         CancellationToken cancellationToken = default)
     {
         if (command.Lines is null || command.Lines.Count == 0)
@@ -77,7 +77,7 @@ public class OrderCommandService(
         }
     }
 
-    public async Task<OrderResult> HandleAsync(AdvanceOrderStatusCommand command,
+    public async Task<OrderResult> Handle(AdvanceOrderStatusCommand command,
         CancellationToken cancellationToken = default)
     {
         var order = await FindOwnedOrderAsync(command.OrderId, command.UserId, cancellationToken);
@@ -100,7 +100,7 @@ public class OrderCommandService(
         return new OrderResult.Success(order);
     }
 
-    public async Task<OrderResult> HandleAsync(CancelOrderCommand command,
+    public async Task<OrderResult> Handle(CancelOrderCommand command,
         CancellationToken cancellationToken = default)
     {
         var order = await FindOwnedOrderAsync(command.OrderId, command.UserId, cancellationToken);

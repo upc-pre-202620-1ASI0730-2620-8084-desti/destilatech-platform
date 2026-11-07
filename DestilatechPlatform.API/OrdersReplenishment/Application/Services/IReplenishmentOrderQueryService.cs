@@ -5,9 +5,9 @@ namespace DestilatechPlatform.API.OrdersReplenishment.Application.Services;
 
 public interface IReplenishmentOrderQueryService
 {
-    Task<IEnumerable<ReplenishmentOrder>> HandleAsync(GetAllReplenishmentOrdersByUserIdQuery query,
+    Task<IEnumerable<ReplenishmentOrder>> Handle(GetAllReplenishmentOrdersByUserIdQuery query,
         CancellationToken cancellationToken = default);
 
-    Task<ReplenishmentOrder?> HandleAsync(GetReplenishmentOrderByIdQuery query,
+    Task<ReplenishmentOrder?> Handle(GetReplenishmentOrderByIdQuery query,
         CancellationToken cancellationToken = default);
 }

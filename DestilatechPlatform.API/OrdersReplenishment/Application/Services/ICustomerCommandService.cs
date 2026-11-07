@@ -7,9 +7,9 @@ namespace DestilatechPlatform.API.OrdersReplenishment.Application.Services;
 
 public interface ICustomerCommandService
 {
-    Task<Result<Customer, OrdersReplenishmentError>> HandleAsync(RegisterCustomerCommand command,
+    Task<Result<Customer, OrdersReplenishmentError>> Handle(RegisterCustomerCommand command,
         CancellationToken cancellationToken = default);
 
-    Task<Result<Customer, OrdersReplenishmentError>> HandleAsync(UpdateCustomerCommand command,
+    Task<Result<Customer, OrdersReplenishmentError>> Handle(UpdateCustomerCommand command,
         CancellationToken cancellationToken = default);
 }

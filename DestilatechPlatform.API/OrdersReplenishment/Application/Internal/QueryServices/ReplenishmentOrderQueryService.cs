@@ -8,7 +8,7 @@ namespace DestilatechPlatform.API.OrdersReplenishment.Application.Internal.Query
 public class ReplenishmentOrderQueryService(IReplenishmentOrderRepository replenishmentOrderRepository)
     : IReplenishmentOrderQueryService
 {
-    public async Task<IEnumerable<ReplenishmentOrder>> HandleAsync(GetAllReplenishmentOrdersByUserIdQuery query,
+    public async Task<IEnumerable<ReplenishmentOrder>> Handle(GetAllReplenishmentOrdersByUserIdQuery query,
         CancellationToken cancellationToken = default)
     {
         var replenishmentOrders = await replenishmentOrderRepository.FindByUserIdAsync(query.UserId,
@@ -16,7 +16,7 @@ public class ReplenishmentOrderQueryService(IReplenishmentOrderRepository replen
         return replenishmentOrders.OrderByDescending(replenishmentOrder => replenishmentOrder.OrderDate);
     }
 
-    public async Task<ReplenishmentOrder?> HandleAsync(GetReplenishmentOrderByIdQuery query,
+    public async Task<ReplenishmentOrder?> Handle(GetReplenishmentOrderByIdQuery query,
         CancellationToken cancellationToken = default)
     {
         var replenishmentOrder = await replenishmentOrderRepository.FindByIdAsync(query.ReplenishmentOrderId,

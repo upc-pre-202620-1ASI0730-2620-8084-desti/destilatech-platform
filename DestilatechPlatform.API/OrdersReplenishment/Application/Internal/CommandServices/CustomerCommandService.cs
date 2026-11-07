@@ -16,7 +16,7 @@ namespace DestilatechPlatform.API.OrdersReplenishment.Application.Internal.Comma
 public class CustomerCommandService(ICustomerRepository customerRepository, IUnitOfWork unitOfWork)
     : ICustomerCommandService
 {
-    public async Task<CustomerResult> HandleAsync(RegisterCustomerCommand command,
+    public async Task<CustomerResult> Handle(RegisterCustomerCommand command,
         CancellationToken cancellationToken = default)
     {
         Customer customer;
@@ -34,7 +34,7 @@ public class CustomerCommandService(ICustomerRepository customerRepository, IUni
         return new CustomerResult.Success(customer);
     }
 
-    public async Task<CustomerResult> HandleAsync(UpdateCustomerCommand command,
+    public async Task<CustomerResult> Handle(UpdateCustomerCommand command,
         CancellationToken cancellationToken = default)
     {
         var customer = await customerRepository.FindByIdAsync(command.CustomerId, cancellationToken);

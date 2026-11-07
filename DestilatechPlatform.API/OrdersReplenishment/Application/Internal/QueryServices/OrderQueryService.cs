@@ -7,14 +7,14 @@ namespace DestilatechPlatform.API.OrdersReplenishment.Application.Internal.Query
 
 public class OrderQueryService(IOrderRepository orderRepository) : IOrderQueryService
 {
-    public async Task<IEnumerable<Order>> HandleAsync(GetAllOrdersByUserIdQuery query,
+    public async Task<IEnumerable<Order>> Handle(GetAllOrdersByUserIdQuery query,
         CancellationToken cancellationToken = default)
     {
         var orders = await orderRepository.FindByUserIdAsync(query.UserId, cancellationToken);
         return orders.OrderByDescending(order => order.OrderDate);
     }
 
-    public async Task<IEnumerable<Order>> HandleAsync(GetOrdersByCustomerIdQuery query,
+    public async Task<IEnumerable<Order>> Handle(GetOrdersByCustomerIdQuery query,
         CancellationToken cancellationToken = default)
     {
         var orders = await orderRepository.FindByCustomerIdAsync(query.CustomerId, cancellationToken);
@@ -23,7 +23,7 @@ public class OrderQueryService(IOrderRepository orderRepository) : IOrderQuerySe
             .OrderByDescending(order => order.OrderDate);
     }
 
-    public async Task<Order?> HandleAsync(GetOrderByIdQuery query, CancellationToken cancellationToken = default)
+    public async Task<Order?> Handle(GetOrderByIdQuery query, CancellationToken cancellationToken = default)
     {
         var order = await orderRepository.FindByIdAsync(query.OrderId, cancellationToken);
         return order is not null && order.BelongsTo(query.UserId) ? order : null;

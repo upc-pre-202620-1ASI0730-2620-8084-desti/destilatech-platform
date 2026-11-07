@@ -7,14 +7,14 @@ namespace DestilatechPlatform.API.OrdersReplenishment.Application.Internal.Query
 
 public class CustomerQueryService(ICustomerRepository customerRepository) : ICustomerQueryService
 {
-    public async Task<IEnumerable<Customer>> HandleAsync(GetAllCustomersByUserIdQuery query,
+    public async Task<IEnumerable<Customer>> Handle(GetAllCustomersByUserIdQuery query,
         CancellationToken cancellationToken = default)
     {
         var customers = await customerRepository.FindByUserIdAsync(query.UserId, cancellationToken);
         return customers.OrderBy(customer => customer.Name, StringComparer.CurrentCultureIgnoreCase);
     }
 
-    public async Task<Customer?> HandleAsync(GetCustomerByIdQuery query, CancellationToken cancellationToken = default)
+    public async Task<Customer?> Handle(GetCustomerByIdQuery query, CancellationToken cancellationToken = default)
     {
         var customer = await customerRepository.FindByIdAsync(query.CustomerId, cancellationToken);
         return customer is not null && customer.BelongsTo(query.UserId) ? customer : null;

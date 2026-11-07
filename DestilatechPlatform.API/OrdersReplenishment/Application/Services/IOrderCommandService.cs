@@ -7,12 +7,12 @@ namespace DestilatechPlatform.API.OrdersReplenishment.Application.Services;
 
 public interface IOrderCommandService
 {
-    Task<Result<Order, OrdersReplenishmentError>> HandleAsync(RegisterOrderCommand command,
+    Task<Result<Order, OrdersReplenishmentError>> Handle(RegisterOrderCommand command,
         CancellationToken cancellationToken = default);
 
-    Task<Result<Order, OrdersReplenishmentError>> HandleAsync(AdvanceOrderStatusCommand command,
+    Task<Result<Order, OrdersReplenishmentError>> Handle(AdvanceOrderStatusCommand command,
         CancellationToken cancellationToken = default);
 
-    Task<Result<Order, OrdersReplenishmentError>> HandleAsync(CancelOrderCommand command,
+    Task<Result<Order, OrdersReplenishmentError>> Handle(CancelOrderCommand command,
         CancellationToken cancellationToken = default);
 }
