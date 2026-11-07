@@ -1,7 +1,6 @@
 using System.Globalization;
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Entities;
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.ValueObjects;
-using DestilatechPlatform.API.Shared.Domain.Model;
 
 namespace DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates;
 
@@ -9,7 +8,7 @@ namespace DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates;
 /// Order placed by a customer (US18, US19). It starts as Pending, moves forward one status
 /// at a time until Delivered, and can be cancelled while it is still open.
 /// </summary>
-public class Order : IAuditableEntity
+public partial class Order
 {
     private const string CodePrefix = "#";
     private const int LastCodeBeforeFirstOrder = 1000;
@@ -19,7 +18,7 @@ public class Order : IAuditableEntity
 
     private readonly List<OrderLine> _lines = [];
 
-    public int Id { get; }
+    public int Id { get; private set; }
 
     public int UserId { get; private set; }
 
@@ -38,10 +37,6 @@ public class Order : IAuditableEntity
     public string Notes { get; private set; }
 
     public IReadOnlyCollection<OrderLine> Lines => _lines.AsReadOnly();
-
-    public DateTimeOffset? CreatedAt { get; set; }
-
-    public DateTimeOffset? UpdatedAt { get; set; }
 
     /// <summary>
     /// Constructor required by Entity Framework Core.
