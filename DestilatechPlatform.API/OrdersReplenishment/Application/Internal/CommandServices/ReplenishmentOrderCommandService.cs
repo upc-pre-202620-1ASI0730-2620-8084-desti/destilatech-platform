@@ -3,7 +3,7 @@ using DestilatechPlatform.API.OrdersReplenishment.Domain.Model;
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates;
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Commands;
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Repositories;
-using DestilatechPlatform.API.OrdersReplenishment.Domain.Services;
+using DestilatechPlatform.API.OrdersReplenishment.Application.Services;
 using DestilatechPlatform.API.Shared.Domain.Repositories;
 using ReplenishmentResult = DestilatechPlatform.API.Shared.Application.Patterns.Result<
     DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates.ReplenishmentOrder,

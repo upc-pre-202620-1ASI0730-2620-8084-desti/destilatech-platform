@@ -1,7 +1,7 @@
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates;
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Queries;
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Repositories;
-using DestilatechPlatform.API.OrdersReplenishment.Domain.Services;
+using DestilatechPlatform.API.OrdersReplenishment.Application.Services;
 
 namespace DestilatechPlatform.API.OrdersReplenishment.Application.Internal.QueryServices;
 

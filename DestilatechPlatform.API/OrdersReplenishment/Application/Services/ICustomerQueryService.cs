@@ -1,7 +1,7 @@
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates;
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Queries;
 
-namespace DestilatechPlatform.API.OrdersReplenishment.Domain.Services;
+namespace DestilatechPlatform.API.OrdersReplenishment.Application.Services;
 
 public interface ICustomerQueryService
 {
