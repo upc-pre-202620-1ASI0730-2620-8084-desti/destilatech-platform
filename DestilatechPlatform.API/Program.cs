@@ -9,6 +9,8 @@ using DestilatechPlatform.API.Iam.Application.CommandServices;
 using DestilatechPlatform.API.Iam.Application.Internal.CommandServices;
 using DestilatechPlatform.API.Iam.Application.Internal.QueryServices;
 using DestilatechPlatform.API.Iam.Application.QueryServices;
+using DestilatechPlatform.API.Iam.Application.Acl;
+using DestilatechPlatform.API.Iam.Interfaces.Acl;
 using DestilatechPlatform.API.Iam.Domain.Repositories;
 using DestilatechPlatform.API.Iam.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -94,6 +96,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserCommandService, UserCommandService>();
 builder.Services.AddScoped<IUserQueryService, UserQueryService>();
+builder.Services.AddScoped<IIamContextFacade, IamContextFacade>();
 
 var app = builder.Build();
 
