@@ -1,6 +1,12 @@
-﻿namespace DestilatechPlatform.API.Billing.Application.CommandServices;
+﻿using DestilatechPlatform.API.Billing.Domain.Model.Aggregates;
+using DestilatechPlatform.API.Billing.Domain.Model.Commands;
+using DestilatechPlatform.API.Billing.Domain.Model.Errors;
+using DestilatechPlatform.API.Shared.Application.Patterns;
+
+namespace DestilatechPlatform.API.Billing.Application.CommandServices;
 
 public interface ISubscriptionCommandService
 {
-    
+    Task<Result<Subscription, BillingError>> Handle(CancelSubscriptionCommand command,
+        CancellationToken cancellationToken = default);
 }
