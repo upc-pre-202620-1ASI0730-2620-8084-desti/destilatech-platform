@@ -2,5 +2,6 @@
 
 public enum EPaymentStatus
 {
-    
+    Paid = 0,
+    Failed = 1
 }
