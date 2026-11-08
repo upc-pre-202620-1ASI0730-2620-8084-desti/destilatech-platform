@@ -1,5 +1,6 @@
 ﻿using System.Net.Mime;
 using DestilatechPlatform.API.AlertsNotifications.Application.Services;
+using DestilatechPlatform.API.AlertsNotifications.Domain.Model;
 using DestilatechPlatform.API.AlertsNotifications.Domain.Model.Commands;
 using DestilatechPlatform.API.AlertsNotifications.Domain.Model.Queries;
 using DestilatechPlatform.API.AlertsNotifications.Domain.Model.ValueObjects;
@@ -8,9 +9,9 @@ using DestilatechPlatform.API.AlertsNotifications.Interfaces.Rest.Transform;
 using DestilatechPlatform.API.Resources;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using ProblemDetailsFactory = DestilatechPlatform.API.Shared.Interfaces.Rest.ProblemDetails.ProblemDetailsFactory;
 
 namespace DestilatechPlatform.API.AlertsNotifications.Interfaces.Rest;
-
 
 [ApiController]
 [Route("api/v1/[controller]")]
@@ -20,49 +21,44 @@ public class AlertsController(
     IAlertCommandService alertCommandService,
     IAlertQueryService alertQueryService,
     IStringLocalizer<SharedResource> localizer,
+    ProblemDetailsFactory problemDetailsFactory,
     ILogger<AlertsController> logger)
     : ControllerBase
 {
 
     [HttpPost]
     [ProducesResponseType(typeof(AlertResource), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(string), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> RaiseAlert([FromBody] RaiseAlertResource resource,
+    public async Task<IActionResult> RaiseAlert([FromBody] RaiseAlertResource resource,
         CancellationToken cancellationToken)
     {
         try
         {
             var raiseAlertCommand = RaiseAlertCommandFromResourceAssembler.ToCommandFromResource(resource);
             var result = await alertCommandService.Handle(raiseAlertCommand, cancellationToken);
-            return ActionResultFromRaiseAlertResultAssembler.ToActionResultFromRaiseAlertResult(
-                result,
+            return AlertsActionResultAssembler.ToActionResultFromAlertResult(
                 this,
+                result,
                 localizer,
-                nameof(GetAlertById));
+                problemDetailsFactory,
+                raisedAlert => CreatedAtAction(nameof(GetAlertById), new { id = raisedAlert.Id.Value },
+                    AlertResourceFromEntityAssembler.ToResourceFromEntity(raisedAlert)));
         }
         catch (ArgumentException ex)
         {
             logger.LogWarning(ex, "Validation failed while raising an alert for account {AccountId}",
                 resource.AccountId);
-            return BadRequest(localizer["InvalidAlertRequest"].Value);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Unexpected error while raising an alert for account {AccountId}",
-                resource.AccountId);
-            return Problem(
-                title: localizer["UnexpectedServerError"].Value,
-                detail: localizer["UnexpectedErrorRaisingAlert"].Value,
-                statusCode: 500);
+            return AlertsActionResultAssembler.ToProblemDetailsFromAlertsError(
+                this, AlertsError.InvalidAlertData, localizer, problemDetailsFactory);
         }
     }
-
+    
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<AlertResource>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> GetAlertsFromQuery([FromQuery] int accountId,
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetAlertsFromQuery([FromQuery] int accountId,
         [FromQuery] string? type = null,
         [FromQuery] string? status = null,
         CancellationToken cancellationToken = default)
@@ -80,34 +76,40 @@ public class AlertsController(
         catch (ArgumentException ex)
         {
             logger.LogWarning(ex, "Validation failed while querying alerts for account {AccountId}", accountId);
-            return BadRequest(localizer["InvalidAlertQuery"].Value);
+            return problemDetailsFactory.CreateProblemDetails(this, StatusCodes.Status400BadRequest,
+                AlertsError.InvalidAlertData, localizer["InvalidAlertQuery"].Value);
         }
     }
     
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(AlertResource), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> GetAlertById(int id, CancellationToken cancellationToken = default)
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetAlertById(int id, CancellationToken cancellationToken = default)
     {
         var getAlertByIdQuery = new GetAlertByIdQuery(id);
-        var result = await alertQueryService.Handle(getAlertByIdQuery, cancellationToken);
-        if (result is null) return NotFound();
-        var resource = AlertResourceFromEntityAssembler.ToResourceFromEntity(result);
-        return Ok(resource);
+        var alert = await alertQueryService.Handle(getAlertByIdQuery, cancellationToken);
+        return AlertsActionResultAssembler.ToActionResultFromGetAlertByIdResult(
+            this,
+            alert,
+            localizer,
+            problemDetailsFactory,
+            foundAlert => Ok(AlertResourceFromEntityAssembler.ToResourceFromEntity(foundAlert)));
     }
     
-    [HttpPatch("{id}/attended")]
+    [HttpPatch("{id:int}/attended")]
     [ProducesResponseType(typeof(AlertResource), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(string), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> MarkAlertAsAttended(int id, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> MarkAlertAsAttended(int id, CancellationToken cancellationToken = default)
     {
         var markAlertAsAttendedCommand = new MarkAlertAsAttendedCommand(id);
         var result = await alertCommandService.Handle(markAlertAsAttendedCommand, cancellationToken);
-        return ActionResultFromMarkAlertAsAttendedResultAssembler.ToActionResultFromMarkAlertAsAttendedResult(
-            result,
+        return AlertsActionResultAssembler.ToActionResultFromAlertResult(
             this,
-            localizer);
+            result,
+            localizer,
+            problemDetailsFactory,
+            attendedAlert => Ok(AlertResourceFromEntityAssembler.ToResourceFromEntity(attendedAlert)));
     }
 }
