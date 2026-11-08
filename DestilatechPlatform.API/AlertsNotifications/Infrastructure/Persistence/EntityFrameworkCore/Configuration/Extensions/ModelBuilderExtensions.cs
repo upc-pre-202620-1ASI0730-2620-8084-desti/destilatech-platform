@@ -1,15 +1,20 @@
 ﻿using DestilatechPlatform.API.AlertsNotifications.Domain.Model.Aggregates;
 using DestilatechPlatform.API.AlertsNotifications.Domain.Model.ValueObjects;
+using DestilatechPlatform.API.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration.ValueConverters;
 using Microsoft.EntityFrameworkCore;
 
 namespace DestilatechPlatform.API.AlertsNotifications.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 
 public static class ModelBuilderExtensions
 {
+
     public static void ApplyAlertsNotificationsConfiguration(this ModelBuilder builder)
     {
         builder.Entity<Alert>().HasKey(a => a.Id);
-        builder.Entity<Alert>().Property(a => a.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Alert>().Property(a => a.Id)
+            .HasConversion(new StronglyTypedIdConverter<AlertId, int>(id => id.Value, value => new AlertId(value)))
+            .IsRequired()
+            .ValueGeneratedOnAdd();
         builder.Entity<Alert>().Property(a => a.AccountId)
             .HasConversion(valueObject => valueObject.Value, value => new AccountId(value))
             .IsRequired();
