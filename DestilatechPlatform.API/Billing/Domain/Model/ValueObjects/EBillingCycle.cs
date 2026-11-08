@@ -2,5 +2,5 @@
 
 public enum EBillingCycle
 {
-    
+    Monthly = 0
 }
