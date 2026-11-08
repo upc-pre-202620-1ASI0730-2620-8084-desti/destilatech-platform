@@ -2,5 +2,5 @@
 
 public enum EPaymentProvider
 {
-    
+    Stripe = 0
 }
