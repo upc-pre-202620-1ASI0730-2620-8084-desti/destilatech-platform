@@ -13,6 +13,16 @@ using DestilatechPlatform.API.Iam.Application.Acl;
 using DestilatechPlatform.API.Iam.Interfaces.Acl;
 using DestilatechPlatform.API.Iam.Domain.Repositories;
 using DestilatechPlatform.API.Iam.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+
+using DestilatechPlatform.API.Billing.Application.CommandServices;
+using DestilatechPlatform.API.Billing.Application.Internal.CommandServices;
+using DestilatechPlatform.API.Billing.Application.Internal.OutboundServices;
+using DestilatechPlatform.API.Billing.Application.Internal.QueryServices;
+using DestilatechPlatform.API.Billing.Application.QueryServices;
+using DestilatechPlatform.API.Billing.Domain.Repositories;
+using DestilatechPlatform.API.Billing.Infrastructure.Payments.Stripe;
+using DestilatechPlatform.API.Billing.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -97,6 +107,19 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserCommandService, UserCommandService>();
 builder.Services.AddScoped<IUserQueryService, UserQueryService>();
 builder.Services.AddScoped<IIamContextFacade, IamContextFacade>();
+
+// Billing Bounded Context Injection Configuration
+builder.Services.AddScoped<IPlanRepository, PlanRepository>();
+builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<ICheckoutCommandService, CheckoutCommandService>();
+builder.Services.AddScoped<ISubscriptionCommandService, SubscriptionCommandService>();
+builder.Services.AddScoped<IPlanQueryService, PlanQueryService>();
+builder.Services.AddScoped<ISubscriptionQueryService, SubscriptionQueryService>();
+builder.Services.AddScoped<IPaymentQueryService, PaymentQueryService>();
+
+builder.Services.Configure<StripeOptions>(builder.Configuration.GetSection("Stripe"));
+builder.Services.AddScoped<IPaymentGatewayService, StripePaymentGatewayService>();
 
 var app = builder.Build();
 
