@@ -24,6 +24,7 @@
         <PackageReference Include="MySql.EntityFrameworkCore" Version="10.0.12" />
         <!-- Naming convention conversion related packages -->
         <PackageReference Include="Humanizer" Version="3.0.10" />
+        <PackageReference Include="Stripe.net" Version="53.1.0" />
     </ItemGroup>
 
 </Project>
