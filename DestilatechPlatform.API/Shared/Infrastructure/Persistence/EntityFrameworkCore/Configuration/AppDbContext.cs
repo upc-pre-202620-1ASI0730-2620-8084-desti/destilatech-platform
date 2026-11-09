@@ -1,6 +1,7 @@
 ﻿using DestilatechPlatform.API.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using DestilatechPlatform.API.Shared.Infrastructure.Persistence.EntityFrameworkCore.Interceptors;
 using DestilatechPlatform.API.Iam.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;//iam
+using DestilatechPlatform.API.Billing.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace DestilatechPlatform.API.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
@@ -18,7 +19,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         base.OnModelCreating(builder);
         // IAM Context
         builder.ApplyIamConfiguration();
-
+        
+        // Billing Context
+        builder.ApplyBillingConfiguration();
+        
         builder.UseSnakeCaseNamingConvention();
     }
 }
