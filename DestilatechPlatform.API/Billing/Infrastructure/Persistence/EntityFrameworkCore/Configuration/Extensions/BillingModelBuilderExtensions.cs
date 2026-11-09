@@ -27,9 +27,8 @@ public static class BillingModelBuilderExtensions
             entity.Property(s => s.PaymentReference).HasMaxLength(255).IsRequired();
             entity.HasIndex(s => s.PaymentReference).IsUnique();
             entity.HasIndex(s => s.UserId);
-            // UserId es referencia lógica a IAM: no hay foreign key hacia users
-            entity.HasOne<Plan>().WithMany().HasForeignKey(s => s.PlanId);
-        });
+            
+            entity.HasOne<Plan>().WithMany().HasForeignKey(s => s.PlanId).OnDelete(DeleteBehavior.Restrict);        });
 
         builder.Entity<Payment>(entity =>
         {
@@ -44,7 +43,6 @@ public static class BillingModelBuilderExtensions
             entity.Property(p => p.CardBrand).HasMaxLength(30);
             entity.Property(p => p.CardLast4).HasMaxLength(4);
             entity.HasIndex(p => p.UserId);
-            entity.HasOne<Plan>().WithMany().HasForeignKey(p => p.PlanId);
-        });
+            entity.HasOne<Plan>().WithMany().HasForeignKey(p => p.PlanId).OnDelete(DeleteBehavior.Restrict);        });
     }
 }
