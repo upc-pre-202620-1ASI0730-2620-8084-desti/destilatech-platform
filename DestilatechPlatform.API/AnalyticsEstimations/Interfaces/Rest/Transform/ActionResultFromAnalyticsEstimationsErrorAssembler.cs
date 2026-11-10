@@ -1,4 +1,4 @@
-using DestilatechPlatform.API.AnalyticsEstimations.Domain.Model;
+using DestilatechPlatform.API.Shared.Domain.Model.Errors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DestilatechPlatform.API.AnalyticsEstimations.Interfaces.Rest.Transform;
@@ -8,12 +8,14 @@ namespace DestilatechPlatform.API.AnalyticsEstimations.Interfaces.Rest.Transform
 /// </summary>
 public static class ActionResultFromAnalyticsEstimationsErrorAssembler
 {
-    public static ActionResult ToActionResultFromError(AnalyticsEstimationsError error, ControllerBase controller)
+    public static ActionResult ToActionResultFromError(Error error, ControllerBase controller)
     {
-        var statusCode = error.Code switch
+        var statusCode = error.Type switch
         {
-            "product-not-found" => StatusCodes.Status404NotFound,
-            _ => StatusCodes.Status400BadRequest
+            EErrorType.NotFound => StatusCodes.Status404NotFound,
+            EErrorType.Conflict => StatusCodes.Status409Conflict,
+            EErrorType.Validation => StatusCodes.Status400BadRequest,
+            _ => StatusCodes.Status500InternalServerError
         };
         var problemDetails = controller.ProblemDetailsFactory.CreateProblemDetails(
             controller.HttpContext,
