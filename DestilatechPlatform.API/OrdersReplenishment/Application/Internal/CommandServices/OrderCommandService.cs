@@ -6,9 +6,7 @@ using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Entities;
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Repositories;
 using DestilatechPlatform.API.OrdersReplenishment.Application.Services;
 using DestilatechPlatform.API.Shared.Domain.Repositories;
-using OrderResult = DestilatechPlatform.API.Shared.Application.Patterns.Result<
-    DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates.Order,
-    DestilatechPlatform.API.OrdersReplenishment.Domain.Model.OrdersReplenishmentError>;
+using OrderResult = DestilatechPlatform.API.Shared.Application.Model.Result<DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates.Order>;
 
 namespace DestilatechPlatform.API.OrdersReplenishment.Application.Internal.CommandServices;
 
@@ -27,13 +25,13 @@ public class OrderCommandService(
     {
         if (command.Lines is null || command.Lines.Count == 0)
         {
-            return new OrderResult.Failure(OrdersReplenishmentError.LinesRequired());
+            return OrderResult.Failure(OrdersReplenishmentError.LinesRequired());
         }
 
         var customer = await customerRepository.FindByIdAsync(command.CustomerId, cancellationToken);
         if (customer is null || !customer.BelongsTo(command.UserId))
         {
-            return new OrderResult.Failure(OrdersReplenishmentError.CustomerRequired());
+            return OrderResult.Failure(OrdersReplenishmentError.CustomerRequired());
         }
 
         var lines = new List<OrderLine>();
@@ -45,12 +43,12 @@ public class OrderCommandService(
                 var product = await inventoryPort.FindProductAsync(command.UserId, requested.Key, cancellationToken);
                 if (product is null)
                 {
-                    return new OrderResult.Failure(OrdersReplenishmentError.ProductRequired());
+                    return OrderResult.Failure(OrdersReplenishmentError.ProductRequired());
                 }
 
                 if (requested.Sum(line => line.Quantity) > product.AvailableQuantity)
                 {
-                    return new OrderResult.Failure(OrdersReplenishmentError.InsufficientStock());
+                    return OrderResult.Failure(OrdersReplenishmentError.InsufficientStock());
                 }
 
                 lines.AddRange(requested.Select(line =>
@@ -69,11 +67,11 @@ public class OrderCommandService(
             }
 
             await unitOfWork.CompleteAsync(cancellationToken);
-            return new OrderResult.Success(order);
+            return OrderResult.Success(order);
         }
         catch (OrdersReplenishmentException exception)
         {
-            return new OrderResult.Failure(exception.Error);
+            return OrderResult.Failure(exception.Error);
         }
     }
 
@@ -83,7 +81,7 @@ public class OrderCommandService(
         var order = await FindOwnedOrderAsync(command.OrderId, command.UserId, cancellationToken);
         if (order is null)
         {
-            return new OrderResult.Failure(OrdersReplenishmentError.OrderNotFound(command.OrderId));
+            return OrderResult.Failure(OrdersReplenishmentError.OrderNotFound(command.OrderId));
         }
 
         try
@@ -92,12 +90,12 @@ public class OrderCommandService(
         }
         catch (OrdersReplenishmentException exception)
         {
-            return new OrderResult.Failure(exception.Error);
+            return OrderResult.Failure(exception.Error);
         }
 
         orderRepository.Update(order);
         await unitOfWork.CompleteAsync(cancellationToken);
-        return new OrderResult.Success(order);
+        return OrderResult.Success(order);
     }
 
     public async Task<OrderResult> Handle(CancelOrderCommand command,
@@ -106,7 +104,7 @@ public class OrderCommandService(
         var order = await FindOwnedOrderAsync(command.OrderId, command.UserId, cancellationToken);
         if (order is null)
         {
-            return new OrderResult.Failure(OrdersReplenishmentError.OrderNotFound(command.OrderId));
+            return OrderResult.Failure(OrdersReplenishmentError.OrderNotFound(command.OrderId));
         }
 
         try
@@ -115,7 +113,7 @@ public class OrderCommandService(
         }
         catch (OrdersReplenishmentException exception)
         {
-            return new OrderResult.Failure(exception.Error);
+            return OrderResult.Failure(exception.Error);
         }
 
         orderRepository.Update(order);
@@ -126,7 +124,7 @@ public class OrderCommandService(
         }
 
         await unitOfWork.CompleteAsync(cancellationToken);
-        return new OrderResult.Success(order);
+        return OrderResult.Success(order);
     }
 
     /// <summary>
