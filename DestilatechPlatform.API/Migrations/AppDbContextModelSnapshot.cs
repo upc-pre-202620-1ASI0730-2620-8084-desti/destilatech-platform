@@ -233,6 +233,12 @@ namespace DestilatechPlatform.API.Migrations
                         .HasColumnType("varchar(150)")
                         .HasColumnName("business_name");
 
+                    b.Property<string>("BusinessType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("business_type");
+
                     b.Property<DateTimeOffset?>("CreatedAt")
                         .HasColumnType("datetime")
                         .HasColumnName("created_at");
@@ -243,16 +249,16 @@ namespace DestilatechPlatform.API.Migrations
                         .HasColumnType("varchar(180)")
                         .HasColumnName("email");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("FullName")
                         .IsRequired()
                         .HasMaxLength(120)
                         .HasColumnType("varchar(120)")
-                        .HasColumnName("name");
+                        .HasColumnName("full_name");
 
-                    b.Property<string>("PreferredPlan")
+                    b.Property<string>("PreferredPlanCode")
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)")
-                        .HasColumnName("preferred_plan");
+                        .HasColumnName("preferred_plan_code");
 
                     b.Property<DateTimeOffset>("TrialEndsAt")
                         .HasColumnType("datetime")
@@ -265,12 +271,6 @@ namespace DestilatechPlatform.API.Migrations
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("datetime")
                         .HasColumnName("updated_at");
-
-                    b.Property<string>("UserType")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
-                        .HasColumnName("user_type");
 
                     b.HasKey("Id")
                         .HasName("p_k_users");
