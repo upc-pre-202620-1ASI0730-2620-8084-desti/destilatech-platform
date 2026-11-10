@@ -88,6 +88,82 @@ namespace DestilatechPlatform.API.Migrations
                     b.ToTable("alerts");
                 });
 
+            modelBuilder.Entity("DestilatechPlatform.API.AnalyticsEstimations.Domain.Model.Aggregates.ReplenishmentEstimate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    b.Property<decimal>("AverageDailyConsumption")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)")
+                        .HasColumnName("average_daily_consumption");
+
+                    b.Property<DateTimeOffset>("CalculatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("calculated_at");
+
+                    b.Property<decimal>("Confidence")
+                        .HasPrecision(3, 2)
+                        .HasColumnType("decimal(3,2)")
+                        .HasColumnName("confidence");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
+                    b.Property<decimal>("CurrentQuantitySnapshot")
+                        .HasPrecision(12, 3)
+                        .HasColumnType("decimal(12,3)")
+                        .HasColumnName("current_quantity_snapshot");
+
+                    b.Property<int?>("DaysUntilThreshold")
+                        .HasColumnType("int")
+                        .HasColumnName("days_until_threshold");
+
+                    b.Property<DateTimeOffset?>("EstimatedDate")
+                        .HasColumnType("datetime")
+                        .HasColumnName("estimated_date");
+
+                    b.Property<int>("ExitsAnalyzed")
+                        .HasColumnType("int")
+                        .HasColumnName("exits_analyzed");
+
+                    b.Property<bool>("HasEnoughData")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("has_enough_data");
+
+                    b.Property<decimal>("LowStockThresholdSnapshot")
+                        .HasPrecision(12, 3)
+                        .HasColumnType("decimal(12,3)")
+                        .HasColumnName("low_stock_threshold_snapshot");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int")
+                        .HasColumnName("product_id");
+
+                    b.Property<int>("SuggestedQuantity")
+                        .HasColumnType("int")
+                        .HasColumnName("suggested_quantity");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_replenishment_estimates");
+
+                    b.HasIndex("UserId", "ProductId")
+                        .HasDatabaseName("i_x_replenishment_estimates_user_id_product_id");
+
+                    b.ToTable("replenishment_estimates");
+                });
+
             modelBuilder.Entity("DestilatechPlatform.API.InventoryStock.Domain.Model.Aggregates.Product", b =>
                 {
                     b.Property<int>("Id")
