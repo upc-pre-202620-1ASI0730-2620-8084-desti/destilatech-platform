@@ -22,7 +22,7 @@ public class User : IAuditableEntity
         Email = email.Trim().ToLowerInvariant();
         BusinessName = businessName.Trim();
         BusinessType = businessType;
-        PreferredPlanCode = string.IsNullOrWhiteSpace(preferredPlanCode) ? null : preferredPlanCode.Trim();
+        PreferredPlanCode = string.IsNullOrWhiteSpace(preferredPlanCode) ? null : preferredPlanCode.Trim().ToUpperInvariant();
         TrialStartedAt = now;
         TrialEndsAt = now.AddDays(TrialDays);
     }
