@@ -22,6 +22,7 @@ using DestilatechPlatform.API.Billing.Application.QueryServices;
 using DestilatechPlatform.API.Billing.Domain.Repositories;
 using DestilatechPlatform.API.Billing.Infrastructure.Payments.Stripe;
 using DestilatechPlatform.API.Billing.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using DestilatechPlatform.API.Billing.Infrastructure.Persistence.EntityFrameworkCore.Seeding;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -129,6 +130,7 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<AppDbContext>();
     context.Database.Migrate();
+    await PlanSeeder.SeedAsync(context);
 }
 
 // Configure the HTTP request pipeline.
