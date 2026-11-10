@@ -12,11 +12,10 @@ public static class UserResourceFromEntityAssembler
             user.FullName,
             user.Email,
             user.BusinessName,
-            user.BusinessType.ToString().ToLowerInvariant(),
-            user.PreferredPlanCode,
-            user.TrialStartedAt,
-            user.TrialEndsAt,
+            user.BusinessType.ToString().ToUpperInvariant(),
+            user.CreatedAt,
+            new TrialPeriodResource(user.TrialStartedAt, user.TrialEndsAt),
             user.AccessGrantedUntil,
-            user.CreatedAt);
+            user.PreferredPlanCode);
     }
 }
