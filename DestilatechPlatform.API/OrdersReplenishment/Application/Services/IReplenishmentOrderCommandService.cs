@@ -1,18 +1,18 @@
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Model;
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates;
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Commands;
-using DestilatechPlatform.API.Shared.Application.Patterns;
+using DestilatechPlatform.API.Shared.Application.Model;
 
 namespace DestilatechPlatform.API.OrdersReplenishment.Application.Services;
 
 public interface IReplenishmentOrderCommandService
 {
-    Task<Result<ReplenishmentOrder, OrdersReplenishmentError>> Handle(RequestReplenishmentOrderCommand command,
+    Task<Result<ReplenishmentOrder>> Handle(RequestReplenishmentOrderCommand command,
         CancellationToken cancellationToken = default);
 
-    Task<Result<ReplenishmentOrder, OrdersReplenishmentError>> Handle(ReceiveReplenishmentOrderCommand command,
+    Task<Result<ReplenishmentOrder>> Handle(ReceiveReplenishmentOrderCommand command,
         CancellationToken cancellationToken = default);
 
-    Task<Result<ReplenishmentOrder, OrdersReplenishmentError>> Handle(CancelReplenishmentOrderCommand command,
+    Task<Result<ReplenishmentOrder>> Handle(CancelReplenishmentOrderCommand command,
         CancellationToken cancellationToken = default);
 }
