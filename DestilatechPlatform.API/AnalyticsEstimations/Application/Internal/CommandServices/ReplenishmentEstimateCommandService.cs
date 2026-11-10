@@ -4,7 +4,7 @@ using DestilatechPlatform.API.AnalyticsEstimations.Domain.Model;
 using DestilatechPlatform.API.AnalyticsEstimations.Domain.Model.Aggregates;
 using DestilatechPlatform.API.AnalyticsEstimations.Domain.Model.Commands;
 using DestilatechPlatform.API.AnalyticsEstimations.Domain.Repositories;
-using DestilatechPlatform.API.Shared.Application.Patterns;
+using DestilatechPlatform.API.Shared.Application.Model;
 using DestilatechPlatform.API.Shared.Domain.Repositories;
 
 namespace DestilatechPlatform.API.AnalyticsEstimations.Application.Internal.CommandServices;
@@ -18,14 +18,14 @@ public class ReplenishmentEstimateCommandService(
     IInventoryHistoryReadPort inventoryHistory,
     IUnitOfWork unitOfWork) : IReplenishmentEstimateCommandService
 {
-    public async Task<Result<ReplenishmentEstimate, AnalyticsEstimationsError>> Handle(
+    public async Task<Result<ReplenishmentEstimate>> Handle(
         CalculateReplenishmentEstimateCommand command, CancellationToken cancellationToken = default)
     {
         var stockLevel = await inventoryHistory.ReadStockLevelAsync(command.UserId, command.ProductId,
             cancellationToken);
         if (stockLevel is null)
         {
-            return new Result<ReplenishmentEstimate, AnalyticsEstimationsError>.Failure(
+            return Result<ReplenishmentEstimate>.Failure(
                 AnalyticsEstimationsError.ProductNotFound(command.ProductId));
         }
 
@@ -40,15 +40,15 @@ public class ReplenishmentEstimateCommandService(
         }
         catch (AnalyticsEstimationsException exception)
         {
-            return new Result<ReplenishmentEstimate, AnalyticsEstimationsError>.Failure(exception.Error);
+            return Result<ReplenishmentEstimate>.Failure(exception.Error);
         }
 
         await estimateRepository.AddAsync(estimate, cancellationToken);
         await unitOfWork.CompleteAsync(cancellationToken);
-        return new Result<ReplenishmentEstimate, AnalyticsEstimationsError>.Success(estimate);
+        return Result<ReplenishmentEstimate>.Success(estimate);
     }
 
-    public async Task<Result<IReadOnlyCollection<ReplenishmentEstimate>, AnalyticsEstimationsError>> Handle(
+    public async Task<Result<IReadOnlyCollection<ReplenishmentEstimate>>> Handle(
         RecalculateReplenishmentEstimatesCommand command, CancellationToken cancellationToken = default)
     {
         var calculatedAt = DateTimeOffset.UtcNow;
@@ -66,7 +66,7 @@ public class ReplenishmentEstimateCommandService(
         }
         catch (AnalyticsEstimationsException exception)
         {
-            return new Result<IReadOnlyCollection<ReplenishmentEstimate>, AnalyticsEstimationsError>.Failure(
+            return Result<IReadOnlyCollection<ReplenishmentEstimate>>.Failure(
                 exception.Error);
         }
 
@@ -76,7 +76,7 @@ public class ReplenishmentEstimateCommandService(
         }
 
         await unitOfWork.CompleteAsync(cancellationToken);
-        return new Result<IReadOnlyCollection<ReplenishmentEstimate>, AnalyticsEstimationsError>.Success(estimates);
+        return Result<IReadOnlyCollection<ReplenishmentEstimate>>.Success(estimates);
     }
 
     private static DateTimeOffset WindowStart(DateTimeOffset calculatedAt)
