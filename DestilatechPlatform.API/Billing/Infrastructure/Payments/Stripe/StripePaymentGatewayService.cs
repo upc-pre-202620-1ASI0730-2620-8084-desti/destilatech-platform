@@ -10,7 +10,9 @@ using Plan = DestilatechPlatform.API.Billing.Domain.Model.Aggregates.Plan;
 
 namespace DestilatechPlatform.API.Billing.Infrastructure.Payments.Stripe;
 
-public class StripePaymentGatewayService(IOptions<StripeOptions> options) : IPaymentGatewayService
+public class StripePaymentGatewayService(
+    IOptions<StripeOptions> options,
+    Microsoft.Extensions.Logging.ILogger<StripePaymentGatewayService> logger) : IPaymentGatewayService
 {
     private const string Currency = "pen";
     private readonly StripeClient _client = new(options.Value.SecretKey);
@@ -57,8 +59,10 @@ public class StripePaymentGatewayService(IOptions<StripeOptions> options) : IPay
             return new Result<CheckoutSessionInfo, BillingError>.Success(
                 new CheckoutSessionInfo(session.Id, session.Url));
         }
-        catch (StripeException)
+        catch (StripeException e)
         {
+            logger.LogError(e, "Stripe rechazó la creación de la sesión: {Message}",
+                e.StripeError?.Message ?? e.Message);
             return new Result<CheckoutSessionInfo, BillingError>.Failure(BillingError.PaymentGatewayFailure);
         }
     }
@@ -102,8 +106,10 @@ public class StripePaymentGatewayService(IOptions<StripeOptions> options) : IPay
         {
             return new Result<PaidSessionInfo, BillingError>.Failure(BillingError.SessionNotFound);
         }
-        catch (StripeException)
+        catch (StripeException e)
         {
+            logger.LogError(e, "Stripe falló al consultar la sesión: {Message}",
+                e.StripeError?.Message ?? e.Message);
             return new Result<PaidSessionInfo, BillingError>.Failure(BillingError.PaymentGatewayFailure);
         }
     }
