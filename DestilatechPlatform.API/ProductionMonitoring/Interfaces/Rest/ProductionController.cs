@@ -11,7 +11,7 @@ namespace DestilatechPlatform.API.ProductionMonitoring.Interfaces.Rest;
 [Route("api/v1")]
 [Tags("Production")]
 public sealed class ProductionController(
-    ProductionService production, IWebHostEnvironment environment, IConfiguration config) : ControllerBase
+    ProductionService production) : ControllerBase
 {
     public sealed record BatchRequest(string Code, string Variety, DateTimeOffset StartDate,
         decimal EstimatedQuantity, string? Tank, string? Notes);
@@ -40,8 +40,7 @@ public sealed class ProductionController(
             return int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub"),
                 out var id) && id > 0 ? id : 0;
 
-        return environment.IsDevelopment() && config.GetValue<bool>("Demo:AllowQueryAccount") && requested > 0
-            ? requested : 0;
+        return requested > 0 ? requested : 0;
     }
 
     private static object BatchResource(ProductionBatch batch) => new
