@@ -2,6 +2,7 @@
 using DestilatechPlatform.API.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using DestilatechPlatform.API.Shared.Infrastructure.Persistence.EntityFrameworkCore.Interceptors;
 using Microsoft.EntityFrameworkCore;
+using DestilatechPlatform.API.InventoryStock.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 
 namespace DestilatechPlatform.API.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
 
@@ -19,6 +20,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         
         builder.ApplyAlertsNotificationsConfiguration();
 
+        builder.UseSnakeCaseNamingConvention();
+        
+        builder.ApplyInventoryStockConfiguration();
+        
         builder.UseSnakeCaseNamingConvention();
     }
 }
