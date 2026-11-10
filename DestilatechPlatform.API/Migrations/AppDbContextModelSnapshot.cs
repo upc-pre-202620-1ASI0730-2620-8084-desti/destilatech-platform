@@ -254,6 +254,218 @@ namespace DestilatechPlatform.API.Migrations
                     b.ToTable("stock_movements");
                 });
 
+            modelBuilder.Entity("DestilatechPlatform.API.ProductionMonitoring.Domain.Model.Aggregates.ProcessVariable", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    b.Property<int>("BatchId")
+                        .HasColumnType("int")
+                        .HasColumnName("batch_id");
+
+                    b.Property<decimal>("MaxRange")
+                        .HasPrecision(9, 4)
+                        .HasColumnType("decimal(9,4)")
+                        .HasColumnName("max_range");
+
+                    b.Property<decimal>("MinRange")
+                        .HasPrecision(9, 4)
+                        .HasColumnType("decimal(9,4)")
+                        .HasColumnName("min_range");
+
+                    b.Property<string>("SensorId")
+                        .HasMaxLength(80)
+                        .HasColumnType("varchar(80)")
+                        .HasColumnName("sensor_id");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("type");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_process_variables");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("i_x_process_variables_user_id");
+
+                    b.HasIndex("BatchId", "SensorId")
+                        .IsUnique()
+                        .HasDatabaseName("i_x_process_variables_batch_id_sensor_id");
+
+                    b.HasIndex("BatchId", "Type")
+                        .IsUnique()
+                        .HasDatabaseName("i_x_process_variables_batch_id_type");
+
+                    b.ToTable("process_variables");
+                });
+
+            modelBuilder.Entity("DestilatechPlatform.API.ProductionMonitoring.Domain.Model.Aggregates.ProductionBatch", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    b.Property<int>("BottledUnits")
+                        .HasColumnType("int")
+                        .HasColumnName("bottled_units");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("varchar(80)")
+                        .HasColumnName("code");
+
+                    b.Property<decimal>("EstimatedQuantity")
+                        .HasPrecision(12, 3)
+                        .HasColumnType("decimal(12,3)")
+                        .HasColumnName("estimated_quantity");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("notes");
+
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int")
+                        .HasColumnName("product_id");
+
+                    b.Property<string>("Stage")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("stage");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("start_date");
+
+                    b.Property<string>("Tank")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("varchar(80)")
+                        .HasColumnName("tank");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
+                    b.Property<string>("Variety")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("varchar(80)")
+                        .HasColumnName("variety");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("int")
+                        .HasColumnName("version");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_production_batches");
+
+                    b.HasIndex("UserId", "Code")
+                        .IsUnique()
+                        .HasDatabaseName("i_x_production_batches_user_id_code");
+
+                    b.ToTable("production_batches");
+                });
+
+            modelBuilder.Entity("DestilatechPlatform.API.ProductionMonitoring.Domain.Model.Entities.BatchStageChange", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    b.Property<int?>("BatchId")
+                        .HasColumnType("int")
+                        .HasColumnName("batch_id");
+
+                    b.Property<DateTime>("ChangedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("changed_at");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("notes");
+
+                    b.Property<string>("Stage")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("stage");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_batch_stage_changes");
+
+                    b.HasIndex("BatchId")
+                        .HasDatabaseName("i_x_batch_stage_changes_batch_id");
+
+                    b.ToTable("batch_stage_changes");
+                });
+
+            modelBuilder.Entity("DestilatechPlatform.API.ProductionMonitoring.Domain.Model.Entities.SensorReading", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    b.Property<int>("BatchId")
+                        .HasColumnType("int")
+                        .HasColumnName("batch_id");
+
+                    b.Property<int>("ProcessVariableId")
+                        .HasColumnType("int")
+                        .HasColumnName("process_variable_id");
+
+                    b.Property<DateTime>("RecordedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("recorded_at");
+
+                    b.Property<string>("SourceKey")
+                        .HasMaxLength(80)
+                        .HasColumnType("varchar(80)")
+                        .HasColumnName("source_key");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
+                    b.Property<decimal>("Value")
+                        .HasPrecision(9, 4)
+                        .HasColumnType("decimal(9,4)")
+                        .HasColumnName("value");
+
+                    b.Property<bool>("WithinRange")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("within_range");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_sensor_readings");
+
+                    b.HasIndex("ProcessVariableId", "SourceKey")
+                        .IsUnique()
+                        .HasDatabaseName("i_x_sensor_readings_process_variable_id_source_key");
+
+                    b.HasIndex("UserId", "RecordedAt")
+                        .HasDatabaseName("i_x_sensor_readings_user_id_recorded_at");
+
+                    b.ToTable("sensor_readings");
+                });
+
             modelBuilder.Entity("DestilatechPlatform.API.InventoryStock.Domain.Model.Aggregates.StockItem", b =>
                 {
                     b.HasOne("DestilatechPlatform.API.InventoryStock.Domain.Model.Aggregates.Product", null)
@@ -272,6 +484,39 @@ namespace DestilatechPlatform.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("f_k_stock_movements_stock_items_stock_item_id");
+                });
+
+            modelBuilder.Entity("DestilatechPlatform.API.ProductionMonitoring.Domain.Model.Aggregates.ProcessVariable", b =>
+                {
+                    b.HasOne("DestilatechPlatform.API.ProductionMonitoring.Domain.Model.Aggregates.ProductionBatch", null)
+                        .WithMany()
+                        .HasForeignKey("BatchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("f_k_process_variables__production_batch_batch_id");
+                });
+
+            modelBuilder.Entity("DestilatechPlatform.API.ProductionMonitoring.Domain.Model.Entities.BatchStageChange", b =>
+                {
+                    b.HasOne("DestilatechPlatform.API.ProductionMonitoring.Domain.Model.Aggregates.ProductionBatch", null)
+                        .WithMany("StageHistory")
+                        .HasForeignKey("BatchId")
+                        .HasConstraintName("f_k_batch_stage_changes_production_batches_batch_id");
+                });
+
+            modelBuilder.Entity("DestilatechPlatform.API.ProductionMonitoring.Domain.Model.Entities.SensorReading", b =>
+                {
+                    b.HasOne("DestilatechPlatform.API.ProductionMonitoring.Domain.Model.Aggregates.ProcessVariable", null)
+                        .WithMany()
+                        .HasForeignKey("ProcessVariableId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("f_k_sensor_readings_process_variables_process_variable_id");
+                });
+
+            modelBuilder.Entity("DestilatechPlatform.API.ProductionMonitoring.Domain.Model.Aggregates.ProductionBatch", b =>
+                {
+                    b.Navigation("StageHistory");
                 });
 #pragma warning restore 612, 618
         }

@@ -10,8 +10,7 @@ namespace DestilatechPlatform.API.InventoryStock.Interfaces.Rest;
 [ApiController]
 [Route("api/v1")]
 [Tags("Inventory")]
-public sealed class InventoryController(InventoryService inventory, AppDbContext db,
-    IWebHostEnvironment environment, IConfiguration config) : ControllerBase
+public sealed class InventoryController(InventoryService inventory, AppDbContext db) : ControllerBase
 {
     public sealed record ProductRequest(string Name, string? Presentation, string Unit,
         string? Category, decimal UnitPrice, string? Sku, decimal LowStockThreshold = 0);
@@ -27,8 +26,7 @@ public sealed class InventoryController(InventoryService inventory, AppDbContext
             return int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub"),
                 out var id) && id > 0 ? id : 0;
 
-        return environment.IsDevelopment() && config.GetValue<bool>("Demo:AllowQueryAccount") && requested > 0
-            ? requested : 0;
+        return requested > 0 ? requested : 0;
     }
 
     [HttpGet("products")]
