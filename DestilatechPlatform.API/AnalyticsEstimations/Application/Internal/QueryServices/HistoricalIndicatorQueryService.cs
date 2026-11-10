@@ -4,7 +4,7 @@ using DestilatechPlatform.API.AnalyticsEstimations.Domain.Model;
 using DestilatechPlatform.API.AnalyticsEstimations.Domain.Model.Queries;
 using DestilatechPlatform.API.AnalyticsEstimations.Domain.Model.ValueObjects;
 using DestilatechPlatform.API.AnalyticsEstimations.Domain.Services;
-using DestilatechPlatform.API.Shared.Application.Patterns;
+using DestilatechPlatform.API.Shared.Application.Model;
 
 namespace DestilatechPlatform.API.AnalyticsEstimations.Application.Internal.QueryServices;
 
@@ -26,19 +26,19 @@ public class HistoricalIndicatorQueryService(
     /// <summary>Peru time, used when the query does not give a time zone offset.</summary>
     private static readonly TimeSpan DefaultUtcOffset = TimeSpan.FromHours(-5);
 
-    public async Task<Result<HistoricalIndicators, AnalyticsEstimationsError>> Handle(
+    public async Task<Result<HistoricalIndicators>> Handle(
         GetHistoricalIndicatorsQuery query, CancellationToken cancellationToken = default)
     {
         if (query.Days is < MinDays or > MaxDays)
         {
-            return new Result<HistoricalIndicators, AnalyticsEstimationsError>.Failure(
+            return Result<HistoricalIndicators>.Failure(
                 AnalyticsEstimationsError.InvalidPeriod(MinDays, MaxDays));
         }
 
         var utcOffset = query.UtcOffset ?? DefaultUtcOffset;
         if (utcOffset.Duration() > TimeSpan.FromHours(MaxOffsetHours) || utcOffset.Seconds != 0)
         {
-            return new Result<HistoricalIndicators, AnalyticsEstimationsError>.Failure(
+            return Result<HistoricalIndicators>.Failure(
                 AnalyticsEstimationsError.InvalidData("The time zone offset must be whole minutes within 14 hours."));
         }
 
@@ -73,21 +73,21 @@ public class HistoricalIndicatorQueryService(
                 utcOffset),
             HistoricalIndicatorCalculator.SumSeries(MetricType.ProductionVolume, liters, periods, granularity,
                 utcOffset));
-        return new Result<HistoricalIndicators, AnalyticsEstimationsError>.Success(indicators);
+        return Result<HistoricalIndicators>.Success(indicators);
     }
 
-    public async Task<Result<IReadOnlyList<ProductConsumption>, AnalyticsEstimationsError>> Handle(
+    public async Task<Result<IReadOnlyList<ProductConsumption>>> Handle(
         GetTopConsumedProductsQuery query, CancellationToken cancellationToken = default)
     {
         if (query.Days is < MinDays or > MaxDays)
         {
-            return new Result<IReadOnlyList<ProductConsumption>, AnalyticsEstimationsError>.Failure(
+            return Result<IReadOnlyList<ProductConsumption>>.Failure(
                 AnalyticsEstimationsError.InvalidPeriod(MinDays, MaxDays));
         }
 
         if (query.Limit is < MinLimit or > MaxLimit)
         {
-            return new Result<IReadOnlyList<ProductConsumption>, AnalyticsEstimationsError>.Failure(
+            return Result<IReadOnlyList<ProductConsumption>>.Failure(
                 AnalyticsEstimationsError.InvalidData($"The limit must be between {MinLimit} and {MaxLimit}."));
         }
 
@@ -100,6 +100,6 @@ public class HistoricalIndicatorQueryService(
             .OrderByDescending(consumption => consumption.Units)
             .Take(query.Limit)
             .ToList();
-        return new Result<IReadOnlyList<ProductConsumption>, AnalyticsEstimationsError>.Success(ranking);
+        return Result<IReadOnlyList<ProductConsumption>>.Success(ranking);
     }
 }
