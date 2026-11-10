@@ -26,7 +26,19 @@ public class User : IAuditableEntity
         TrialStartedAt = now;
         TrialEndsAt = now.AddDays(TrialDays);
     }
-
+    public static User CreateSeed(string fullName, string email, string businessName, EBusinessType businessType,
+        string? preferredPlanCode, DateTimeOffset trialStartedAt, DateTimeOffset trialEndsAt,
+        DateTimeOffset? accessGrantedUntil)
+    {
+        var user = new User(fullName, email, businessName, businessType, preferredPlanCode)
+        {
+            TrialStartedAt = trialStartedAt,
+            TrialEndsAt = trialEndsAt,
+            AccessGrantedUntil = accessGrantedUntil
+        };
+        return user;
+    }
+    
     public int Id { get; private set; }
     public string FullName { get; private set; }
     public string Email { get; private set; }
