@@ -10,29 +10,29 @@ public class User : IAuditableEntity
     // EF Core necesita un constructor sin parámetros
     protected User()
     {
-        Name = string.Empty;
+        FullName = string.Empty;
         Email = string.Empty;
         BusinessName = string.Empty;
     }
 
-    public User(string name, string email, string businessName, EUserType userType, string? preferredPlan)
+    public User(string fullName, string email, string businessName, EBusinessType businessType, string? preferredPlanCode)
     {
         var now = DateTimeOffset.UtcNow;
-        Name = name.Trim();
+        FullName = fullName.Trim();
         Email = email.Trim().ToLowerInvariant();
         BusinessName = businessName.Trim();
-        UserType = userType;
-        PreferredPlan = string.IsNullOrWhiteSpace(preferredPlan) ? null : preferredPlan.Trim();
+        BusinessType = businessType;
+        PreferredPlanCode = string.IsNullOrWhiteSpace(preferredPlanCode) ? null : preferredPlanCode.Trim();
         TrialStartedAt = now;
         TrialEndsAt = now.AddDays(TrialDays);
     }
 
     public int Id { get; private set; }
-    public string Name { get; private set; }
+    public string FullName { get; private set; }
     public string Email { get; private set; }
     public string BusinessName { get; private set; }
-    public EUserType UserType { get; private set; }
-    public string? PreferredPlan { get; private set; }
+    public EBusinessType BusinessType { get; private set; }
+    public string? PreferredPlanCode { get; private set; }
     public DateTimeOffset TrialStartedAt { get; private set; }
     public DateTimeOffset TrialEndsAt { get; private set; }
     public DateTimeOffset? AccessGrantedUntil { get; private set; }

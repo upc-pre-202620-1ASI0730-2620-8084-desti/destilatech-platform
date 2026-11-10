@@ -9,11 +9,11 @@ public static class UserResourceFromEntityAssembler
     {
         return new UserResource(
             user.Id,
-            user.Name,
+            user.FullName,
             user.Email,
             user.BusinessName,
-            user.UserType.ToString().ToLowerInvariant(),
-            user.PreferredPlan,
+            user.BusinessType.ToString().ToLowerInvariant(),
+            user.PreferredPlanCode,
             user.TrialStartedAt,
             user.TrialEndsAt,
             user.AccessGrantedUntil,

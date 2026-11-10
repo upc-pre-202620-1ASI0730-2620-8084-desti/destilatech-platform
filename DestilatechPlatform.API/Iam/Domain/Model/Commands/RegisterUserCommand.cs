@@ -1,9 +1,9 @@
 ﻿namespace DestilatechPlatform.API.Iam.Domain.Model.Commands;
 
 public record RegisterUserCommand(
-    string Name,
+    string FullName,
     string Email,
     string BusinessName,
-    string UserType,
-    string? PreferredPlan
+    string BusinessType,
+    string? PreferredPlanCode
     );

@@ -1,9 +1,9 @@
 ﻿namespace DestilatechPlatform.API.Iam.Interfaces.Rest.Resources;
 
 public record RegisterUserResource(
-    string Name,
+    string FullName,
     string Email,
     string BusinessName,
-    string UserType,
-    string? PreferredPlan
+    string BusinessType,
+    string? PreferredPlanCode
     );

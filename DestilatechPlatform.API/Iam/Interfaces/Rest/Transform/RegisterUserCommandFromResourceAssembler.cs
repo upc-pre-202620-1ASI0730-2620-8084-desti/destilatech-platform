@@ -8,10 +8,10 @@ public static class RegisterUserCommandFromResourceAssembler
     public static RegisterUserCommand ToCommandFromResource(RegisterUserResource resource)
     {
         return new RegisterUserCommand(
-            resource.Name ?? string.Empty,
+            resource.FullName ?? string.Empty,
             resource.Email ?? string.Empty,
             resource.BusinessName ?? string.Empty,
-            resource.UserType ?? string.Empty,
-            resource.PreferredPlan);
+            resource.BusinessType ?? string.Empty,
+            resource.PreferredPlanCode);
     }
 }

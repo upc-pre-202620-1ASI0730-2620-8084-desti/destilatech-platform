@@ -2,11 +2,11 @@
 
 public record UserResource(
     int Id,
-    string Name,
+    string FullName,
     string Email,
     string BusinessName,
-    string UserType,
-    string? PreferredPlan,
+    string BusinessType,
+    string? PreferredPlanCode,
     DateTimeOffset TrialStartedAt,
     DateTimeOffset TrialEndsAt,
     DateTimeOffset? AccessGrantedUntil,

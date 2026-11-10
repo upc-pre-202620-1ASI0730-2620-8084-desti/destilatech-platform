@@ -1,6 +1,6 @@
 ﻿namespace DestilatechPlatform.API.Iam.Domain.Model.ValueObjects;
 
-public enum EUserType
+public enum EBusinessType
 {
     Producer = 0,
     Trader = 1  

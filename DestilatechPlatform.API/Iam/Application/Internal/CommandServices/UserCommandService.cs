@@ -15,11 +15,11 @@ public class UserCommandService(IUserRepository userRepository, IUnitOfWork unit
     public async Task<Result<User, IamError>> Handle(RegisterUserCommand command,
         CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(command.Name) ||
+        if (string.IsNullOrWhiteSpace(command.FullName) ||
             string.IsNullOrWhiteSpace(command.BusinessName) ||
             string.IsNullOrWhiteSpace(command.Email) ||
             !MailAddress.TryCreate(command.Email.Trim(), out _) ||
-            !Enum.TryParse<EUserType>(command.UserType, true, out var userType) ||
+            !Enum.TryParse<EBusinessType>(command.BusinessType, true, out var userType) ||
             !Enum.IsDefined(userType))
             return new Result<User, IamError>.Failure(IamError.InvalidData);
 
@@ -27,7 +27,7 @@ public class UserCommandService(IUserRepository userRepository, IUnitOfWork unit
         if (await userRepository.ExistsByEmailAsync(email, cancellationToken))
             return new Result<User, IamError>.Failure(IamError.EmailAlreadyExists);
 
-        var user = new User(command.Name, email, command.BusinessName, userType, command.PreferredPlan);
+        var user = new User(command.FullName, email, command.BusinessName, userType, command.PreferredPlanCode);
         await userRepository.AddAsync(user, cancellationToken);
         await unitOfWork.CompleteAsync(cancellationToken);
 
