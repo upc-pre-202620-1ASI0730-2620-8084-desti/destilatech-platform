@@ -57,7 +57,7 @@ public class ReplenishmentEstimatesController(
 
         var result = await replenishmentEstimateCommandService.Handle(
             new RecalculateReplenishmentEstimatesCommand(userId), cancellationToken);
-        return result.Fold<ActionResult>(
+        return result.Match<ActionResult>(
             estimates => Ok(estimates.Select(ReplenishmentEstimateResourceFromEntityAssembler.ToResourceFromEntity)),
             error => ActionResultFromAnalyticsEstimationsErrorAssembler.ToActionResultFromError(error, this));
     }

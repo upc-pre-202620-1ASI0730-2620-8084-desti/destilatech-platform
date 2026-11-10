@@ -35,7 +35,7 @@ public class HistoricalIndicatorsController(IHistoricalIndicatorQueryService his
         var utcOffset = utcOffsetMinutes is null ? (TimeSpan?)null : TimeSpan.FromMinutes(utcOffsetMinutes.Value);
         var result = await historicalIndicatorQueryService.Handle(
             new GetHistoricalIndicatorsQuery(userId, days, utcOffset), cancellationToken);
-        return result.Fold<ActionResult>(
+        return result.Match<ActionResult>(
             indicators => Ok(HistoricalIndicatorsResourceFromValueAssembler.ToResourceFromValue(indicators)),
             error => ActionResultFromAnalyticsEstimationsErrorAssembler.ToActionResultFromError(error, this));
     }
@@ -55,7 +55,7 @@ public class HistoricalIndicatorsController(IHistoricalIndicatorQueryService his
 
         var result = await historicalIndicatorQueryService.Handle(
             new GetTopConsumedProductsQuery(userId, days, limit), cancellationToken);
-        return result.Fold<ActionResult>(
+        return result.Match<ActionResult>(
             ranking => Ok(ranking.Select(ProductConsumptionResourceFromValueAssembler.ToResourceFromValue)),
             error => ActionResultFromAnalyticsEstimationsErrorAssembler.ToActionResultFromError(error, this));
     }
