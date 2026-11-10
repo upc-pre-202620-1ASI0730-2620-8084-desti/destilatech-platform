@@ -69,7 +69,7 @@ public class CustomersController(
         {
             var command = RegisterCustomerCommandFromResourceAssembler.ToCommandFromResource(resource, accountId);
             var result = await customerCommandService.Handle(command, cancellationToken);
-            return result.Fold<ActionResult>(
+            return result.Match<ActionResult>(
                 customer => CreatedAtAction(nameof(GetCustomerById), new { id = customer.Id, userId = accountId },
                     CustomerResourceFromEntityAssembler.ToResourceFromEntity(customer)),
                 error => ActionResultFromOrdersReplenishmentErrorAssembler.ToActionResultFromError(error, this));
@@ -99,7 +99,7 @@ public class CustomersController(
         {
             var command = UpdateCustomerCommandFromResourceAssembler.ToCommandFromResource(id, resource, accountId);
             var result = await customerCommandService.Handle(command, cancellationToken);
-            return result.Fold<ActionResult>(
+            return result.Match<ActionResult>(
                 customer => Ok(CustomerResourceFromEntityAssembler.ToResourceFromEntity(customer)),
                 error => ActionResultFromOrdersReplenishmentErrorAssembler.ToActionResultFromError(error, this));
         }

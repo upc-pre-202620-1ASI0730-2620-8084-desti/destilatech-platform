@@ -7,7 +7,7 @@ using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Queries;
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.ValueObjects;
 using DestilatechPlatform.API.OrdersReplenishment.Interfaces.Rest.Resources;
 using DestilatechPlatform.API.OrdersReplenishment.Interfaces.Rest.Transform;
-using DestilatechPlatform.API.Shared.Application.Patterns;
+using DestilatechPlatform.API.Shared.Application.Model;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DestilatechPlatform.API.OrdersReplenishment.Interfaces.Rest;
@@ -73,7 +73,7 @@ public class ReplenishmentOrdersController(
 
         var command = RequestReplenishmentOrderCommandFromResourceAssembler.ToCommandFromResource(resource, accountId);
         var result = await replenishmentOrderCommandService.Handle(command, cancellationToken);
-        return result.Fold<ActionResult>(
+        return result.Match<ActionResult>(
             replenishmentOrder => CreatedAtAction(nameof(GetReplenishmentOrderById),
                 new { id = replenishmentOrder.Id, userId = accountId },
                 ReplenishmentOrderResourceFromEntityAssembler.ToResourceFromEntity(replenishmentOrder)),
@@ -107,16 +107,16 @@ public class ReplenishmentOrdersController(
                 OrdersReplenishmentError.InvalidData(exception.Message), this);
         }
 
-        Result<ReplenishmentOrder, OrdersReplenishmentError> result = requestedStatus switch
+        Result<ReplenishmentOrder> result = requestedStatus switch
         {
             ReplenishmentStatus.Received => await replenishmentOrderCommandService.Handle(
                 new ReceiveReplenishmentOrderCommand(id, userId), cancellationToken),
             ReplenishmentStatus.Cancelled => await replenishmentOrderCommandService.Handle(
                 new CancelReplenishmentOrderCommand(id, userId), cancellationToken),
-            _ => new Result<ReplenishmentOrder, OrdersReplenishmentError>.Failure(
+            _ => Result<ReplenishmentOrder>.Failure(
                 OrdersReplenishmentError.InvalidData("The status must be RECEIVED or CANCELLED."))
         };
-        return result.Fold<ActionResult>(
+        return result.Match<ActionResult>(
             replenishmentOrder => Ok(ReplenishmentOrderResourceFromEntityAssembler.ToResourceFromEntity(replenishmentOrder)),
             error => ActionResultFromOrdersReplenishmentErrorAssembler.ToActionResultFromError(error, this));
     }
