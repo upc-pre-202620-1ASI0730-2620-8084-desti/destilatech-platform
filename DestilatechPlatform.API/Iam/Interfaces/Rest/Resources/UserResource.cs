@@ -6,9 +6,9 @@ public record UserResource(
     string Email,
     string BusinessName,
     string BusinessType,
-    string? PreferredPlanCode,
-    DateTimeOffset TrialStartedAt,
-    DateTimeOffset TrialEndsAt,
+    DateTimeOffset? CreatedAt,
+    TrialPeriodResource TrialPeriod,
     DateTimeOffset? AccessGrantedUntil,
-    DateTimeOffset? CreatedAt
+    string? PreferredPlanCode
     );
+    
