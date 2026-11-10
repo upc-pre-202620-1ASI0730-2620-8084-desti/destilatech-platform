@@ -13,6 +13,7 @@ using DestilatechPlatform.API.Iam.Application.Acl;
 using DestilatechPlatform.API.Iam.Interfaces.Acl;
 using DestilatechPlatform.API.Iam.Domain.Repositories;
 using DestilatechPlatform.API.Iam.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using DestilatechPlatform.API.Iam.Infrastructure.Persistence.EntityFrameworkCore.Seeding;
 
 using DestilatechPlatform.API.Billing.Application.CommandServices;
 using DestilatechPlatform.API.Billing.Application.Internal.CommandServices;
@@ -131,6 +132,7 @@ using (var scope = app.Services.CreateScope())
     var context = services.GetRequiredService<AppDbContext>();
     context.Database.Migrate();
     await PlanSeeder.SeedAsync(context);
+    await UserSeeder.SeedAsync(context);
 }
 
 // Configure the HTTP request pipeline.
