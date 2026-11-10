@@ -3,5 +3,5 @@
 public enum EBusinessType
 {
     Producer = 0,
-    Trader = 1  
+    Retailer = 1  
 }
