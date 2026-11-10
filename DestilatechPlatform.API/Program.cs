@@ -5,6 +5,15 @@ using DestilatechPlatform.API.AlertsNotifications.Application.Services;
 using DestilatechPlatform.API.AlertsNotifications.Domain.Repositories;
 using DestilatechPlatform.API.AlertsNotifications.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 using DestilatechPlatform.API.AlertsNotifications.Interfaces.ACL;
+using DestilatechPlatform.API.OrdersReplenishment.Application.ACL;
+using DestilatechPlatform.API.OrdersReplenishment.Application.Internal.CommandServices;
+using DestilatechPlatform.API.OrdersReplenishment.Application.Internal.OutboundServices;
+using DestilatechPlatform.API.OrdersReplenishment.Application.Internal.OutboundServices.ACL;
+using DestilatechPlatform.API.OrdersReplenishment.Application.Internal.QueryServices;
+using DestilatechPlatform.API.OrdersReplenishment.Application.Services;
+using DestilatechPlatform.API.OrdersReplenishment.Domain.Repositories;
+using DestilatechPlatform.API.OrdersReplenishment.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using DestilatechPlatform.API.OrdersReplenishment.Interfaces.ACL;
 using DestilatechPlatform.API.Resources;
 using DestilatechPlatform.API.Shared.Domain.Repositories;
 using DestilatechPlatform.API.Shared.Infrastructure.Interfaces.Asp.Configuration;
@@ -116,6 +125,19 @@ builder.Services.AddScoped<IAlertRepository, AlertRepository>();
 builder.Services.AddScoped<IAlertCommandService, AlertCommandService>();
 builder.Services.AddScoped<IAlertQueryService, AlertQueryService>();
 builder.Services.AddScoped<IAlertsContextFacade, AlertsContextFacade>();
+
+// Orders & Replenishment Bounded Context Injection Configuration
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IReplenishmentOrderRepository, ReplenishmentOrderRepository>();
+builder.Services.AddScoped<ICustomerCommandService, CustomerCommandService>();
+builder.Services.AddScoped<ICustomerQueryService, CustomerQueryService>();
+builder.Services.AddScoped<IOrderCommandService, OrderCommandService>();
+builder.Services.AddScoped<IOrderQueryService, OrderQueryService>();
+builder.Services.AddScoped<IReplenishmentOrderCommandService, ReplenishmentOrderCommandService>();
+builder.Services.AddScoped<IReplenishmentOrderQueryService, ReplenishmentOrderQueryService>();
+builder.Services.AddScoped<IInventoryPort, ExternalInventoryService>();
+builder.Services.AddScoped<IOrdersContextFacade, OrdersContextFacade>();
 
 // Mediator Configuration
 // Command pipeline behaviors (logging, exception logging, unit of work commit)
