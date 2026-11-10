@@ -254,6 +254,258 @@ namespace DestilatechPlatform.API.Migrations
                     b.ToTable("stock_movements");
                 });
 
+            modelBuilder.Entity("DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates.Customer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)")
+                        .HasColumnName("address");
+
+                    b.Property<string>("ContactName")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("varchar(120)")
+                        .HasColumnName("contact_name");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CustomerType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("customer_type");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("varchar(120)")
+                        .HasColumnName("email");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("varchar(120)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)")
+                        .HasColumnName("phone");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_customers");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("i_x_customers_user_id");
+
+                    b.ToTable("customers");
+                });
+
+            modelBuilder.Entity("DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int")
+                        .HasColumnName("customer_id");
+
+                    b.Property<string>("CustomerName")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("varchar(120)")
+                        .HasColumnName("customer_name");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)")
+                        .HasColumnName("notes");
+
+                    b.Property<DateTimeOffset>("OrderDate")
+                        .HasColumnType("datetime")
+                        .HasColumnName("order_date");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("status");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_orders");
+
+                    b.HasIndex("CustomerId")
+                        .HasDatabaseName("i_x_orders_customer_id");
+
+                    b.HasIndex("UserId", "Code")
+                        .IsUnique()
+                        .HasDatabaseName("i_x_orders_user_id_code");
+
+                    b.ToTable("orders");
+                });
+
+            modelBuilder.Entity("DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates.ReplenishmentOrder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTimeOffset?>("ExpectedDate")
+                        .HasColumnType("datetime")
+                        .HasColumnName("expected_date");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)")
+                        .HasColumnName("notes");
+
+                    b.Property<DateTimeOffset>("OrderDate")
+                        .HasColumnType("datetime")
+                        .HasColumnName("order_date");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int")
+                        .HasColumnName("product_id");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("varchar(160)")
+                        .HasColumnName("product_name");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int")
+                        .HasColumnName("quantity");
+
+                    b.Property<DateTimeOffset?>("ReceivedDate")
+                        .HasColumnType("datetime")
+                        .HasColumnName("received_date");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("status");
+
+                    b.Property<string>("SupplierContact")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("varchar(120)")
+                        .HasColumnName("supplier_contact");
+
+                    b.Property<string>("SupplierName")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("varchar(120)")
+                        .HasColumnName("supplier_name");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_replenishment_orders");
+
+                    b.HasIndex("UserId", "Code")
+                        .IsUnique()
+                        .HasDatabaseName("i_x_replenishment_orders_user_id_code");
+
+                    b.ToTable("replenishment_orders");
+                });
+
+            modelBuilder.Entity("DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Entities.OrderLine", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int")
+                        .HasColumnName("order_id");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int")
+                        .HasColumnName("product_id");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("varchar(160)")
+                        .HasColumnName("product_name");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int")
+                        .HasColumnName("quantity");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)")
+                        .HasColumnName("unit_price");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_order_lines");
+
+                    b.HasIndex("OrderId")
+                        .HasDatabaseName("i_x_order_lines_order_id");
+
+                    b.ToTable("order_lines");
+                });
+
             modelBuilder.Entity("DestilatechPlatform.API.ProductionMonitoring.Domain.Model.Aggregates.ProcessVariable", b =>
                 {
                     b.Property<int>("Id")
@@ -486,6 +738,16 @@ namespace DestilatechPlatform.API.Migrations
                         .HasConstraintName("f_k_stock_movements_stock_items_stock_item_id");
                 });
 
+            modelBuilder.Entity("DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Entities.OrderLine", b =>
+                {
+                    b.HasOne("DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates.Order", null)
+                        .WithMany("Lines")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("f_k_order_lines_orders_order_id");
+                });
+
             modelBuilder.Entity("DestilatechPlatform.API.ProductionMonitoring.Domain.Model.Aggregates.ProcessVariable", b =>
                 {
                     b.HasOne("DestilatechPlatform.API.ProductionMonitoring.Domain.Model.Aggregates.ProductionBatch", null)
@@ -512,6 +774,11 @@ namespace DestilatechPlatform.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("f_k_sensor_readings_process_variables_process_variable_id");
+                });
+
+            modelBuilder.Entity("DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates.Order", b =>
+                {
+                    b.Navigation("Lines");
                 });
 
             modelBuilder.Entity("DestilatechPlatform.API.ProductionMonitoring.Domain.Model.Aggregates.ProductionBatch", b =>
