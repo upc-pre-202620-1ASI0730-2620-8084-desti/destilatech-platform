@@ -1,4 +1,4 @@
-using DestilatechPlatform.API.OrdersReplenishment.Domain.Model;
+using DestilatechPlatform.API.Shared.Domain.Model.Errors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DestilatechPlatform.API.OrdersReplenishment.Interfaces.Rest.Transform;
@@ -9,15 +9,14 @@ namespace DestilatechPlatform.API.OrdersReplenishment.Interfaces.Rest.Transform;
 /// </summary>
 public static class ActionResultFromOrdersReplenishmentErrorAssembler
 {
-    public static ActionResult ToActionResultFromError(OrdersReplenishmentError error, ControllerBase controller)
+    public static ActionResult ToActionResultFromError(Error error, ControllerBase controller)
     {
-        var statusCode = error.Code switch
+        var statusCode = error.Type switch
         {
-            "customer-not-found" or "order-not-found" or "replenishment-not-found" =>
-                StatusCodes.Status404NotFound,
-            "insufficient-stock" or "order-closed" or "replenishment-closed" or "invalid-status-transition" =>
-                StatusCodes.Status409Conflict,
-            _ => StatusCodes.Status400BadRequest
+            EErrorType.NotFound => StatusCodes.Status404NotFound,
+            EErrorType.Conflict => StatusCodes.Status409Conflict,
+            EErrorType.Validation => StatusCodes.Status400BadRequest,
+            _ => StatusCodes.Status500InternalServerError
         };
         var problemDetails = controller.ProblemDetailsFactory.CreateProblemDetails(
             controller.HttpContext,

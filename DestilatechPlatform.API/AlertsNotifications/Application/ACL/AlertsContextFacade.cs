@@ -7,6 +7,7 @@ namespace DestilatechPlatform.API.AlertsNotifications.Application.ACL;
 
 public class AlertsContextFacade(IAlertCommandService alertCommandService) : IAlertsContextFacade
 {
+
     public Task<int> RaiseLowStockAlert(int accountId, int productId, string message,
         CancellationToken cancellationToken = default) =>
         RaiseAlert(accountId, AlertType.LowStock, productId, message, AlertSeverity.Warning, cancellationToken);
@@ -22,6 +23,6 @@ public class AlertsContextFacade(IAlertCommandService alertCommandService) : IAl
         var command = new RaiseAlertCommand(new AccountId(accountId), type, new SourceId(sourceId),
             new AlertMessage(message), severity);
         var result = await alertCommandService.Handle(command, cancellationToken);
-        return result.Fold(alert => alert.Id, _ => 0);
+        return result.IsSuccess ? result.Value!.Id.Value : 0;
     }
 }

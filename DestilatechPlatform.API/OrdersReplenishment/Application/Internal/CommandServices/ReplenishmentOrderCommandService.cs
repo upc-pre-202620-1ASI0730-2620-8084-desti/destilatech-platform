@@ -5,9 +5,7 @@ using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Commands;
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Repositories;
 using DestilatechPlatform.API.OrdersReplenishment.Application.Services;
 using DestilatechPlatform.API.Shared.Domain.Repositories;
-using ReplenishmentResult = DestilatechPlatform.API.Shared.Application.Patterns.Result<
-    DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates.ReplenishmentOrder,
-    DestilatechPlatform.API.OrdersReplenishment.Domain.Model.OrdersReplenishmentError>;
+using ReplenishmentResult = DestilatechPlatform.API.Shared.Application.Model.Result<DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates.ReplenishmentOrder>;
 
 namespace DestilatechPlatform.API.OrdersReplenishment.Application.Internal.CommandServices;
 
@@ -26,7 +24,7 @@ public class ReplenishmentOrderCommandService(
         var product = await inventoryPort.FindProductAsync(command.UserId, command.ProductId, cancellationToken);
         if (product is null)
         {
-            return new ReplenishmentResult.Failure(OrdersReplenishmentError.ProductRequired());
+            return ReplenishmentResult.Failure(OrdersReplenishmentError.ProductRequired());
         }
 
         var sequence = await replenishmentOrderRepository.CountByUserIdAsync(command.UserId, cancellationToken) + 1;
@@ -38,12 +36,12 @@ public class ReplenishmentOrderCommandService(
         }
         catch (OrdersReplenishmentException exception)
         {
-            return new ReplenishmentResult.Failure(exception.Error);
+            return ReplenishmentResult.Failure(exception.Error);
         }
 
         await replenishmentOrderRepository.AddAsync(replenishmentOrder, cancellationToken);
         await unitOfWork.CompleteAsync(cancellationToken);
-        return new ReplenishmentResult.Success(replenishmentOrder);
+        return ReplenishmentResult.Success(replenishmentOrder);
     }
 
     public async Task<ReplenishmentResult> Handle(ReceiveReplenishmentOrderCommand command,
@@ -53,7 +51,7 @@ public class ReplenishmentOrderCommandService(
             await FindOwnedReplenishmentOrderAsync(command.ReplenishmentOrderId, command.UserId, cancellationToken);
         if (replenishmentOrder is null)
         {
-            return new ReplenishmentResult.Failure(
+            return ReplenishmentResult.Failure(
                 OrdersReplenishmentError.ReplenishmentOrderNotFound(command.ReplenishmentOrderId));
         }
 
@@ -63,14 +61,14 @@ public class ReplenishmentOrderCommandService(
         }
         catch (OrdersReplenishmentException exception)
         {
-            return new ReplenishmentResult.Failure(exception.Error);
+            return ReplenishmentResult.Failure(exception.Error);
         }
 
         replenishmentOrderRepository.Update(replenishmentOrder);
         await inventoryPort.RegisterEntryAsync(replenishmentOrder.UserId, replenishmentOrder.ProductId,
             replenishmentOrder.Quantity, StockEntryReason.Purchase, replenishmentOrder.Code, cancellationToken);
         await unitOfWork.CompleteAsync(cancellationToken);
-        return new ReplenishmentResult.Success(replenishmentOrder);
+        return ReplenishmentResult.Success(replenishmentOrder);
     }
 
     public async Task<ReplenishmentResult> Handle(CancelReplenishmentOrderCommand command,
@@ -80,7 +78,7 @@ public class ReplenishmentOrderCommandService(
             await FindOwnedReplenishmentOrderAsync(command.ReplenishmentOrderId, command.UserId, cancellationToken);
         if (replenishmentOrder is null)
         {
-            return new ReplenishmentResult.Failure(
+            return ReplenishmentResult.Failure(
                 OrdersReplenishmentError.ReplenishmentOrderNotFound(command.ReplenishmentOrderId));
         }
 
@@ -90,12 +88,12 @@ public class ReplenishmentOrderCommandService(
         }
         catch (OrdersReplenishmentException exception)
         {
-            return new ReplenishmentResult.Failure(exception.Error);
+            return ReplenishmentResult.Failure(exception.Error);
         }
 
         replenishmentOrderRepository.Update(replenishmentOrder);
         await unitOfWork.CompleteAsync(cancellationToken);
-        return new ReplenishmentResult.Success(replenishmentOrder);
+        return ReplenishmentResult.Success(replenishmentOrder);
     }
 
     private async Task<ReplenishmentOrder?> FindOwnedReplenishmentOrderAsync(int replenishmentOrderId, int userId,

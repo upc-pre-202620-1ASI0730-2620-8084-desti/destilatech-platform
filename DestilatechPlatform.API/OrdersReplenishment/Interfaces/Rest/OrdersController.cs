@@ -7,7 +7,7 @@ using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Queries;
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.ValueObjects;
 using DestilatechPlatform.API.OrdersReplenishment.Interfaces.Rest.Resources;
 using DestilatechPlatform.API.OrdersReplenishment.Interfaces.Rest.Transform;
-using DestilatechPlatform.API.Shared.Application.Patterns;
+using DestilatechPlatform.API.Shared.Application.Model;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DestilatechPlatform.API.OrdersReplenishment.Interfaces.Rest;
@@ -76,7 +76,7 @@ public class OrdersController(
 
         var command = RegisterOrderCommandFromResourceAssembler.ToCommandFromResource(resource, accountId);
         var result = await orderCommandService.Handle(command, cancellationToken);
-        return result.Fold<ActionResult>(
+        return result.Match<ActionResult>(
             order => CreatedAtAction(nameof(GetOrderById), new { id = order.Id, userId = accountId },
                 OrderResourceFromEntityAssembler.ToResourceFromEntity(order)),
             error => ActionResultFromOrdersReplenishmentErrorAssembler.ToActionResultFromError(error, this));
@@ -142,9 +142,9 @@ public class OrdersController(
         return ToActionResult(advanceResult);
     }
 
-    private ActionResult ToActionResult(Result<Order, OrdersReplenishmentError> result)
+    private ActionResult ToActionResult(Result<Order> result)
     {
-        return result.Fold<ActionResult>(
+        return result.Match<ActionResult>(
             order => Ok(OrderResourceFromEntityAssembler.ToResourceFromEntity(order)),
             error => ActionResultFromOrdersReplenishmentErrorAssembler.ToActionResultFromError(error, this));
     }

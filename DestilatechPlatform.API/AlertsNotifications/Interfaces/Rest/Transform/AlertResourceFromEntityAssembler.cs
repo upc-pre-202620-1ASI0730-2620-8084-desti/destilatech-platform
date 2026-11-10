@@ -9,7 +9,7 @@ public static class AlertResourceFromEntityAssembler
     public static AlertResource ToResourceFromEntity(Alert entity)
     {
         return new AlertResource(
-            entity.Id,
+            entity.Id.Value,
             entity.AccountId.Value,
             AlertValueAssembler.ToValueFromEnum(entity.Type),
             entity.SourceId.Value,

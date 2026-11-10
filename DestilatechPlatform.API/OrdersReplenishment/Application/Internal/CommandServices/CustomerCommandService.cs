@@ -4,9 +4,7 @@ using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Commands;
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Repositories;
 using DestilatechPlatform.API.OrdersReplenishment.Application.Services;
 using DestilatechPlatform.API.Shared.Domain.Repositories;
-using CustomerResult = DestilatechPlatform.API.Shared.Application.Patterns.Result<
-    DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates.Customer,
-    DestilatechPlatform.API.OrdersReplenishment.Domain.Model.OrdersReplenishmentError>;
+using CustomerResult = DestilatechPlatform.API.Shared.Application.Model.Result<DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates.Customer>;
 
 namespace DestilatechPlatform.API.OrdersReplenishment.Application.Internal.CommandServices;
 
@@ -26,12 +24,12 @@ public class CustomerCommandService(ICustomerRepository customerRepository, IUni
         }
         catch (OrdersReplenishmentException exception)
         {
-            return new CustomerResult.Failure(exception.Error);
+            return CustomerResult.Failure(exception.Error);
         }
 
         await customerRepository.AddAsync(customer, cancellationToken);
         await unitOfWork.CompleteAsync(cancellationToken);
-        return new CustomerResult.Success(customer);
+        return CustomerResult.Success(customer);
     }
 
     public async Task<CustomerResult> Handle(UpdateCustomerCommand command,
@@ -40,7 +38,7 @@ public class CustomerCommandService(ICustomerRepository customerRepository, IUni
         var customer = await customerRepository.FindByIdAsync(command.CustomerId, cancellationToken);
         if (customer is null || !customer.BelongsTo(command.UserId))
         {
-            return new CustomerResult.Failure(OrdersReplenishmentError.CustomerNotFound(command.CustomerId));
+            return CustomerResult.Failure(OrdersReplenishmentError.CustomerNotFound(command.CustomerId));
         }
 
         try
@@ -49,11 +47,11 @@ public class CustomerCommandService(ICustomerRepository customerRepository, IUni
         }
         catch (OrdersReplenishmentException exception)
         {
-            return new CustomerResult.Failure(exception.Error);
+            return CustomerResult.Failure(exception.Error);
         }
 
         customerRepository.Update(customer);
         await unitOfWork.CompleteAsync(cancellationToken);
-        return new CustomerResult.Success(customer);
+        return CustomerResult.Success(customer);
     }
 }

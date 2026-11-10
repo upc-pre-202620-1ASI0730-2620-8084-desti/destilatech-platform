@@ -36,6 +36,8 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Scalar.AspNetCore;
+using DestilatechPlatform.API.InventoryStock.Application;
+using DestilatechPlatform.API.ProductionMonitoring.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -161,6 +163,12 @@ builder.Services.AddScoped(typeof(ICommandPipelineBehavior<>), typeof(Transactio
 
 // Cortex Mediator publishes domain events to every IEventHandler found in this assembly
 builder.Services.AddCortexMediator([typeof(Program)]);
+
+builder.Services.AddScoped<InventoryService>();
+
+builder.Services.AddScoped<InventoryService>();
+
+builder.Services.AddScoped<ProductionService>();
 
 var app = builder.Build();
 
