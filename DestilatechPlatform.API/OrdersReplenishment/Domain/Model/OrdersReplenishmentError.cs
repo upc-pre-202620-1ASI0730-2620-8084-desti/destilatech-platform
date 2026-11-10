@@ -1,3 +1,5 @@
+using DestilatechPlatform.API.Shared.Domain.Model.Errors;
+
 namespace DestilatechPlatform.API.OrdersReplenishment.Domain.Model;
 
 /// <summary>
@@ -9,7 +11,9 @@ namespace DestilatechPlatform.API.OrdersReplenishment.Domain.Model;
 /// </remarks>
 /// <param name="Code">Stable error code, in kebab case.</param>
 /// <param name="Message">English description of the error.</param>
-public sealed record OrdersReplenishmentError(string Code, string Message)
+/// <param name="Type">Kind of error, used by the REST layer to choose the HTTP status code.</param>
+public sealed record OrdersReplenishmentError(string Code, string Message, EErrorType Type = EErrorType.Validation)
+    : Error(Code, Message, Type)
 {
     public static OrdersReplenishmentError InvalidData(string message) =>
         new("invalid-data", message);
@@ -33,26 +37,26 @@ public sealed record OrdersReplenishmentError(string Code, string Message)
         new("quantity-required", "The quantity must be greater than zero.");
 
     public static OrdersReplenishmentError InsufficientStock() =>
-        new("insufficient-stock", "The order exceeds the available stock.");
+        new("insufficient-stock", "The order exceeds the available stock.", EErrorType.Conflict);
 
     public static OrdersReplenishmentError OrderClosed() =>
-        new("order-closed", "The order is already closed.");
+        new("order-closed", "The order is already closed.", EErrorType.Conflict);
 
     public static OrdersReplenishmentError InvalidStatusTransition(string from, string to) =>
-        new("invalid-status-transition", $"An order cannot change from {from} to {to}.");
+        new("invalid-status-transition", $"An order cannot change from {from} to {to}.", EErrorType.Conflict);
 
     public static OrdersReplenishmentError SupplierRequired() =>
         new("supplier-required", "Enter the supplier.");
 
     public static OrdersReplenishmentError ReplenishmentClosed() =>
-        new("replenishment-closed", "The replenishment is already closed.");
+        new("replenishment-closed", "The replenishment is already closed.", EErrorType.Conflict);
 
     public static OrdersReplenishmentError CustomerNotFound(int customerId) =>
-        new("customer-not-found", $"Customer {customerId} was not found.");
+        new("customer-not-found", $"Customer {customerId} was not found.", EErrorType.NotFound);
 
     public static OrdersReplenishmentError OrderNotFound(int orderId) =>
-        new("order-not-found", $"Order {orderId} was not found.");
+        new("order-not-found", $"Order {orderId} was not found.", EErrorType.NotFound);
 
     public static OrdersReplenishmentError ReplenishmentOrderNotFound(int replenishmentOrderId) =>
-        new("replenishment-not-found", $"Replenishment order {replenishmentOrderId} was not found.");
+        new("replenishment-not-found", $"Replenishment order {replenishmentOrderId} was not found.", EErrorType.NotFound);
 }
