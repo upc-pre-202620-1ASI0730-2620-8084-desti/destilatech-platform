@@ -1,4 +1,5 @@
-﻿using System.Net.Mime;
+﻿using DestilatechPlatform.API.Billing.Domain.Model.Errors;
+using System.Net.Mime;
 using DestilatechPlatform.API.Billing.Application.CommandServices;
 using DestilatechPlatform.API.Billing.Domain.Model.Commands;
 using DestilatechPlatform.API.Billing.Interfaces.Rest.Resources;
@@ -23,9 +24,9 @@ public class CheckoutSessionsController(ICheckoutCommandService checkoutCommandS
         var command = new CreateCheckoutSessionCommand(resource.UserId, resource.PlanId);
         var result = await checkoutCommandService.Handle(command, cancellationToken);
 
-        return result.Fold<IActionResult>(
+        return result.Match<IActionResult>(
             info => StatusCode(StatusCodes.Status201Created, new CheckoutSessionResource(info.SessionId, info.Url)),
-            error => this.ToProblem(error));
+            _ => this.ToProblem((BillingError)result.Error!));
     }
 
     [HttpPost("{sessionId}/confirmation")]
@@ -38,10 +39,10 @@ public class CheckoutSessionsController(ICheckoutCommandService checkoutCommandS
         var result = await checkoutCommandService.Handle(new ConfirmCheckoutSessionCommand(sessionId),
             cancellationToken);
 
-        return result.Fold<IActionResult>(
+        return result.Match<IActionResult>(
             confirmation => Ok(new CheckoutConfirmationResource(
                 PaymentResourceFromEntityAssembler.ToResourceFromEntity(confirmation.Payment),
                 SubscriptionResourceFromEntityAssembler.ToResourceFromEntity(confirmation.Subscription))),
-            error => this.ToProblem(error));
+            _ => this.ToProblem((BillingError)result.Error!));
     }
 }

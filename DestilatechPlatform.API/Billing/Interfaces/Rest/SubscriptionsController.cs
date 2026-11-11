@@ -1,4 +1,5 @@
-﻿using System.Net.Mime;
+﻿using DestilatechPlatform.API.Billing.Domain.Model.Errors;
+using System.Net.Mime;
 using DestilatechPlatform.API.Billing.Application.CommandServices;
 using DestilatechPlatform.API.Billing.Application.QueryServices;
 using DestilatechPlatform.API.Billing.Domain.Model.Commands;
@@ -43,8 +44,8 @@ public class SubscriptionsController(
                 title: "Invalid status");
 
         var result = await subscriptionCommandService.Handle(new CancelSubscriptionCommand(id), cancellationToken);
-        return result.Fold<IActionResult>(
+        return result.Match<IActionResult>(
             subscription => Ok(SubscriptionResourceFromEntityAssembler.ToResourceFromEntity(subscription)),
-            error => this.ToProblem(error));
+            _ => this.ToProblem((BillingError)result.Error!));
     }
 }
