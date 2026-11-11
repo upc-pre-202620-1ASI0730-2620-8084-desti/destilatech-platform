@@ -3,6 +3,8 @@ using DestilatechPlatform.API.AnalyticsEstimations.Infrastructure.Persistence.En
 using DestilatechPlatform.API.OrdersReplenishment.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using DestilatechPlatform.API.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using DestilatechPlatform.API.Shared.Infrastructure.Persistence.EntityFrameworkCore.Interceptors;
+using DestilatechPlatform.API.Iam.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;//iam
+using DestilatechPlatform.API.Billing.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using Microsoft.EntityFrameworkCore;
 using DestilatechPlatform.API.InventoryStock.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using DestilatechPlatform.API.ProductionMonitoring.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
@@ -22,6 +24,11 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         
         
         base.OnModelCreating(builder);
+        // IAM Context
+        builder.ApplyIamConfiguration();
+        
+        // Billing Context
+        builder.ApplyBillingConfiguration();
         
         builder.ApplyAlertsNotificationsConfiguration();
         builder.ApplyOrdersReplenishmentConfiguration();
