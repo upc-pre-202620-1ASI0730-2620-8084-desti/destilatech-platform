@@ -57,7 +57,13 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Scalar.AspNetCore;
-using DestilatechPlatform.API.InventoryStock.Application;
+using DestilatechPlatform.API.InventoryStock.Application.ACL;
+using DestilatechPlatform.API.InventoryStock.Application.Internal.CommandServices;
+using DestilatechPlatform.API.InventoryStock.Application.Internal.QueryServices;
+using DestilatechPlatform.API.InventoryStock.Application.Services;
+using DestilatechPlatform.API.InventoryStock.Domain.Repositories;
+using DestilatechPlatform.API.InventoryStock.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using DestilatechPlatform.API.InventoryStock.Interfaces.ACL;
 using DestilatechPlatform.API.ProductionMonitoring.Application;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -213,7 +219,13 @@ builder.Services.AddScoped(typeof(ICommandPipelineBehavior<>), typeof(Transactio
 builder.Services.AddCortexMediator([typeof(Program)]);
 
 // Inventory & Stock Bounded Context Injection Configuration
-builder.Services.AddScoped<InventoryService>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IStockItemRepository, StockItemRepository>();
+builder.Services.AddScoped<IStockMovementRepository, StockMovementRepository>();
+builder.Services.AddScoped<IProductCommandService, ProductCommandService>();
+builder.Services.AddScoped<IStockItemCommandService, StockItemCommandService>();
+builder.Services.AddScoped<IInventoryQueryService, InventoryQueryService>();
+builder.Services.AddScoped<IInventoryContextFacade, InventoryContextFacade>();
 
 // Production & Monitoring Bounded Context Injection Configuration
 builder.Services.AddScoped<ProductionService>();
