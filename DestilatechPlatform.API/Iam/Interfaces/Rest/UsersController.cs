@@ -27,10 +27,10 @@ public class UsersController(IUserCommandService userCommandService, IUserQueryS
         var command = RegisterUserCommandFromResourceAssembler.ToCommandFromResource(resource);
         var result = await userCommandService.Handle(command, cancellationToken);
 
-        return result.Fold<IActionResult>(
+        return result.Match<IActionResult>(
             user => CreatedAtAction(nameof(GetUserById), new { id = user.Id },
                 UserResourceFromEntityAssembler.ToResourceFromEntity(user)),
-            ToProblem);
+            _ => ToProblem((IamError)result.Error!));
     }
 
     [HttpGet]
