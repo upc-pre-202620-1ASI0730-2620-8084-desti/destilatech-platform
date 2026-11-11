@@ -64,7 +64,11 @@ using DestilatechPlatform.API.InventoryStock.Application.Services;
 using DestilatechPlatform.API.InventoryStock.Domain.Repositories;
 using DestilatechPlatform.API.InventoryStock.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 using DestilatechPlatform.API.InventoryStock.Interfaces.ACL;
-using DestilatechPlatform.API.ProductionMonitoring.Application;
+using DestilatechPlatform.API.ProductionMonitoring.Application.Internal.CommandServices;
+using DestilatechPlatform.API.ProductionMonitoring.Application.Internal.QueryServices;
+using DestilatechPlatform.API.ProductionMonitoring.Application.Services;
+using DestilatechPlatform.API.ProductionMonitoring.Domain.Repositories;
+using DestilatechPlatform.API.ProductionMonitoring.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -228,7 +232,12 @@ builder.Services.AddScoped<IInventoryQueryService, InventoryQueryService>();
 builder.Services.AddScoped<IInventoryContextFacade, InventoryContextFacade>();
 
 // Production & Monitoring Bounded Context Injection Configuration
-builder.Services.AddScoped<ProductionService>();
+builder.Services.AddScoped<IProductionBatchRepository, ProductionBatchRepository>();
+builder.Services.AddScoped<IProcessVariableRepository, ProcessVariableRepository>();
+builder.Services.AddScoped<ISensorReadingRepository, SensorReadingRepository>();
+builder.Services.AddScoped<IProductionBatchCommandService, ProductionBatchCommandService>();
+builder.Services.AddScoped<IProcessMonitoringCommandService, ProcessMonitoringCommandService>();
+builder.Services.AddScoped<IProductionQueryService, ProductionQueryService>();
 
 var app = builder.Build();
 
