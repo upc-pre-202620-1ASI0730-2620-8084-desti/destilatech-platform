@@ -38,7 +38,25 @@ IDE recomendado: **JetBrains Rider**.
 Cada bounded context sigue las capas de Domain-Driven Design: `Domain` (aggregates, value objects, commands, queries,
 repositorios), `Application` (command y query services, ACL), `Infrastructure` (EF Core) e `Interfaces` (REST y ACL).
 
-## Puesta en marcha
+## Opción rápida: Docker (MySQL + API con un comando)
+
+Requisito: Docker Desktop abierto.
+
+```bash
+docker compose up -d --build
+```
+
+- API y documentación: `http://localhost:8080/scalar`
+- MySQL: `localhost`, puerto **3307**, usuario `root`, contraseña `destilatech` y base de datos `destilatech`. Se puede abrir
+  con MySQL Workbench creando una conexión con esos datos. Se usa el puerto 3307 para no chocar con un MySQL instalado en la PC.
+
+```bash
+docker compose logs -f api    # ver el log de la API
+docker compose down           # detener todo (los datos se conservan)
+docker compose down -v        # detener y borrar la base de datos
+```
+
+## Puesta en marcha (sin Docker)
 
 Requisitos: .NET 10 SDK y MySQL 8 (por ejemplo, MySQL Server + MySQL Workbench).
 
