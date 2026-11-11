@@ -110,6 +110,15 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 // Localized ProblemDetails for failed application results (bounded context error enums).
 builder.Services.AddSingleton<DestilatechPlatform.API.Shared.Interfaces.Rest.ProblemDetails.ProblemDetailsFactory>();
 
+// Add CORS Policy so the web application (localhost and Firebase Hosting) can call the API.
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllPolicy",
+        policy => policy.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
+
 // Generate the OpenAPI document with ASP.NET Core's built-in support.
 builder.Services.AddOpenApi(options =>
 {
@@ -203,10 +212,10 @@ builder.Services.AddScoped(typeof(ICommandPipelineBehavior<>), typeof(Transactio
 // Cortex Mediator publishes domain events to every IEventHandler found in this assembly
 builder.Services.AddCortexMediator([typeof(Program)]);
 
+// Inventory & Stock Bounded Context Injection Configuration
 builder.Services.AddScoped<InventoryService>();
 
-builder.Services.AddScoped<InventoryService>();
-
+// Production & Monitoring Bounded Context Injection Configuration
 builder.Services.AddScoped<ProductionService>();
 
 var app = builder.Build();
@@ -232,6 +241,9 @@ var localizationOptions = new RequestLocalizationOptions()
     .AddSupportedUICultures(supportedCultures);
 localizationOptions.ApplyCurrentCultureToResponseHeaders = true;
 app.UseRequestLocalization(localizationOptions);
+
+// Apply CORS Policy
+app.UseCors("AllowAllPolicy");
 
 app.UseHttpsRedirection();
 

@@ -21,29 +21,29 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        
-        
         base.OnModelCreating(builder);
+
         // IAM Context
         builder.ApplyIamConfiguration();
-        
+
         // Billing Context
         builder.ApplyBillingConfiguration();
-        
+
+        // Alerts & Notifications Context
         builder.ApplyAlertsNotificationsConfiguration();
+
+        // Inventory & Stock Context
+        builder.ApplyInventoryStockConfiguration();
+
+        // Production & Monitoring Context
+        builder.ApplyProductionMonitoringConfiguration();
+
+        // Orders & Replenishment Context
         builder.ApplyOrdersReplenishmentConfiguration();
+
+        // Analytics & Estimations Context
         builder.ApplyAnalyticsEstimationsConfiguration();
 
-        builder.UseSnakeCaseNamingConvention();
-        
-        builder.ApplyInventoryStockConfiguration();
-        
-        builder.UseSnakeCaseNamingConvention();
-        
-        builder.ApplyInventoryStockConfiguration();
-        
-        builder.ApplyProductionMonitoringConfiguration();
-        
         builder.UseSnakeCaseNamingConvention();
     }
 }
