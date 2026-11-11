@@ -1,12 +1,21 @@
 ﻿using DestilatechPlatform.API.AlertsNotifications.Application.Services;
 using DestilatechPlatform.API.AlertsNotifications.Domain.Model.Commands;
+using DestilatechPlatform.API.AlertsNotifications.Domain.Model.Queries;
 using DestilatechPlatform.API.AlertsNotifications.Domain.Model.ValueObjects;
 using DestilatechPlatform.API.AlertsNotifications.Interfaces.ACL;
 
 namespace DestilatechPlatform.API.AlertsNotifications.Application.ACL;
 
-public class AlertsContextFacade(IAlertCommandService alertCommandService) : IAlertsContextFacade
+public class AlertsContextFacade(IAlertCommandService alertCommandService, IAlertQueryService alertQueryService)
+    : IAlertsContextFacade
 {
+    public async Task<int> CountPendingAlertsAsync(int accountId, CancellationToken cancellationToken = default)
+    {
+        if (accountId <= 0) return 0;
+        var alerts = await alertQueryService.Handle(
+            new GetAllAlertsByAccountIdQuery(new AccountId(accountId), Status: AlertStatus.Pending), cancellationToken);
+        return alerts.Count();
+    }
 
     public Task<int> RaiseLowStockAlert(int accountId, int productId, string message,
         CancellationToken cancellationToken = default) =>
