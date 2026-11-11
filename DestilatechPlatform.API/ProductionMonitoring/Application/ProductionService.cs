@@ -1,5 +1,5 @@
 using DestilatechPlatform.API.AlertsNotifications.Interfaces.ACL;
-using DestilatechPlatform.API.InventoryStock.Application;
+using DestilatechPlatform.API.InventoryStock.Interfaces.ACL;
 using DestilatechPlatform.API.ProductionMonitoring.Domain.Model.Aggregates;
 using DestilatechPlatform.API.ProductionMonitoring.Domain.Model.Entities;
 using DestilatechPlatform.API.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DestilatechPlatform.API.ProductionMonitoring.Application;
 
-public sealed class ProductionService(AppDbContext db, InventoryService inventory, IAlertsContextFacade alerts)
+public sealed class ProductionService(AppDbContext db, IInventoryContextFacade inventory, IAlertsContextFacade alerts)
 {
     public IQueryable<ProductionBatch> Batches(int owner) =>
         db.Set<ProductionBatch>().AsNoTracking().Where(x => x.UserId == owner).Include(x => x.StageHistory);
