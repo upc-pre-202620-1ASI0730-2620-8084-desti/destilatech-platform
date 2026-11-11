@@ -19,4 +19,7 @@ public interface IOrdersContextFacade
     /// </summary>
     Task<IReadOnlyCollection<OrderSalesSummary>> FetchOrdersPlacedSinceAsync(int userId, DateTimeOffset since,
         CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyCollection<RecentOrderSnapshot>> FetchRecentOrdersAsync(int userId, int limit,
+        CancellationToken cancellationToken = default);
 }

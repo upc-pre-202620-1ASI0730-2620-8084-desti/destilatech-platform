@@ -36,6 +36,22 @@ public class InventoryContextFacade(
             .ToList();
     }
 
+    public async Task<IReadOnlyCollection<StockOverviewSnapshot>> FetchStockOverviewAsync(int userId,
+        CancellationToken cancellationToken = default)
+    {
+        var products = (await productRepository.FindByUserIdAsync(userId, cancellationToken))
+            .Where(product => product.IsActive)
+            .ToDictionary(product => product.Id);
+        var stockItems = await stockItemRepository.FindByUserIdAsync(userId, cancellationToken);
+        return stockItems
+            .Where(stockItem => products.ContainsKey(stockItem.ProductId))
+            .OrderBy(stockItem => stockItem.ProductId)
+            .Select(stockItem => new StockOverviewSnapshot(stockItem.ProductId, products[stockItem.ProductId].Name,
+                products[stockItem.ProductId].Presentation, stockItem.CurrentQuantity, stockItem.LowStockThreshold,
+                stockItem.IsBelowThreshold()))
+            .ToList();
+    }
+
     public async Task<IReadOnlyCollection<StockMovementSnapshot>> FetchStockMovementsSinceAsync(int userId,
         DateTime sinceUtc, int? productId = null, CancellationToken cancellationToken = default)
     {

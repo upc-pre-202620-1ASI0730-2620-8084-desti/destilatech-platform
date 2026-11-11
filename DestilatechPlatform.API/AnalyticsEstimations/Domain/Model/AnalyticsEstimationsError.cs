@@ -17,6 +17,9 @@ public sealed record AnalyticsEstimationsError(string Code, string Message, EErr
     public static AnalyticsEstimationsError InvalidPeriod(int minDays, int maxDays) =>
         new("invalid-period", $"The period must be between {minDays} and {maxDays} days.");
 
+    public static AnalyticsEstimationsError UserNotFound(int userId) =>
+        new("user-not-found", $"User {userId} was not found.", EErrorType.NotFound);
+
     public static AnalyticsEstimationsError ProductNotFound(int productId) =>
         new("product-not-found", $"Product {productId} was not found in the inventory of the account.", EErrorType.NotFound);
 }

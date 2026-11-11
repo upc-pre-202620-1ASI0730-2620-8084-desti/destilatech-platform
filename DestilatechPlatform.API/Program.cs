@@ -64,11 +64,13 @@ using DestilatechPlatform.API.InventoryStock.Application.Services;
 using DestilatechPlatform.API.InventoryStock.Domain.Repositories;
 using DestilatechPlatform.API.InventoryStock.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 using DestilatechPlatform.API.InventoryStock.Interfaces.ACL;
+using DestilatechPlatform.API.ProductionMonitoring.Application.ACL;
 using DestilatechPlatform.API.ProductionMonitoring.Application.Internal.CommandServices;
 using DestilatechPlatform.API.ProductionMonitoring.Application.Internal.QueryServices;
 using DestilatechPlatform.API.ProductionMonitoring.Application.Services;
 using DestilatechPlatform.API.ProductionMonitoring.Domain.Repositories;
 using DestilatechPlatform.API.ProductionMonitoring.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using DestilatechPlatform.API.ProductionMonitoring.Interfaces.ACL;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -211,7 +213,9 @@ builder.Services.AddScoped<IReplenishmentEstimateQueryService, ReplenishmentEsti
 builder.Services.AddScoped<IHistoricalIndicatorQueryService, HistoricalIndicatorQueryService>();
 builder.Services.AddScoped<IInventoryHistoryReadPort, ExternalInventoryHistoryService>();
 builder.Services.AddScoped<ISalesHistoryReadPort, ExternalSalesHistoryService>();
-builder.Services.AddScoped<IProductionHistoryReadPort, EmptyProductionHistoryService>();
+builder.Services.AddScoped<IProductionHistoryReadPort, ExternalProductionHistoryService>();
+builder.Services.AddScoped<IDashboardSourcesReadPort, ExternalDashboardSourcesService>();
+builder.Services.AddScoped<IDashboardQueryService, DashboardQueryService>();
 
 // Mediator Configuration
 // Command pipeline behaviors (logging, exception logging, unit of work commit)
@@ -238,6 +242,7 @@ builder.Services.AddScoped<ISensorReadingRepository, SensorReadingRepository>();
 builder.Services.AddScoped<IProductionBatchCommandService, ProductionBatchCommandService>();
 builder.Services.AddScoped<IProcessMonitoringCommandService, ProcessMonitoringCommandService>();
 builder.Services.AddScoped<IProductionQueryService, ProductionQueryService>();
+builder.Services.AddScoped<IProductionContextFacade, ProductionContextFacade>();
 
 var app = builder.Build();
 

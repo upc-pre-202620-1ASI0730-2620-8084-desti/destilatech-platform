@@ -1,4 +1,5 @@
-﻿using DestilatechPlatform.API.Iam.Domain.Repositories;
+﻿using DestilatechPlatform.API.Iam.Domain.Model.ValueObjects;
+using DestilatechPlatform.API.Iam.Domain.Repositories;
 using DestilatechPlatform.API.Iam.Interfaces.Acl;
 
 namespace DestilatechPlatform.API.Iam.Application.Acl;
@@ -20,5 +21,16 @@ public class IamContextFacade(IUserRepository userRepository) : IIamContextFacad
         userRepository.Update(user);
         // No guarda: el commit lo hace quien llama (Billing), en una sola transacción.
         return true;
+    }
+
+    public async Task<string?> FetchBusinessTypeAsync(int userId, CancellationToken cancellationToken = default)
+    {
+        var user = await userRepository.FindByIdAsync(userId, cancellationToken);
+        return user?.BusinessType switch
+        {
+            EBusinessType.Producer => "PRODUCER",
+            EBusinessType.Retailer => "RETAILER",
+            _ => null
+        };
     }
 }

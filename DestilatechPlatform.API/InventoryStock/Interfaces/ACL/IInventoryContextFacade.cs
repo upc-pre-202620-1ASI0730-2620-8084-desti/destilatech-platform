@@ -15,6 +15,9 @@ public interface IInventoryContextFacade
     Task<IReadOnlyCollection<StockLevelSnapshot>> FetchActiveStockLevelsAsync(int userId, int? productId = null,
         CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyCollection<StockOverviewSnapshot>> FetchStockOverviewAsync(int userId,
+        CancellationToken cancellationToken = default);
+
     Task<IReadOnlyCollection<StockMovementSnapshot>> FetchStockMovementsSinceAsync(int userId, DateTime sinceUtc,
         int? productId = null, CancellationToken cancellationToken = default);
 
