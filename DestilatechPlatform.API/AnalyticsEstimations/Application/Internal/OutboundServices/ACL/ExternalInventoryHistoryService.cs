@@ -1,6 +1,5 @@
 using DestilatechPlatform.API.AnalyticsEstimations.Domain.Model.ValueObjects;
-using DestilatechPlatform.API.InventoryStock.Application;
-using Microsoft.EntityFrameworkCore;
+using DestilatechPlatform.API.InventoryStock.Interfaces.ACL;
 
 namespace DestilatechPlatform.API.AnalyticsEstimations.Application.Internal.OutboundServices.ACL;
 
@@ -8,7 +7,7 @@ namespace DestilatechPlatform.API.AnalyticsEstimations.Application.Internal.Outb
 /// Adapter of <see cref="IInventoryHistoryReadPort"/> over the Inventory &amp; Stock Management bounded context.
 /// It only reads stock items and movements; Analytics never changes the inventory.
 /// </summary>
-public class ExternalInventoryHistoryService(InventoryService inventoryService) : IInventoryHistoryReadPort
+public class ExternalInventoryHistoryService(IInventoryContextFacade inventoryContextFacade) : IInventoryHistoryReadPort
 {
     private const string MovementIn = "IN";
 
@@ -40,22 +39,9 @@ public class ExternalInventoryHistoryService(InventoryService inventoryService) 
     private async Task<List<StockLevel>> ReadActiveStockLevelsAsync(int userId, int? productId,
         CancellationToken cancellationToken)
     {
-        var activeProductIds = inventoryService.Products(userId)
-            .Where(product => product.IsActive)
-            .Select(product => product.Id);
-        var stockItems = inventoryService.StockItems(userId)
-            .Where(stock => activeProductIds.Contains(stock.ProductId));
-        if (productId is not null)
-        {
-            stockItems = stockItems.Where(stock => stock.ProductId == productId);
-        }
-
-        var rows = await stockItems
-            .OrderBy(stock => stock.ProductId)
-            .Select(stock => new { stock.ProductId, stock.CurrentQuantity, stock.LowStockThreshold })
-            .ToListAsync(cancellationToken);
-        return rows
-            .Select(row => new StockLevel(row.ProductId, row.CurrentQuantity, row.LowStockThreshold))
+        var levels = await inventoryContextFacade.FetchActiveStockLevelsAsync(userId, productId, cancellationToken);
+        return levels
+            .Select(level => new StockLevel(level.ProductId, level.CurrentQuantity, level.LowStockThreshold))
             .ToList();
     }
 
@@ -63,28 +49,15 @@ public class ExternalInventoryHistoryService(InventoryService inventoryService) 
         DateTimeOffset since, CancellationToken cancellationToken)
     {
         // Inventory keeps movement dates as UTC DateTime values.
-        var sinceUtc = since.UtcDateTime;
-        var movements = inventoryService.Movements(userId)
-            .Where(movement => movement.MovementDate >= sinceUtc);
-        if (productId is not null)
-        {
-            movements = movements.Where(movement => movement.ProductId == productId);
-        }
-
-        var rows = await movements
-            .OrderBy(movement => movement.MovementDate)
-            .Select(movement => new
-            {
-                movement.ProductId, movement.Type, movement.Reason, movement.Quantity, movement.MovementDate
-            })
-            .ToListAsync(cancellationToken);
-        return rows
-            .Select(row => new StockMovementRecord(
-                row.ProductId,
-                row.Type == MovementIn ? MovementDirection.In : MovementDirection.Out,
-                row.Reason,
-                row.Quantity,
-                new DateTimeOffset(DateTime.SpecifyKind(row.MovementDate, DateTimeKind.Utc))))
+        var movements = await inventoryContextFacade.FetchStockMovementsSinceAsync(userId, since.UtcDateTime,
+            productId, cancellationToken);
+        return movements
+            .Select(movement => new StockMovementRecord(
+                movement.ProductId,
+                movement.Type == MovementIn ? MovementDirection.In : MovementDirection.Out,
+                movement.Reason,
+                movement.Quantity,
+                new DateTimeOffset(DateTime.SpecifyKind(movement.MovementDate, DateTimeKind.Utc))))
             .ToList();
     }
 }

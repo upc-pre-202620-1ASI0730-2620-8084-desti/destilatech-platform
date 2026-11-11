@@ -1,6 +1,5 @@
-using DestilatechPlatform.API.InventoryStock.Application;
+using DestilatechPlatform.API.InventoryStock.Interfaces.ACL;
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Model;
-using Microsoft.EntityFrameworkCore;
 
 namespace DestilatechPlatform.API.OrdersReplenishment.Application.Internal.OutboundServices.ACL;
 
@@ -8,11 +7,11 @@ namespace DestilatechPlatform.API.OrdersReplenishment.Application.Internal.Outbo
 /// Adapter of <see cref="IInventoryPort"/> over the Inventory &amp; Stock Management bounded context.
 /// </summary>
 /// <remarks>
-/// Stock movements are only staged in the shared context through
-/// <see cref="InventoryService.StageOrderMovementAsync"/>; the command service saves them together
+/// Stock movements are only staged in the shared unit of work through
+/// <see cref="IInventoryContextFacade.StageStockMovementAsync"/>; the command service saves them together
 /// with the order, so both are committed in the same transaction.
 /// </remarks>
-public class ExternalInventoryService(InventoryService inventoryService) : IInventoryPort
+public class ExternalInventoryService(IInventoryContextFacade inventoryContextFacade) : IInventoryPort
 {
     private const string MovementIn = "IN";
     private const string MovementOut = "OUT";
@@ -23,36 +22,25 @@ public class ExternalInventoryService(InventoryService inventoryService) : IInve
     public async Task<InventoryProduct?> FindProductAsync(int userId, int productId,
         CancellationToken cancellationToken = default)
     {
-        var product = await inventoryService.Products(userId)
-            .Where(item => item.Id == productId && item.IsActive)
-            .Select(item => new { item.Id, item.Name, item.Presentation, item.UnitPrice })
-            .FirstOrDefaultAsync(cancellationToken);
+        var product = await inventoryContextFacade.FetchActiveProductAsync(userId, productId, cancellationToken);
         if (product is null)
         {
             return null;
         }
 
-        var availableQuantity = await inventoryService.StockItems(userId)
-            .Where(stock => stock.ProductId == productId)
-            .Select(stock => (decimal?)stock.CurrentQuantity)
-            .FirstOrDefaultAsync(cancellationToken) ?? 0m;
-
         // Same display name as the web application: "Name · Presentation".
         var displayName = string.IsNullOrWhiteSpace(product.Presentation)
             ? product.Name
             : $"{product.Name} · {product.Presentation}";
-        return new InventoryProduct(product.Id, displayName, product.UnitPrice, availableQuantity);
+        return new InventoryProduct(product.ProductId, displayName, product.UnitPrice, product.AvailableQuantity);
     }
 
     public async Task RegisterOrderExitAsync(int userId, int productId, int quantity, string reference,
         CancellationToken cancellationToken = default)
     {
-        try
-        {
-            await inventoryService.StageOrderMovementAsync(userId, productId, MovementOut, ReasonOrder, quantity,
-                reference, cancellationToken);
-        }
-        catch (InvalidOperationException)
+        var staged = await inventoryContextFacade.StageStockMovementAsync(userId, productId, MovementOut,
+            ReasonOrder, quantity, reference, cancellationToken);
+        if (!staged)
         {
             throw new OrdersReplenishmentException(OrdersReplenishmentError.InsufficientStock());
         }
@@ -62,12 +50,9 @@ public class ExternalInventoryService(InventoryService inventoryService) : IInve
         string reference, CancellationToken cancellationToken = default)
     {
         var inventoryReason = reason == StockEntryReason.Purchase ? ReasonPurchase : ReasonReturn;
-        try
-        {
-            await inventoryService.StageOrderMovementAsync(userId, productId, MovementIn, inventoryReason, quantity,
-                reference, cancellationToken);
-        }
-        catch (InvalidOperationException)
+        var staged = await inventoryContextFacade.StageStockMovementAsync(userId, productId, MovementIn,
+            inventoryReason, quantity, reference, cancellationToken);
+        if (!staged)
         {
             throw new OrdersReplenishmentException(OrdersReplenishmentError.ProductRequired());
         }
