@@ -1,23 +1,290 @@
+using DestilatechPlatform.API.AlertsNotifications.Application.ACL;
+using DestilatechPlatform.API.AlertsNotifications.Application.Internal.CommandServices;
+using DestilatechPlatform.API.AlertsNotifications.Application.Internal.QueryServices;
+using DestilatechPlatform.API.AlertsNotifications.Application.Services;
+using DestilatechPlatform.API.AlertsNotifications.Domain.Repositories;
+using DestilatechPlatform.API.AlertsNotifications.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using DestilatechPlatform.API.AlertsNotifications.Interfaces.ACL;
+using DestilatechPlatform.API.AnalyticsEstimations.Application.Internal.CommandServices;
+using DestilatechPlatform.API.AnalyticsEstimations.Application.Internal.OutboundServices;
+using DestilatechPlatform.API.AnalyticsEstimations.Application.Internal.OutboundServices.ACL;
+using DestilatechPlatform.API.AnalyticsEstimations.Application.Internal.QueryServices;
+using DestilatechPlatform.API.AnalyticsEstimations.Application.Services;
+using DestilatechPlatform.API.AnalyticsEstimations.Domain.Repositories;
+using DestilatechPlatform.API.AnalyticsEstimations.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using DestilatechPlatform.API.OrdersReplenishment.Application.ACL;
+using DestilatechPlatform.API.OrdersReplenishment.Application.Internal.CommandServices;
+using DestilatechPlatform.API.OrdersReplenishment.Application.Internal.OutboundServices;
+using DestilatechPlatform.API.OrdersReplenishment.Application.Internal.OutboundServices.ACL;
+using DestilatechPlatform.API.OrdersReplenishment.Application.Internal.QueryServices;
+using DestilatechPlatform.API.OrdersReplenishment.Application.Services;
+using DestilatechPlatform.API.OrdersReplenishment.Domain.Repositories;
+using DestilatechPlatform.API.OrdersReplenishment.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using DestilatechPlatform.API.OrdersReplenishment.Interfaces.ACL;
+using DestilatechPlatform.API.Resources;
+using DestilatechPlatform.API.Shared.Domain.Repositories;
+using DestilatechPlatform.API.Shared.Infrastructure.Interfaces.Asp.Configuration;
+using DestilatechPlatform.API.Shared.Infrastructure.Mediator.Cortex.Configuration;
+using DestilatechPlatform.API.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
+using DestilatechPlatform.API.Shared.Infrastructure.Persistence.EntityFrameworkCore.Interceptors;
+using DestilatechPlatform.API.Shared.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+
+using DestilatechPlatform.API.Iam.Application.CommandServices;
+using DestilatechPlatform.API.Iam.Application.Internal.CommandServices;
+using DestilatechPlatform.API.Iam.Application.Internal.QueryServices;
+using DestilatechPlatform.API.Iam.Application.QueryServices;
+using DestilatechPlatform.API.Iam.Application.Acl;
+using DestilatechPlatform.API.Iam.Interfaces.Acl;
+using DestilatechPlatform.API.Iam.Domain.Repositories;
+using DestilatechPlatform.API.Iam.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using DestilatechPlatform.API.Iam.Infrastructure.Persistence.EntityFrameworkCore.Seeding;
+
+using DestilatechPlatform.API.Billing.Application.CommandServices;
+using DestilatechPlatform.API.Billing.Application.Internal.CommandServices;
+using DestilatechPlatform.API.Billing.Application.Internal.OutboundServices;
+using DestilatechPlatform.API.Billing.Application.Internal.QueryServices;
+using DestilatechPlatform.API.Billing.Application.QueryServices;
+using DestilatechPlatform.API.Billing.Domain.Repositories;
+using DestilatechPlatform.API.Billing.Infrastructure.Payments.Stripe;
+using DestilatechPlatform.API.Billing.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using DestilatechPlatform.API.Billing.Infrastructure.Persistence.EntityFrameworkCore.Seeding;
+
+using DestilatechPlatform.API.Shared.Infrastructure.Pipeline.Middleware.Components;
+using Cortex.Mediator.Commands;
+using Cortex.Mediator.DependencyInjection;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
+using Scalar.AspNetCore;
+using DestilatechPlatform.API.InventoryStock.Application.ACL;
+using DestilatechPlatform.API.InventoryStock.Application.Internal.CommandServices;
+using DestilatechPlatform.API.InventoryStock.Application.Internal.QueryServices;
+using DestilatechPlatform.API.InventoryStock.Application.Services;
+using DestilatechPlatform.API.InventoryStock.Domain.Repositories;
+using DestilatechPlatform.API.InventoryStock.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using DestilatechPlatform.API.InventoryStock.Interfaces.ACL;
+using DestilatechPlatform.API.ProductionMonitoring.Application.ACL;
+using DestilatechPlatform.API.ProductionMonitoring.Application.Internal.CommandServices;
+using DestilatechPlatform.API.ProductionMonitoring.Application.Internal.QueryServices;
+using DestilatechPlatform.API.ProductionMonitoring.Application.Services;
+using DestilatechPlatform.API.ProductionMonitoring.Domain.Repositories;
+using DestilatechPlatform.API.ProductionMonitoring.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using DestilatechPlatform.API.ProductionMonitoring.Infrastructure.Simulation;
+using DestilatechPlatform.API.ProductionMonitoring.Interfaces.ACL;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Localization Configuration
+builder.Services.AddLocalization();
 
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+// Add services to the container.
+builder.Services.AddRouting(options => options.LowercaseUrls = false);
+builder.Services.AddControllers(options => options.Conventions.Add(new KebabCaseRouteNamingConvention()))
+    .AddDataAnnotationsLocalization(options =>
+        options.DataAnnotationLocalizerProvider = (_, factory) => factory.Create(typeof(SharedResource)))
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var localizer = context.HttpContext.RequestServices
+                .GetRequiredService<IStringLocalizer<SharedResource>>();
+            var problemDetailsFactory = context.HttpContext.RequestServices
+                .GetRequiredService<ProblemDetailsFactory>();
+            var problemDetails = problemDetailsFactory.CreateValidationProblemDetails(
+                context.HttpContext,
+                context.ModelState,
+                statusCode: StatusCodes.Status400BadRequest,
+                title: localizer["InvalidModelStateTitle"].Value);
+
+            var result = new BadRequestObjectResult(problemDetails);
+            result.ContentTypes.Add("application/problem+json");
+            return result;
+        };
+    });
+
+// Register RFC 7807 ProblemDetails payloads for centralized exception handling.
+builder.Services.AddProblemDetails(options =>
+{
+    options.CustomizeProblemDetails = context =>
+    {
+        if (context.ProblemDetails.Status is null or >= 500)
+        {
+            var localizer = context.HttpContext.RequestServices.GetRequiredService<IStringLocalizer<SharedResource>>();
+            context.ProblemDetails.Title ??= localizer["UnexpectedServerError"].Value;
+            context.ProblemDetails.Detail ??= localizer["UnexpectedErrorProcessingRequest"].Value;
+        }
+    };
+});
+
+// Turn unhandled exceptions into localized ProblemDetails responses.
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
+// Localized ProblemDetails for failed application results (bounded context error enums).
+builder.Services.AddSingleton<DestilatechPlatform.API.Shared.Interfaces.Rest.ProblemDetails.ProblemDetailsFactory>();
+
+// Add CORS Policy so the web application (localhost and Firebase Hosting) can call the API.
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllPolicy",
+        policy => policy.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
+
+// Generate the OpenAPI document with ASP.NET Core's built-in support.
+builder.Services.AddOpenApi(options =>
+{
+    // Alerts & Notifications localized documentation
+    options.AddOperationTransformer(
+        DestilatechPlatform.API.AlertsNotifications.Interfaces.Rest.Transform.LocalizedOpenApiAssembler
+            .TransformOperationAsync);
+    options.AddSchemaTransformer(
+        DestilatechPlatform.API.AlertsNotifications.Interfaces.Rest.Transform.LocalizedOpenApiAssembler
+            .TransformSchemaAsync);
+});
+
+// Configure Database Context and route EF logs through the app logger pipeline.
+builder.Services.AddDbContext<AppDbContext>((serviceProvider, options) =>
+{
+    var connectionStringTemplate = builder.Configuration.GetConnectionString("DefaultConnection");
+    if (string.IsNullOrWhiteSpace(connectionStringTemplate))
+        throw new InvalidOperationException("Database connection string is not set in the configuration.");
+
+    var connectionString = Environment.ExpandEnvironmentVariables(connectionStringTemplate);
+    if (string.IsNullOrWhiteSpace(connectionString))
+        throw new InvalidOperationException("Database connection string is not set in the configuration.");
+
+    options.UseMySQL(connectionString)
+        .UseLoggerFactory(serviceProvider.GetRequiredService<ILoggerFactory>())
+        .AddInterceptors(serviceProvider.GetRequiredService<DispatchDomainEventsInterceptor>())
+        .EnableDetailedErrors();
+
+    if (builder.Environment.IsDevelopment())
+        options.EnableSensitiveDataLogging();
+});
+
+// Configure Dependency Injection
+
+// Shared Bounded Context Injection Configuration
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+// IAM Bounded Context Injection Configuration
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserCommandService, UserCommandService>();
+builder.Services.AddScoped<IUserQueryService, UserQueryService>();
+builder.Services.AddScoped<IIamContextFacade, IamContextFacade>();
+
+// Billing Bounded Context Injection Configuration
+builder.Services.AddScoped<IPlanRepository, PlanRepository>();
+builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<ICheckoutCommandService, CheckoutCommandService>();
+builder.Services.AddScoped<ISubscriptionCommandService, SubscriptionCommandService>();
+builder.Services.AddScoped<IPlanQueryService, PlanQueryService>();
+builder.Services.AddScoped<ISubscriptionQueryService, SubscriptionQueryService>();
+builder.Services.AddScoped<IPaymentQueryService, PaymentQueryService>();
+
+builder.Services.Configure<StripeOptions>(builder.Configuration.GetSection("Stripe"));
+builder.Services.AddScoped<IPaymentGatewayService, StripePaymentGatewayService>();
+builder.Services.AddScoped<DispatchDomainEventsInterceptor>();
+
+// Alerts & Notifications Bounded Context Injection Configuration
+builder.Services.AddScoped<IAlertRepository, AlertRepository>();
+builder.Services.AddScoped<IAlertCommandService, AlertCommandService>();
+builder.Services.AddScoped<IAlertQueryService, AlertQueryService>();
+builder.Services.AddScoped<IAlertsContextFacade, AlertsContextFacade>();
+
+// Orders & Replenishment Bounded Context Injection Configuration
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IReplenishmentOrderRepository, ReplenishmentOrderRepository>();
+builder.Services.AddScoped<ICustomerCommandService, CustomerCommandService>();
+builder.Services.AddScoped<ICustomerQueryService, CustomerQueryService>();
+builder.Services.AddScoped<IOrderCommandService, OrderCommandService>();
+builder.Services.AddScoped<IOrderQueryService, OrderQueryService>();
+builder.Services.AddScoped<IReplenishmentOrderCommandService, ReplenishmentOrderCommandService>();
+builder.Services.AddScoped<IReplenishmentOrderQueryService, ReplenishmentOrderQueryService>();
+builder.Services.AddScoped<IInventoryPort, ExternalInventoryService>();
+builder.Services.AddScoped<IOrdersContextFacade, OrdersContextFacade>();
+
+// Analytics & Estimations Bounded Context Injection Configuration
+builder.Services.AddScoped<IReplenishmentEstimateRepository, ReplenishmentEstimateRepository>();
+builder.Services.AddScoped<IReplenishmentEstimateCommandService, ReplenishmentEstimateCommandService>();
+builder.Services.AddScoped<IReplenishmentEstimateQueryService, ReplenishmentEstimateQueryService>();
+builder.Services.AddScoped<IHistoricalIndicatorQueryService, HistoricalIndicatorQueryService>();
+builder.Services.AddScoped<IInventoryHistoryReadPort, ExternalInventoryHistoryService>();
+builder.Services.AddScoped<ISalesHistoryReadPort, ExternalSalesHistoryService>();
+builder.Services.AddScoped<IProductionHistoryReadPort, ExternalProductionHistoryService>();
+builder.Services.AddScoped<IDashboardSourcesReadPort, ExternalDashboardSourcesService>();
+builder.Services.AddScoped<IDashboardQueryService, DashboardQueryService>();
+
+// Mediator Configuration
+// Command pipeline behaviors (logging, exception logging, unit of work commit)
+builder.Services.AddScoped(typeof(ICommandPipelineBehavior<>), typeof(LoggingCommandBehavior<>));
+builder.Services.AddScoped(typeof(ICommandPipelineBehavior<>), typeof(ExceptionHandlingCommandBehavior<>));
+builder.Services.AddScoped(typeof(ICommandPipelineBehavior<>), typeof(TransactionCommandBehavior<>));
+
+// Cortex Mediator publishes domain events to every IEventHandler found in this assembly
+builder.Services.AddCortexMediator([typeof(Program)]);
+
+// Inventory & Stock Bounded Context Injection Configuration
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IStockItemRepository, StockItemRepository>();
+builder.Services.AddScoped<IStockMovementRepository, StockMovementRepository>();
+builder.Services.AddScoped<IProductCommandService, ProductCommandService>();
+builder.Services.AddScoped<IStockItemCommandService, StockItemCommandService>();
+builder.Services.AddScoped<IInventoryQueryService, InventoryQueryService>();
+builder.Services.AddScoped<IInventoryContextFacade, InventoryContextFacade>();
+
+// Production & Monitoring Bounded Context Injection Configuration
+builder.Services.AddScoped<IProductionBatchRepository, ProductionBatchRepository>();
+builder.Services.AddScoped<IProcessVariableRepository, ProcessVariableRepository>();
+builder.Services.AddScoped<ISensorReadingRepository, SensorReadingRepository>();
+builder.Services.AddScoped<IProductionBatchCommandService, ProductionBatchCommandService>();
+builder.Services.AddScoped<IProcessMonitoringCommandService, ProcessMonitoringCommandService>();
+builder.Services.AddScoped<IProductionQueryService, ProductionQueryService>();
+builder.Services.AddScoped<IProductionContextFacade, ProductionContextFacade>();
+
+// IoT sensor simulator (US64): disabled by default, enable it with IotSensorSimulator:Enabled = true
+builder.Services.Configure<IotSensorSimulatorOptions>(
+    builder.Configuration.GetSection(IotSensorSimulatorOptions.SectionName));
+builder.Services.AddHttpClient();
+builder.Services.AddHostedService<IotSensorSimulator>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Apply pending migrations on startup (safe to call even when schema is up to date)
+using (var scope = app.Services.CreateScope())
 {
-    app.MapOpenApi();
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<AppDbContext>();
+    context.Database.Migrate();
+    await PlanSeeder.SeedAsync(context);
+    await UserSeeder.SeedAsync(context);
 }
+
+// Configure the HTTP request pipeline.
+app.UseExceptionHandler();
+
+// Localization must run before OpenAPI so generated documentation follows the request culture.
+string[] supportedCultures = ["en", "en-US", "es", "es-PE"];
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture(supportedCultures[0])
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures);
+localizationOptions.ApplyCurrentCultureToResponseHeaders = true;
+app.UseRequestLocalization(localizationOptions);
+
+// Apply CORS Policy
+app.UseCors("AllowAllPolicy");
 
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+// OpenAPI and Scalar are kept available in all environments to preserve the existing API explorer behavior.
+app.MapOpenApi();
+app.MapScalarApiReference();
 app.MapControllers();
 
 app.Run();
