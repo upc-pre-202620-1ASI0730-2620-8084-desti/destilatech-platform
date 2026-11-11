@@ -2,7 +2,7 @@
 using DestilatechPlatform.API.Billing.Application.Internal.OutboundServices;
 using DestilatechPlatform.API.Billing.Domain.Model.Aggregates;
 using DestilatechPlatform.API.Billing.Domain.Model.Errors;
-using DestilatechPlatform.API.Shared.Application.Patterns;
+using DestilatechPlatform.API.Shared.Application.Model;
 using Microsoft.Extensions.Options;
 using Stripe;
 using Stripe.Checkout;
@@ -18,7 +18,7 @@ public class StripePaymentGatewayService(
     private readonly StripeClient _client = new(options.Value.SecretKey);
     private readonly StripeOptions _options = options.Value;
 
-    public async Task<Result<CheckoutSessionInfo, BillingError>> CreateCheckoutSessionAsync(int userId, Plan plan,
+    public async Task<Result<CheckoutSessionInfo>> CreateCheckoutSessionAsync(int userId, Plan plan,
         CancellationToken cancellationToken = default)
     {
         try
@@ -56,18 +56,18 @@ public class StripePaymentGatewayService(
             var session = await new SessionService(_client).CreateAsync(sessionOptions,
                 cancellationToken: cancellationToken);
 
-            return new Result<CheckoutSessionInfo, BillingError>.Success(
+            return Result<CheckoutSessionInfo>.Success(
                 new CheckoutSessionInfo(session.Id, session.Url));
         }
         catch (StripeException e)
         {
             logger.LogError(e, "Stripe rechazó la creación de la sesión: {Message}",
                 e.StripeError?.Message ?? e.Message);
-            return new Result<CheckoutSessionInfo, BillingError>.Failure(BillingError.PaymentGatewayFailure);
+            return Result<CheckoutSessionInfo>.Failure(BillingError.PaymentGatewayFailure, "The payment gateway could not process the request.");
         }
     }
 
-    public async Task<Result<PaidSessionInfo, BillingError>> GetPaidSessionAsync(string sessionId,
+    public async Task<Result<PaidSessionInfo>> GetPaidSessionAsync(string sessionId,
         CancellationToken cancellationToken = default)
     {
         try
@@ -77,14 +77,14 @@ public class StripePaymentGatewayService(
                 cancellationToken: cancellationToken);
 
             if (session.PaymentStatus != "paid")
-                return new Result<PaidSessionInfo, BillingError>.Failure(BillingError.PaymentNotCompleted);
+                return Result<PaidSessionInfo>.Failure(BillingError.PaymentNotCompleted, "The payment has not been completed.");
 
             if (!session.Metadata.TryGetValue("userId", out var userIdText) ||
                 !session.Metadata.TryGetValue("planId", out var planIdText) ||
                 !int.TryParse(userIdText, out var userId) ||
                 !int.TryParse(planIdText, out var planId) ||
                 session.AmountTotal is null)
-                return new Result<PaidSessionInfo, BillingError>.Failure(BillingError.InvalidData);
+                return Result<PaidSessionInfo>.Failure(BillingError.InvalidData, "The billing data is invalid.");
 
             var charge = session.PaymentIntent?.LatestCharge;
             var card = charge?.PaymentMethodDetails?.Card;
@@ -92,7 +92,7 @@ public class StripePaymentGatewayService(
                 ? new DateTimeOffset(DateTime.SpecifyKind(charge.Created, DateTimeKind.Utc))
                 : DateTimeOffset.UtcNow;
 
-            return new Result<PaidSessionInfo, BillingError>.Success(new PaidSessionInfo(
+            return Result<PaidSessionInfo>.Success(new PaidSessionInfo(
                 session.Id,
                 userId,
                 planId,
@@ -104,13 +104,13 @@ public class StripePaymentGatewayService(
         }
         catch (StripeException e) when (e.HttpStatusCode == HttpStatusCode.NotFound)
         {
-            return new Result<PaidSessionInfo, BillingError>.Failure(BillingError.SessionNotFound);
+            return Result<PaidSessionInfo>.Failure(BillingError.SessionNotFound, "The checkout session was not found.");
         }
         catch (StripeException e)
         {
             logger.LogError(e, "Stripe falló al consultar la sesión: {Message}",
                 e.StripeError?.Message ?? e.Message);
-            return new Result<PaidSessionInfo, BillingError>.Failure(BillingError.PaymentGatewayFailure);
+            return Result<PaidSessionInfo>.Failure(BillingError.PaymentGatewayFailure, "The payment gateway could not process the request.");
         }
     }
 }

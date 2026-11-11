@@ -1,6 +1,6 @@
 ﻿using DestilatechPlatform.API.Billing.Domain.Model.Aggregates;
 using DestilatechPlatform.API.Billing.Domain.Model.Errors;
-using DestilatechPlatform.API.Shared.Application.Patterns;
+using DestilatechPlatform.API.Shared.Application.Model;
 
 namespace DestilatechPlatform.API.Billing.Application.Internal.OutboundServices;
 
@@ -18,9 +18,9 @@ public record PaidSessionInfo(
 
 public interface IPaymentGatewayService
 {
-    Task<Result<CheckoutSessionInfo, BillingError>> CreateCheckoutSessionAsync(int userId, Plan plan,
+    Task<Result<CheckoutSessionInfo>> CreateCheckoutSessionAsync(int userId, Plan plan,
         CancellationToken cancellationToken = default);
 
-    Task<Result<PaidSessionInfo, BillingError>> GetPaidSessionAsync(string sessionId,
+    Task<Result<PaidSessionInfo>> GetPaidSessionAsync(string sessionId,
         CancellationToken cancellationToken = default);
 }
