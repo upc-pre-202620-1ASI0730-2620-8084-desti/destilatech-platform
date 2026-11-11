@@ -6,7 +6,7 @@ using DestilatechPlatform.API.Billing.Domain.Model.Errors;
 using DestilatechPlatform.API.Billing.Domain.Model.ValueObjects;
 using DestilatechPlatform.API.Billing.Domain.Repositories;
 using DestilatechPlatform.API.Iam.Interfaces.Acl;
-using DestilatechPlatform.API.Shared.Application.Patterns;
+using DestilatechPlatform.API.Shared.Application.Model;
 using DestilatechPlatform.API.Shared.Domain.Repositories;
 
 namespace DestilatechPlatform.API.Billing.Application.Internal.CommandServices;
@@ -21,28 +21,28 @@ public class CheckoutCommandService(
 {
     private const string ExpectedCurrency = "PEN";
 
-    public async Task<Result<CheckoutSessionInfo, BillingError>> Handle(CreateCheckoutSessionCommand command,
+    public async Task<Result<CheckoutSessionInfo>> Handle(CreateCheckoutSessionCommand command,
         CancellationToken cancellationToken = default)
     {
         if (command.UserId <= 0 || command.PlanId <= 0)
-            return new Result<CheckoutSessionInfo, BillingError>.Failure(BillingError.InvalidData);
+            return Result<CheckoutSessionInfo>.Failure(BillingError.InvalidData, "The billing data is invalid.");
 
         if (!await iamContextFacade.UserExistsAsync(command.UserId, cancellationToken))
-            return new Result<CheckoutSessionInfo, BillingError>.Failure(BillingError.UserNotFound);
+            return Result<CheckoutSessionInfo>.Failure(BillingError.UserNotFound, "The user was not found.");
 
         var plan = await planRepository.FindByIdAsync(command.PlanId, cancellationToken);
         if (plan is null)
-            return new Result<CheckoutSessionInfo, BillingError>.Failure(BillingError.PlanNotFound);
+            return Result<CheckoutSessionInfo>.Failure(BillingError.PlanNotFound, "The plan was not found.");
 
         // El precio sale del plan guardado en la base de datos, nunca del cliente
         return await paymentGateway.CreateCheckoutSessionAsync(command.UserId, plan, cancellationToken);
     }
 
-    public async Task<Result<ConfirmationResult, BillingError>> Handle(ConfirmCheckoutSessionCommand command,
+    public async Task<Result<ConfirmationResult>> Handle(ConfirmCheckoutSessionCommand command,
         CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(command.SessionId))
-            return new Result<ConfirmationResult, BillingError>.Failure(BillingError.InvalidData);
+            return Result<ConfirmationResult>.Failure(BillingError.InvalidData, "The billing data is invalid.");
 
         // Idempotencia: si esta sesión ya se confirmó, devuelve el mismo resultado
         var existingPayment = await paymentRepository.FindByReferenceAsync(command.SessionId, cancellationToken);
@@ -51,27 +51,27 @@ public class CheckoutCommandService(
             var existingSubscription =
                 await subscriptionRepository.FindByPaymentReferenceAsync(command.SessionId, cancellationToken);
             if (existingSubscription is not null)
-                return new Result<ConfirmationResult, BillingError>.Success(
+                return Result<ConfirmationResult>.Success(
                     new ConfirmationResult(existingPayment, existingSubscription));
         }
 
         // Se le pregunta a Stripe: el cliente no decide si el pago fue válido
         var gatewayResult = await paymentGateway.GetPaidSessionAsync(command.SessionId, cancellationToken);
-        if (gatewayResult is Result<PaidSessionInfo, BillingError>.Failure failure)
-            return new Result<ConfirmationResult, BillingError>.Failure(failure.Error);
-        var session = ((Result<PaidSessionInfo, BillingError>.Success)gatewayResult).Value;
+        if (gatewayResult.IsFailure)
+            return Result<ConfirmationResult>.Failure(gatewayResult.DomainError, gatewayResult.Error!);
+        var session = gatewayResult.Value!;
 
         var plan = await planRepository.FindByIdAsync(session.PlanId, cancellationToken);
         if (plan is null)
-            return new Result<ConfirmationResult, BillingError>.Failure(BillingError.PlanNotFound);
+            return Result<ConfirmationResult>.Failure(BillingError.PlanNotFound, "The plan was not found.");
 
         // Lo que cobró Stripe debe coincidir con el precio del plan
         if (session.Amount != plan.Price ||
             !string.Equals(session.Currency, ExpectedCurrency, StringComparison.OrdinalIgnoreCase))
-            return new Result<ConfirmationResult, BillingError>.Failure(BillingError.AmountMismatch);
+            return Result<ConfirmationResult>.Failure(BillingError.AmountMismatch, "The paid amount does not match the plan price.");
 
         if (!await iamContextFacade.UserExistsAsync(session.UserId, cancellationToken))
-            return new Result<ConfirmationResult, BillingError>.Failure(BillingError.UserNotFound);
+            return Result<ConfirmationResult>.Failure(BillingError.UserNotFound, "The user was not found.");
 
         var payment = new Payment(session.UserId, plan.Id, session.Amount, ExpectedCurrency,
             EPaymentProvider.Stripe, session.SessionId, EPaymentStatus.Paid, session.CardBrand,
@@ -85,6 +85,6 @@ public class CheckoutCommandService(
         // Un solo guardado: pago, suscripción y acceso de IAM, todo o nada
         await unitOfWork.CompleteAsync(cancellationToken);
 
-        return new Result<ConfirmationResult, BillingError>.Success(new ConfirmationResult(payment, subscription));
+        return Result<ConfirmationResult>.Success(new ConfirmationResult(payment, subscription));
     }
 }
