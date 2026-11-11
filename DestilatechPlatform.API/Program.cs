@@ -70,6 +70,7 @@ using DestilatechPlatform.API.ProductionMonitoring.Application.Internal.QuerySer
 using DestilatechPlatform.API.ProductionMonitoring.Application.Services;
 using DestilatechPlatform.API.ProductionMonitoring.Domain.Repositories;
 using DestilatechPlatform.API.ProductionMonitoring.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using DestilatechPlatform.API.ProductionMonitoring.Infrastructure.Simulation;
 using DestilatechPlatform.API.ProductionMonitoring.Interfaces.ACL;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -243,6 +244,12 @@ builder.Services.AddScoped<IProductionBatchCommandService, ProductionBatchComman
 builder.Services.AddScoped<IProcessMonitoringCommandService, ProcessMonitoringCommandService>();
 builder.Services.AddScoped<IProductionQueryService, ProductionQueryService>();
 builder.Services.AddScoped<IProductionContextFacade, ProductionContextFacade>();
+
+// IoT sensor simulator (US64): disabled by default, enable it with IotSensorSimulator:Enabled = true
+builder.Services.Configure<IotSensorSimulatorOptions>(
+    builder.Configuration.GetSection(IotSensorSimulatorOptions.SectionName));
+builder.Services.AddHttpClient();
+builder.Services.AddHostedService<IotSensorSimulator>();
 
 var app = builder.Build();
 
