@@ -1,5 +1,5 @@
 ﻿using DestilatechPlatform.API.Billing.Domain.Model.ValueObjects;
-using DestilatechPlatform.API.Shared.Domain.Model;
+using DestilatechPlatform.API.Shared.Domain.Model.Entities;
 
 namespace DestilatechPlatform.API.Billing.Domain.Model.Aggregates;
 
