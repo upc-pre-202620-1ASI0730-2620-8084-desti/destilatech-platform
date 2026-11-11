@@ -1,4 +1,5 @@
 ﻿using DestilatechPlatform.API.AlertsNotifications.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
+using DestilatechPlatform.API.AnalyticsEstimations.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using DestilatechPlatform.API.OrdersReplenishment.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using DestilatechPlatform.API.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using DestilatechPlatform.API.Shared.Infrastructure.Persistence.EntityFrameworkCore.Interceptors;
@@ -24,6 +25,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         
         builder.ApplyAlertsNotificationsConfiguration();
         builder.ApplyOrdersReplenishmentConfiguration();
+        builder.ApplyAnalyticsEstimationsConfiguration();
 
         builder.UseSnakeCaseNamingConvention();
         
