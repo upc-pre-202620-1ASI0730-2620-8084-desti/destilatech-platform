@@ -9,7 +9,7 @@ namespace DestilatechPlatform.API.AnalyticsEstimations.Interfaces.Rest.Resources
 /// <param name="Urgent">Whether the product reaches its threshold in seven days or less.</param>
 public record ReplenishmentEstimateResource(
     int Id,
-    int UserId,
+    int TenantId,
     int ProductId,
     bool HasEnoughData,
     decimal AverageDailyConsumption,

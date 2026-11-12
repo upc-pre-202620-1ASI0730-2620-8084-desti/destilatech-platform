@@ -21,7 +21,7 @@ public class CheckoutSessionsController(ICheckoutCommandService checkoutCommandS
     public async Task<IActionResult> CreateCheckoutSession([FromBody] CreateCheckoutSessionResource resource,
         CancellationToken cancellationToken)
     {
-        var command = new CreateCheckoutSessionCommand(resource.UserId, resource.PlanId);
+        var command = new CreateCheckoutSessionCommand(resource.TenantId, resource.PlanId);
         var result = await checkoutCommandService.Handle(command, cancellationToken);
 
         return result.Match<IActionResult>(

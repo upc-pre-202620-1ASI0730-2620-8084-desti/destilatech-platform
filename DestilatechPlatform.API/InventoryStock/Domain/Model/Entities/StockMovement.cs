@@ -1,6 +1,6 @@
 namespace DestilatechPlatform.API.InventoryStock.Domain.Model.Entities;
 
-public sealed class StockMovement
+public sealed partial class StockMovement
 {
     public int Id { get; private set; }
     public int StockItemId { get; private set; }

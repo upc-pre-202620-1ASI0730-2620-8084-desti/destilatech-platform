@@ -2,7 +2,7 @@ namespace DestilatechPlatform.API.ProductionMonitoring.Interfaces.Rest.Resources
 
 public record ProductionBatchResource(
     int Id,
-    int UserId,
+    int TenantId,
     string Code,
     string Variety,
     DateTime StartDate,

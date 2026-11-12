@@ -1,9 +1,9 @@
 ﻿using DestilatechPlatform.API.Billing.Domain.Model.ValueObjects;
-using DestilatechPlatform.API.Shared.Domain.Model.Entities;
+using DestilatechPlatform.API.Shared.Domain.Model.Aggregates.Internal;
 
 namespace DestilatechPlatform.API.Billing.Domain.Model.Aggregates;
 
-public class Subscription : IAuditableEntity
+public partial class Subscription : AggregateRoot
 {
     // Requerido por EF Core
     protected Subscription()
@@ -32,9 +32,6 @@ public class Subscription : IAuditableEntity
 
     // Id de la checkout session de Stripe
     public string PaymentReference { get; private set; }
-
-    public DateTimeOffset? CreatedAt { get; set; }
-    public DateTimeOffset? UpdatedAt { get; set; }
 
     public void Cancel()
     {

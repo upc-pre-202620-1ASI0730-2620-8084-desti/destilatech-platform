@@ -1,4 +1,5 @@
 using DestilatechPlatform.API.AnalyticsEstimations.Domain.Model.ValueObjects;
+using DestilatechPlatform.API.Shared.Domain.Model.Aggregates.Internal;
 
 namespace DestilatechPlatform.API.AnalyticsEstimations.Domain.Model.Aggregates;
 
@@ -11,7 +12,7 @@ namespace DestilatechPlatform.API.AnalyticsEstimations.Domain.Model.Aggregates;
 /// and waste in the last <see cref="AnalysisWindowDays"/> days and needs at least
 /// <see cref="MinExitMovements"/> of them to give an estimate.
 /// </remarks>
-public partial class ReplenishmentEstimate
+public partial class ReplenishmentEstimate : AggregateRoot
 {
     public const int AnalysisWindowDays = 30;
     public const int CoverageDays = 30;

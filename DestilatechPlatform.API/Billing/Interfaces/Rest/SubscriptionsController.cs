@@ -15,21 +15,8 @@ namespace DestilatechPlatform.API.Billing.Interfaces.Rest;
 [Produces(MediaTypeNames.Application.Json)]
 [Tags("Available Subscription endpoints")]
 
-public class SubscriptionsController(
-    ISubscriptionQueryService subscriptionQueryService,
-    ISubscriptionCommandService subscriptionCommandService) : ControllerBase
+public class SubscriptionsController(ISubscriptionCommandService subscriptionCommandService) : ControllerBase
 {
-    [HttpGet]
-    [EndpointSummary("Get subscriptions by user id (most recent first)")]
-    [ProducesResponseType(typeof(IEnumerable<SubscriptionResource>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetSubscriptionsByUserId([FromQuery] int userId,
-        CancellationToken cancellationToken)
-    {
-        var subscriptions =
-            await subscriptionQueryService.Handle(new GetSubscriptionsByUserIdQuery(userId), cancellationToken);
-        return Ok(subscriptions.Select(SubscriptionResourceFromEntityAssembler.ToResourceFromEntity));
-    }
-
     [HttpPatch("{id:int}")]
     [EndpointSummary("Cancel a subscription")]
     [ProducesResponseType(typeof(SubscriptionResource), StatusCodes.Status200OK)]

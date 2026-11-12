@@ -1,3 +1,3 @@
 ﻿namespace DestilatechPlatform.API.Billing.Interfaces.Rest.Resources;
 
-public record CreateCheckoutSessionResource(int UserId, int PlanId);
+public record CreateCheckoutSessionResource(int TenantId, int PlanId);

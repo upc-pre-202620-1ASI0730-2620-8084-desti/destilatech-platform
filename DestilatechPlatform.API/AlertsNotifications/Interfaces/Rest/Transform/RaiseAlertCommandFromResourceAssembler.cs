@@ -15,7 +15,7 @@ public static class RaiseAlertCommandFromResourceAssembler
             : AlertValueAssembler.ToEnumFromValue<AlertSeverity>(resource.Severity);
 
         return new RaiseAlertCommand(
-            new AccountId(resource.AccountId),
+            new AccountId(resource.TenantId),
             AlertValueAssembler.ToEnumFromValue<AlertType>(resource.Type),
             new SourceId(resource.SourceId),
             new AlertMessage(resource.Message),

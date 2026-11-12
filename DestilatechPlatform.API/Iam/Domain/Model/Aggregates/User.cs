@@ -1,9 +1,9 @@
 ﻿using DestilatechPlatform.API.Iam.Domain.Model.ValueObjects;
-using DestilatechPlatform.API.Shared.Domain.Model.Entities;
+using DestilatechPlatform.API.Shared.Domain.Model.Aggregates.Internal;
 
 namespace DestilatechPlatform.API.Iam.Domain.Model.Aggregates;
 
-public class User : IAuditableEntity
+public partial class User : AggregateRoot
 {
     public const int TrialDays = 14;
 
@@ -50,8 +50,6 @@ public class User : IAuditableEntity
     public DateTimeOffset? AccessGrantedUntil { get; private set; }
 
     // Los llena el AuditableEntityInterceptor de tu Shared
-    public DateTimeOffset? CreatedAt { get; set; }
-    public DateTimeOffset? UpdatedAt { get; set; }
 
     public bool HasActiveAccess(DateTimeOffset now)
     {

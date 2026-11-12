@@ -1,3 +1,5 @@
 namespace DestilatechPlatform.API.InventoryStock.Interfaces.Rest.Resources;
 
-public record ConfigureLowStockThresholdResource(decimal LowStockThreshold);
+public record ConfigureLowStockThresholdResource(
+    int TenantId,
+    decimal LowStockThreshold);

@@ -1,9 +1,9 @@
 ﻿using DestilatechPlatform.API.Billing.Domain.Model.ValueObjects;
-using DestilatechPlatform.API.Shared.Domain.Model.Entities;
+using DestilatechPlatform.API.Shared.Domain.Model.Aggregates.Internal;
 
 namespace DestilatechPlatform.API.Billing.Domain.Model.Aggregates;
 
-public class Plan : IAuditableEntity
+public partial class Plan : AggregateRoot
 {
     // Requerido por EF Core
     protected Plan()
@@ -35,7 +35,4 @@ public class Plan : IAuditableEntity
     // Solo lectura: EF no la mapea porque no tiene setter
     public IReadOnlyList<string> FeatureKeys =>
         FeatureKeysCsv.Split(',', StringSplitOptions.RemoveEmptyEntries);
-
-    public DateTimeOffset? CreatedAt { get; set; }
-    public DateTimeOffset? UpdatedAt { get; set; }
 }

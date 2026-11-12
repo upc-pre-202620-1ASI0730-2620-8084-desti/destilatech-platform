@@ -1,8 +1,9 @@
 using DestilatechPlatform.API.InventoryStock.Domain.Model.Entities;
+using DestilatechPlatform.API.Shared.Domain.Model.Aggregates.Internal;
 
 namespace DestilatechPlatform.API.InventoryStock.Domain.Model.Aggregates;
 
-public sealed class StockItem
+public sealed partial class StockItem : AggregateRoot
 {
     public int Id { get; private set; }
     public int ProductId { get; private set; }

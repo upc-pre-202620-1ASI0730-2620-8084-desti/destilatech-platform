@@ -4,7 +4,7 @@ namespace DestilatechPlatform.API.OrdersReplenishment.Interfaces.Rest.Resources;
 /// Data to request a replenishment order. The account can come in the body or in the <c>userId</c> query parameter.
 /// </summary>
 public record CreateReplenishmentOrderResource(
-    int? UserId,
+    int TenantId,
     string SupplierName,
     string? SupplierContact,
     int ProductId,

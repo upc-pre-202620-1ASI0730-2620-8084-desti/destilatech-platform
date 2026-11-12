@@ -4,7 +4,7 @@ public record StockMovementResource(
     int Id,
     int StockItemId,
     int ProductId,
-    int UserId,
+    int TenantId,
     string Type,
     string Reason,
     decimal Quantity,

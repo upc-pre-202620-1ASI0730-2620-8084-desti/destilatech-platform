@@ -15,13 +15,13 @@ namespace DestilatechPlatform.API.Billing.Interfaces.Rest;
 public class PaymentsController(IPaymentQueryService paymentQueryService) : ControllerBase
 {
     [HttpGet]
-    [EndpointSummary("Get payments by user id or by reference (most recent first)")]
+    [EndpointSummary("Get a payment by its reference")]
     [ProducesResponseType(typeof(IEnumerable<PaymentResource>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetPayments([FromQuery] int? userId, [FromQuery] string? reference,
+    public async Task<IActionResult> GetPaymentsByReference([FromQuery] string? reference,
         CancellationToken cancellationToken)
     {
-        // Con ?reference= devuelve una lista de 0 o 1 elementos, como json-server
+        // Returns a list of 0 or 1 payments; the payments of a tenant are listed in TenantPaymentsController.
         if (!string.IsNullOrWhiteSpace(reference))
         {
             var payment = await paymentQueryService.Handle(new GetPaymentByReferenceQuery(reference),
@@ -31,14 +31,7 @@ public class PaymentsController(IPaymentQueryService paymentQueryService) : Cont
             return Ok(found);
         }
 
-        if (userId.HasValue)
-        {
-            var payments = await paymentQueryService.Handle(new GetPaymentsByUserIdQuery(userId.Value),
-                cancellationToken);
-            return Ok(payments.Select(PaymentResourceFromEntityAssembler.ToResourceFromEntity));
-        }
-
-        return Problem("Indica userId o reference.", statusCode: StatusCodes.Status400BadRequest,
+        return Problem("Indica reference.", statusCode: StatusCodes.Status400BadRequest,
             title: "Missing filter");
     }
 }

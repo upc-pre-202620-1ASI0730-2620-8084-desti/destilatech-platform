@@ -1,9 +1,9 @@
 ﻿using DestilatechPlatform.API.Billing.Domain.Model.ValueObjects;
-using DestilatechPlatform.API.Shared.Domain.Model.Entities;
+using DestilatechPlatform.API.Shared.Domain.Model.Aggregates.Internal;
 
 namespace DestilatechPlatform.API.Billing.Domain.Model.Aggregates;
 
-public class Payment : IAuditableEntity
+public partial class Payment : AggregateRoot
 {
     //Requerido porEF Core
     protected Payment()
@@ -42,7 +42,4 @@ public class Payment : IAuditableEntity
     public string? CardBrand { get; private set; }
     public string? CardLast4 { get; private set; }
     public DateTimeOffset PaidAt { get; private set; }
-
-    public DateTimeOffset? CreatedAt { get; set; }
-    public DateTimeOffset? UpdatedAt { get; set; }
 }
