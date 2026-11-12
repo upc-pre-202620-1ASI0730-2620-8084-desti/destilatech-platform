@@ -1,6 +1,7 @@
 using System.Globalization;
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Entities;
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.ValueObjects;
+using DestilatechPlatform.API.Shared.Domain.Model.Aggregates.Internal;
 
 namespace DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates;
 
@@ -8,7 +9,7 @@ namespace DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates;
 /// Order placed by a customer (US18, US19). It starts as Pending, moves forward one status
 /// at a time until Delivered, and can be cancelled while it is still open.
 /// </summary>
-public partial class Order
+public partial class Order : AggregateRoot
 {
     private const string CodePrefix = "#";
     private const int LastCodeBeforeFirstOrder = 1000;

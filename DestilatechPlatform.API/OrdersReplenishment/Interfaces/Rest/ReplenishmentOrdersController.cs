@@ -3,7 +3,6 @@ using DestilatechPlatform.API.OrdersReplenishment.Application.Services;
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Model;
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates;
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Commands;
-using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Queries;
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.ValueObjects;
 using DestilatechPlatform.API.OrdersReplenishment.Interfaces.Rest.Resources;
 using DestilatechPlatform.API.OrdersReplenishment.Interfaces.Rest.Transform;
@@ -20,62 +19,27 @@ namespace DestilatechPlatform.API.OrdersReplenishment.Interfaces.Rest;
 [Produces(MediaTypeNames.Application.Json)]
 [Tags("Replenishment Orders")]
 public class ReplenishmentOrdersController(
-    IReplenishmentOrderCommandService replenishmentOrderCommandService,
-    IReplenishmentOrderQueryService replenishmentOrderQueryService) : ControllerBase
+    IReplenishmentOrderCommandService replenishmentOrderCommandService) : ControllerBase
 {
-    [HttpGet]
-    [EndpointSummary("List the replenishment orders of an account")]
-    [EndpointDescription("Returns the replenishment orders of the account, newest first.")]
-    [ProducesResponseType(typeof(IEnumerable<ReplenishmentOrderResource>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> GetReplenishmentOrders([FromQuery] int userId, CancellationToken cancellationToken)
-    {
-        if (userId <= 0)
-        {
-            return UserIdRequired();
-        }
-
-        var replenishmentOrders = await replenishmentOrderQueryService.Handle(
-            new GetAllReplenishmentOrdersByUserIdQuery(userId), cancellationToken);
-        return Ok(replenishmentOrders.Select(ReplenishmentOrderResourceFromEntityAssembler.ToResourceFromEntity));
-    }
-
-    [HttpGet("{id:int}")]
-    [EndpointSummary("Get a replenishment order")]
-    [ProducesResponseType(typeof(ReplenishmentOrderResource), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> GetReplenishmentOrderById(int id, [FromQuery] int userId,
-        CancellationToken cancellationToken)
-    {
-        var replenishmentOrder = await replenishmentOrderQueryService.Handle(
-            new GetReplenishmentOrderByIdQuery(id, userId), cancellationToken);
-        if (replenishmentOrder is null)
-        {
-            return NotFound();
-        }
-
-        return Ok(ReplenishmentOrderResourceFromEntityAssembler.ToResourceFromEntity(replenishmentOrder));
-    }
-
     [HttpPost]
     [EndpointSummary("Request a replenishment order")]
     [EndpointDescription("Registers a replenishment order in REQUESTED status. The code is generated (RP-0001, RP-0002...).")]
     [ProducesResponseType(typeof(ReplenishmentOrderResource), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> RequestReplenishmentOrder([FromBody] CreateReplenishmentOrderResource resource,
-        [FromQuery] int userId = 0, CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default)
     {
-        var accountId = userId > 0 ? userId : resource.UserId ?? 0;
+        var accountId = resource.TenantId;
         if (accountId <= 0)
         {
-            return UserIdRequired();
+            return TenantIdRequired();
         }
 
         var command = RequestReplenishmentOrderCommandFromResourceAssembler.ToCommandFromResource(resource, accountId);
         var result = await replenishmentOrderCommandService.Handle(command, cancellationToken);
         return result.Match<ActionResult>(
-            replenishmentOrder => CreatedAtAction(nameof(GetReplenishmentOrderById),
-                new { id = replenishmentOrder.Id, userId = accountId },
+            replenishmentOrder => CreatedAtAction(nameof(TenantReplenishmentOrdersController.GetReplenishmentOrderById),
+                "TenantReplenishmentOrders", new { tenantId = accountId, replenishmentOrderId = replenishmentOrder.Id },
                 ReplenishmentOrderResourceFromEntityAssembler.ToResourceFromEntity(replenishmentOrder)),
             error => ActionResultFromOrdersReplenishmentErrorAssembler.ToActionResultFromError(error, this));
     }
@@ -88,12 +52,12 @@ public class ReplenishmentOrdersController(
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     public async Task<ActionResult> UpdateReplenishmentOrderStatus(int id,
-        [FromBody] UpdateReplenishmentOrderStatusResource resource, [FromQuery] int userId,
-        CancellationToken cancellationToken)
+        [FromBody] UpdateReplenishmentOrderStatusResource resource, CancellationToken cancellationToken)
     {
+        var userId = resource.TenantId;
         if (userId <= 0)
         {
-            return UserIdRequired();
+            return TenantIdRequired();
         }
 
         ReplenishmentStatus requestedStatus;
@@ -121,9 +85,9 @@ public class ReplenishmentOrdersController(
             error => ActionResultFromOrdersReplenishmentErrorAssembler.ToActionResultFromError(error, this));
     }
 
-    private ActionResult UserIdRequired()
+    private ActionResult TenantIdRequired()
     {
         return ActionResultFromOrdersReplenishmentErrorAssembler.ToActionResultFromError(
-            OrdersReplenishmentError.InvalidData("The userId of the account is required."), this);
+            OrdersReplenishmentError.InvalidData("The tenantId is required."), this);
     }
 }

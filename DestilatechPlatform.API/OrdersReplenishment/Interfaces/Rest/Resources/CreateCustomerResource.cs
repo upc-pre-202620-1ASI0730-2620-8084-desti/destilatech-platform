@@ -4,7 +4,7 @@ namespace DestilatechPlatform.API.OrdersReplenishment.Interfaces.Rest.Resources;
 /// Data to register a customer. The account can come in the body or in the <c>userId</c> query parameter.
 /// </summary>
 public record CreateCustomerResource(
-    int? UserId,
+    int TenantId,
     string Name,
     string? ContactName,
     string? Phone,

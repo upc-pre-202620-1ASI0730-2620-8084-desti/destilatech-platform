@@ -2,7 +2,7 @@ namespace DestilatechPlatform.API.InventoryStock.Interfaces.Rest.Resources;
 
 public record ProductResource(
     int Id,
-    int UserId,
+    int TenantId,
     string Name,
     string Presentation,
     string Unit,

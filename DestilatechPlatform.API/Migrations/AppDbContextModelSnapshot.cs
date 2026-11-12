@@ -440,6 +440,10 @@ namespace DestilatechPlatform.API.Migrations
                         .HasColumnType("varchar(80)")
                         .HasColumnName("category");
 
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("tinyint(1)")
                         .HasColumnName("is_active");
@@ -473,6 +477,10 @@ namespace DestilatechPlatform.API.Migrations
                         .HasColumnType("decimal(12,2)")
                         .HasColumnName("unit_price");
 
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int")
                         .HasColumnName("user_id");
@@ -493,6 +501,10 @@ namespace DestilatechPlatform.API.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id");
 
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
                     b.Property<decimal>("CurrentQuantity")
                         .HasPrecision(12, 3)
                         .HasColumnType("decimal(12,3)")
@@ -506,6 +518,10 @@ namespace DestilatechPlatform.API.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int")
                         .HasColumnName("product_id");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int")
@@ -535,6 +551,10 @@ namespace DestilatechPlatform.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("id");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
 
                     b.Property<DateTime>("MovementDate")
                         .HasColumnType("datetime(6)")
@@ -576,6 +596,10 @@ namespace DestilatechPlatform.API.Migrations
                         .HasMaxLength(8)
                         .HasColumnType("varchar(8)")
                         .HasColumnName("type");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int")
@@ -856,6 +880,10 @@ namespace DestilatechPlatform.API.Migrations
                         .HasColumnType("int")
                         .HasColumnName("batch_id");
 
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
                     b.Property<decimal>("MaxRange")
                         .HasPrecision(9, 4)
                         .HasColumnType("decimal(9,4)")
@@ -876,6 +904,10 @@ namespace DestilatechPlatform.API.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("varchar(20)")
                         .HasColumnName("type");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int")
@@ -915,6 +947,10 @@ namespace DestilatechPlatform.API.Migrations
                         .HasColumnType("varchar(80)")
                         .HasColumnName("code");
 
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
                     b.Property<decimal>("EstimatedQuantity")
                         .HasPrecision(12, 3)
                         .HasColumnType("decimal(12,3)")
@@ -945,6 +981,10 @@ namespace DestilatechPlatform.API.Migrations
                         .HasMaxLength(80)
                         .HasColumnType("varchar(80)")
                         .HasColumnName("tank");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int")
@@ -1018,6 +1058,10 @@ namespace DestilatechPlatform.API.Migrations
                         .HasColumnType("int")
                         .HasColumnName("batch_id");
 
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
                     b.Property<int>("ProcessVariableId")
                         .HasColumnType("int")
                         .HasColumnName("process_variable_id");
@@ -1030,6 +1074,10 @@ namespace DestilatechPlatform.API.Migrations
                         .HasMaxLength(80)
                         .HasColumnType("varchar(80)")
                         .HasColumnName("source_key");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int")

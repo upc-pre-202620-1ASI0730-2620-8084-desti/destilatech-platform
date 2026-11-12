@@ -4,7 +4,7 @@ public record SensorReadingResource(
     int Id,
     int ProcessVariableId,
     int BatchId,
-    int UserId,
+    int TenantId,
     decimal Value,
     string? SourceKey,
     bool WithinRange,

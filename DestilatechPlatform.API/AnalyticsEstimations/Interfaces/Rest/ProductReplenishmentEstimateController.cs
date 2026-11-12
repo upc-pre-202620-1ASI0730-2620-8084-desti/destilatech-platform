@@ -12,7 +12,7 @@ namespace DestilatechPlatform.API.AnalyticsEstimations.Interfaces.Rest;
 /// Replenishment estimate of one product (US29).
 /// </summary>
 [ApiController]
-[Route("api/v1/products/{productId:int}/replenishment-estimate")]
+[Route("api/v1/tenants/{tenantId:int}/products/{productId:int}/replenishment-estimate")]
 [Produces(MediaTypeNames.Application.Json)]
 [Tags("Replenishment Estimates")]
 public class ProductReplenishmentEstimateController(
@@ -25,17 +25,11 @@ public class ProductReplenishmentEstimateController(
     [ProducesResponseType(typeof(ReplenishmentEstimateResource), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> GetReplenishmentEstimate(int productId, [FromQuery] int userId,
+    public async Task<ActionResult> GetReplenishmentEstimate(int tenantId, int productId,
         CancellationToken cancellationToken)
     {
-        if (userId <= 0)
-        {
-            return ActionResultFromAnalyticsEstimationsErrorAssembler.ToActionResultFromError(
-                AnalyticsEstimationsError.InvalidData("The userId of the account is required."), this);
-        }
-
         var result = await replenishmentEstimateCommandService.Handle(
-            new CalculateReplenishmentEstimateCommand(userId, productId), cancellationToken);
+            new CalculateReplenishmentEstimateCommand(tenantId, productId), cancellationToken);
         return result.Match<ActionResult>(
             estimate => Ok(ReplenishmentEstimateResourceFromEntityAssembler.ToResourceFromEntity(estimate)),
             error => ActionResultFromAnalyticsEstimationsErrorAssembler.ToActionResultFromError(error, this));

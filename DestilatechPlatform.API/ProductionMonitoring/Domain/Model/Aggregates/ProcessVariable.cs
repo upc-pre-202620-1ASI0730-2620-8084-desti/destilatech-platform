@@ -1,6 +1,8 @@
+using DestilatechPlatform.API.Shared.Domain.Model.Aggregates.Internal;
+
 namespace DestilatechPlatform.API.ProductionMonitoring.Domain.Model.Aggregates;
 
-public sealed class ProcessVariable
+public sealed partial class ProcessVariable : AggregateRoot
 {
     public int Id { get; private set; }
     public int UserId { get; private set; }

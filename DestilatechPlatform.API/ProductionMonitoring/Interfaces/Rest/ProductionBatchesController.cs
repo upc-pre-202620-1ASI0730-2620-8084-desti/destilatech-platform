@@ -1,46 +1,36 @@
 using System.Net.Mime;
 using DestilatechPlatform.API.ProductionMonitoring.Application.Services;
 using DestilatechPlatform.API.ProductionMonitoring.Domain.Model;
-using DestilatechPlatform.API.ProductionMonitoring.Domain.Model.Queries;
 using DestilatechPlatform.API.ProductionMonitoring.Interfaces.Rest.Resources;
 using DestilatechPlatform.API.ProductionMonitoring.Interfaces.Rest.Transform;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DestilatechPlatform.API.ProductionMonitoring.Interfaces.Rest;
 
+/// <summary>
+/// Write endpoints of the production batches. The tenant travels in the request body; the batches of a tenant
+/// and their readings are listed in <see cref="TenantProductionBatchesController"/>.
+/// </summary>
 [ApiController]
 [Route("api/v1/batches")]
 [Produces(MediaTypeNames.Application.Json)]
 [Tags("Production")]
 public class ProductionBatchesController(
     IProductionBatchCommandService productionBatchCommandService,
-    IProcessMonitoringCommandService processMonitoringCommandService,
-    IProductionQueryService productionQueryService) : ControllerBase
+    IProcessMonitoringCommandService processMonitoringCommandService) : ControllerBase
 {
-    [HttpGet]
-    [EndpointSummary("List the batches of an account")]
-    [ProducesResponseType(typeof(IEnumerable<ProductionBatchResource>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> GetBatches([FromQuery] int userId, CancellationToken cancellationToken)
-    {
-        if (userId <= 0) return UserIdRequired();
-
-        var batches = await productionQueryService.Handle(new GetAllProductionBatchesByUserIdQuery(userId),
-            cancellationToken);
-        return Ok(batches.Select(ProductionBatchResourceFromEntityAssembler.ToResourceFromEntity));
-    }
-
     [HttpPost]
     [EndpointSummary("Register a batch")]
     [ProducesResponseType(typeof(ProductionBatchResource), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
-    public async Task<ActionResult> CreateBatch([FromQuery] int userId,
-        [FromBody] CreateProductionBatchResource resource, CancellationToken cancellationToken)
+    public async Task<ActionResult> CreateBatch([FromBody] CreateProductionBatchResource resource,
+        CancellationToken cancellationToken)
     {
-        if (userId <= 0) return UserIdRequired();
+        if (resource.TenantId <= 0) return TenantIdRequired();
 
-        var command = CreateProductionBatchCommandFromResourceAssembler.ToCommandFromResource(resource, userId);
+        var command = CreateProductionBatchCommandFromResourceAssembler.ToCommandFromResource(resource,
+            resource.TenantId);
         var result = await productionBatchCommandService.Handle(command, cancellationToken);
         return result.Match<ActionResult>(
             batch => StatusCode(StatusCodes.Status201Created,
@@ -55,13 +45,13 @@ public class ProductionBatchesController(
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status422UnprocessableEntity)]
-    public async Task<ActionResult> UpdateBatch(int id, [FromQuery] int userId,
-        [FromBody] UpdateProductionBatchResource resource, CancellationToken cancellationToken)
+    public async Task<ActionResult> UpdateBatch(int id, [FromBody] UpdateProductionBatchResource resource,
+        CancellationToken cancellationToken)
     {
-        if (userId <= 0) return UserIdRequired();
+        if (resource.TenantId <= 0) return TenantIdRequired();
 
-        var command = UpdateProductionBatchCommandFromResourceAssembler.ToCommandFromResource(resource, id, userId);
+        var command = UpdateProductionBatchCommandFromResourceAssembler.ToCommandFromResource(resource, id,
+            resource.TenantId);
         var result = await productionBatchCommandService.Handle(command, cancellationToken);
         return result.Match<ActionResult>(
             batch => Ok(ProductionBatchResourceFromEntityAssembler.ToResourceFromEntity(batch)),
@@ -75,33 +65,16 @@ public class ProductionBatchesController(
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status422UnprocessableEntity)]
-    public async Task<ActionResult> AdvanceBatchStage(int id, [FromQuery] int userId,
-        [FromBody] UpdateBatchStatusResource resource, CancellationToken cancellationToken)
+    public async Task<ActionResult> AdvanceBatchStage(int id, [FromBody] UpdateBatchStatusResource resource,
+        CancellationToken cancellationToken)
     {
-        if (userId <= 0) return UserIdRequired();
+        if (resource.TenantId <= 0) return TenantIdRequired();
 
-        var command = AdvanceBatchStageCommandFromResourceAssembler.ToCommandFromResource(resource, id, userId);
+        var command = AdvanceBatchStageCommandFromResourceAssembler.ToCommandFromResource(resource, id,
+            resource.TenantId);
         var result = await productionBatchCommandService.Handle(command, cancellationToken);
         return result.Match<ActionResult>(
             batch => Ok(ProductionBatchResourceFromEntityAssembler.ToResourceFromEntity(batch)),
-            error => ActionResultFromProductionMonitoringErrorAssembler.ToActionResultFromError(error, this));
-    }
-
-    [HttpGet("{id:int}/readings")]
-    [EndpointSummary("List the readings of a batch")]
-    [ProducesResponseType(typeof(IEnumerable<SensorReadingResource>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> GetBatchReadings(int id, [FromQuery] int userId, [FromQuery] string? variable,
-        [FromQuery] DateTimeOffset? from, [FromQuery] DateTimeOffset? to, CancellationToken cancellationToken)
-    {
-        if (userId <= 0) return UserIdRequired();
-
-        var result = await productionQueryService.Handle(new GetBatchSensorReadingsQuery(userId, id, variable, from, to),
-            cancellationToken);
-        return result.Match<ActionResult>(
-            readings => Ok(readings.Select(SensorReadingResourceFromEntityAssembler.ToResourceFromEntity)),
             error => ActionResultFromProductionMonitoringErrorAssembler.ToActionResultFromError(error, this));
     }
 
@@ -113,16 +86,17 @@ public class ProductionBatchesController(
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
-    public async Task<ActionResult> IngestBatchReading(int id, [FromQuery] int userId,
-        [FromBody] IngestBatchReadingResource resource, CancellationToken cancellationToken)
+    public async Task<ActionResult> IngestBatchReading(int id, [FromBody] IngestBatchReadingResource resource,
+        CancellationToken cancellationToken)
     {
-        if (userId <= 0) return UserIdRequired();
+        if (resource.TenantId <= 0) return TenantIdRequired();
 
         if (string.IsNullOrWhiteSpace(resource.SourceId) || string.IsNullOrWhiteSpace(resource.SourceKey))
             return ActionResultFromProductionMonitoringErrorAssembler.ToActionResultFromError(
                 ProductionMonitoringError.SourceRequired(), this);
 
-        var command = RecordSensorReadingCommandFromResourceAssembler.ToCommandFromResource(resource, id, userId);
+        var command = RecordSensorReadingCommandFromResourceAssembler.ToCommandFromResource(resource, id,
+            resource.TenantId);
         var result = await processMonitoringCommandService.Handle(command, cancellationToken);
         return result.Match<ActionResult>(
             recorded => StatusCode(recorded.Replayed ? StatusCodes.Status200OK : StatusCodes.Status201Created,
@@ -130,9 +104,9 @@ public class ProductionBatchesController(
             error => ActionResultFromProductionMonitoringErrorAssembler.ToActionResultFromError(error, this));
     }
 
-    private ActionResult UserIdRequired()
+    private ActionResult TenantIdRequired()
     {
         return ActionResultFromProductionMonitoringErrorAssembler.ToActionResultFromError(
-            ProductionMonitoringError.InvalidData("The userId of the account is required."), this);
+            ProductionMonitoringError.InvalidData("The tenantId is required."), this);
     }
 }

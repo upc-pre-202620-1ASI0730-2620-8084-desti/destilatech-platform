@@ -1,6 +1,7 @@
 namespace DestilatechPlatform.API.InventoryStock.Interfaces.Rest.Resources;
 
 public record RegisterStockMovementResource(
+    int TenantId,
     int ProductId,
     string Type,
     string Reason,

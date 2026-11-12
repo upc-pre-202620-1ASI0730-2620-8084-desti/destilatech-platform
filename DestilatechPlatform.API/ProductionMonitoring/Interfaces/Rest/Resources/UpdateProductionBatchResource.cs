@@ -1,6 +1,7 @@
 namespace DestilatechPlatform.API.ProductionMonitoring.Interfaces.Rest.Resources;
 
 public record UpdateProductionBatchResource(
+    int TenantId,
     string Stage,
     string Variety,
     decimal EstimatedQuantity,

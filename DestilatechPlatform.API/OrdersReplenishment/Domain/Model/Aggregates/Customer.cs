@@ -1,5 +1,6 @@
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Commands;
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.ValueObjects;
+using DestilatechPlatform.API.Shared.Domain.Model.Aggregates.Internal;
 
 namespace DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates;
 
@@ -7,7 +8,7 @@ namespace DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates;
 /// Customer of a producer or trader (US17). A customer needs a name and at least
 /// a phone number or an email to be contacted.
 /// </summary>
-public partial class Customer
+public partial class Customer : AggregateRoot
 {
     public int Id { get; private set; }
 

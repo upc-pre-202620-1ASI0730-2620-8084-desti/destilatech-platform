@@ -48,39 +48,14 @@ public class AlertsController(
         }
         catch (ArgumentException ex)
         {
-            logger.LogWarning(ex, "Validation failed while raising an alert for account {AccountId}",
-                resource.AccountId);
+            logger.LogWarning(ex, "Validation failed while raising an alert for tenant {TenantId}",
+                resource.TenantId);
             return AlertsActionResultAssembler.ToProblemDetailsFromAlertsError(
                 this, AlertsError.InvalidAlertData, localizer, problemDetailsFactory);
         }
     }
     
-    [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<AlertResource>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetAlertsFromQuery([FromQuery] int accountId,
-        [FromQuery] string? type = null,
-        [FromQuery] string? status = null,
-        CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            var getAllAlertsByAccountIdQuery = new GetAllAlertsByAccountIdQuery(
-                new AccountId(accountId),
-                string.IsNullOrWhiteSpace(type) ? null : AlertValueAssembler.ToEnumFromValue<AlertType>(type),
-                string.IsNullOrWhiteSpace(status) ? null : AlertValueAssembler.ToEnumFromValue<AlertStatus>(status));
-            var result = await alertQueryService.Handle(getAllAlertsByAccountIdQuery, cancellationToken);
-            var resources = result.Select(AlertResourceFromEntityAssembler.ToResourceFromEntity);
-            return Ok(resources);
-        }
-        catch (ArgumentException ex)
-        {
-            logger.LogWarning(ex, "Validation failed while querying alerts for account {AccountId}", accountId);
-            return problemDetailsFactory.CreateProblemDetails(this, StatusCodes.Status400BadRequest,
-                AlertsError.InvalidAlertData, localizer["InvalidAlertQuery"].Value);
-        }
-    }
-    
+   
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(AlertResource), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
