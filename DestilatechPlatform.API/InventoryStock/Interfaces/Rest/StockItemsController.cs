@@ -1,34 +1,22 @@
 using System.Net.Mime;
 using DestilatechPlatform.API.InventoryStock.Application.Services;
 using DestilatechPlatform.API.InventoryStock.Domain.Model;
-using DestilatechPlatform.API.InventoryStock.Domain.Model.Queries;
 using DestilatechPlatform.API.InventoryStock.Interfaces.Rest.Resources;
 using DestilatechPlatform.API.InventoryStock.Interfaces.Rest.Transform;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DestilatechPlatform.API.InventoryStock.Interfaces.Rest;
 
+/// <summary>
+/// Write endpoints of the stock items. The stock items of a tenant are listed in
+/// <see cref="TenantStockItemsController"/>.
+/// </summary>
 [ApiController]
 [Route("api/v1/stock-items")]
 [Produces(MediaTypeNames.Application.Json)]
 [Tags("Inventory")]
-public class StockItemsController(
-    IStockItemCommandService stockItemCommandService,
-    IInventoryQueryService inventoryQueryService) : ControllerBase
+public class StockItemsController(IStockItemCommandService stockItemCommandService) : ControllerBase
 {
-    [HttpGet]
-    [EndpointSummary("List the stock items of an account")]
-    [ProducesResponseType(typeof(IEnumerable<StockItemResource>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> GetStockItems([FromQuery] int userId, CancellationToken cancellationToken)
-    {
-        if (userId <= 0) return UserIdRequired();
-
-        var stockItems = await inventoryQueryService.Handle(new GetAllStockItemsByUserIdQuery(userId),
-            cancellationToken);
-        return Ok(stockItems.Select(StockItemResourceFromEntityAssembler.ToResourceFromEntity));
-    }
-
     [HttpPatch("{id:int}")]
     [EndpointSummary("Configure the low stock threshold")]
     [EndpointDescription("Updates the threshold and raises a low stock alert if the stock is at or below it.")]
@@ -36,21 +24,18 @@ public class StockItemsController(
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
-    public async Task<ActionResult> ConfigureLowStockThreshold(int id, [FromQuery] int userId,
+    public async Task<ActionResult> ConfigureLowStockThreshold(int id,
         [FromBody] ConfigureLowStockThresholdResource resource, CancellationToken cancellationToken)
     {
-        if (userId <= 0) return UserIdRequired();
+        if (resource.TenantId <= 0)
+            return ActionResultFromInventoryStockErrorAssembler.ToActionResultFromError(
+                InventoryStockError.InvalidData("The tenantId is required."), this);
 
-        var command = ConfigureLowStockThresholdCommandFromResourceAssembler.ToCommandFromResource(resource, id, userId);
+        var command = ConfigureLowStockThresholdCommandFromResourceAssembler.ToCommandFromResource(resource, id,
+            resource.TenantId);
         var result = await stockItemCommandService.Handle(command, cancellationToken);
         return result.Match<ActionResult>(
             stockItem => Ok(StockItemResourceFromEntityAssembler.ToResourceFromEntity(stockItem)),
             error => ActionResultFromInventoryStockErrorAssembler.ToActionResultFromError(error, this));
-    }
-
-    private ActionResult UserIdRequired()
-    {
-        return ActionResultFromInventoryStockErrorAssembler.ToActionResultFromError(
-            InventoryStockError.InvalidData("The userId of the account is required."), this);
     }
 }
