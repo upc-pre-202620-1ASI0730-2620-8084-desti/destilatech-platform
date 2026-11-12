@@ -1,8 +1,9 @@
 using DestilatechPlatform.API.ProductionMonitoring.Domain.Model.Entities;
+using DestilatechPlatform.API.Shared.Domain.Model.Aggregates.Internal;
 
 namespace DestilatechPlatform.API.ProductionMonitoring.Domain.Model.Aggregates;
 
-public sealed class ProductionBatch
+public sealed partial class ProductionBatch : AggregateRoot
 {
     private readonly List<BatchStageChange> _stageHistory = [];
 

@@ -2,7 +2,7 @@ using DestilatechPlatform.API.ProductionMonitoring.Domain.Model.Aggregates;
 
 namespace DestilatechPlatform.API.ProductionMonitoring.Domain.Model.Entities;
 
-public sealed class SensorReading
+public sealed partial class SensorReading
 {
     public int Id { get; private set; }
     public int ProcessVariableId { get; private set; }
