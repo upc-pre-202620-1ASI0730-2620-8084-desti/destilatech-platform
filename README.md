@@ -26,17 +26,37 @@ IDE recomendado: **JetBrains Rider**.
 
 | Bounded context | Carpeta | Endpoints principales |
 | :--- | :--- | :--- |
-| Shared Kernel | `Shared/` | — (base repository, unit of work, `Result<T>`, errores, interceptores, mediator) |
+| Shared Kernel | `Shared/` | — (`AggregateRoot`, auditoría, base repository, unit of work, `Result<T>`, errores, interceptores, mediator) |
 | IAM | `Iam/` | `/api/v1/users` |
-| Billing | `Billing/` | `/api/v1/plans`, `/subscriptions`, `/payments`, `/checkout-sessions` |
-| Alerts & Notifications | `AlertsNotifications/` | `/api/v1/alerts` |
-| Inventory & Stock | `InventoryStock/` | `/api/v1/products`, `/stock-items`, `/stock-movements` |
-| Production & Monitoring | `ProductionMonitoring/` | `/api/v1/batches`, `/process-variables`, `/sensor-readings` |
-| Orders & Replenishment | `OrdersReplenishment/` | `/api/v1/customers`, `/orders`, `/replenishment-orders` |
-| Analytics & Estimations | `AnalyticsEstimations/` | `/api/v1/historical-indicators`, `/replenishment-estimates` |
+| Billing | `Billing/` | `/api/v1/plans`, `/checkout-sessions`, `/subscriptions/{id}`, `/tenants/{tenantId}/subscriptions`, `/tenants/{tenantId}/payments` |
+| Alerts & Notifications | `AlertsNotifications/` | `/api/v1/alerts`, `/tenants/{tenantId}/alerts` |
+| Inventory & Stock | `InventoryStock/` | `/api/v1/products`, `/stock-items`, `/stock-movements` y sus listas en `/tenants/{tenantId}/...` |
+| Production & Monitoring | `ProductionMonitoring/` | `/api/v1/batches`, `/process-variables`, `/sensor-readings` y sus listas en `/tenants/{tenantId}/...` |
+| Orders & Replenishment | `OrdersReplenishment/` | `/api/v1/customers`, `/orders`, `/replenishment-orders` y sus listas en `/tenants/{tenantId}/...` |
+| Analytics & Estimations | `AnalyticsEstimations/` | `/api/v1/tenants/{tenantId}/dashboard-summary`, `/historical-indicators`, `/replenishment-estimates` |
 
 Cada bounded context sigue las capas de Domain-Driven Design: `Domain` (aggregates, value objects, commands, queries,
 repositorios), `Application` (command y query services, ACL), `Infrastructure` (EF Core) e `Interfaces` (REST y ACL).
+
+### Rutas por tenant
+
+Cada cuenta (productor o comercializador) es un **tenant** y es dueña de sus datos. Igual que
+`/categories/{categoryId}/tutorials` en el Learning Center, los datos de un tenant se leen como sub-recursos suyos,
+sin filtros como `?userId=`:
+
+| Operación | Ruta | Dónde va el tenant |
+| :--- | :--- | :--- |
+| Listar o leer los datos de un tenant | `GET /api/v1/tenants/{tenantId}/products`, `/tenants/{tenantId}/sensor-readings`, `/tenants/{tenantId}/customers/{customerId}/orders`... (controllers `Tenant...Controller`) | En la ruta |
+| Crear o modificar | `POST /api/v1/products`, `PUT /products/{id}`, `PATCH /batches/{id}/status`... | En el cuerpo: `"tenantId": 1` |
+
+Los filtros propios de cada consulta siguen como query (`?days=30`, `?type=LOW_STOCK`, `?limit=100`).
+
+### Auditoría y eventos de dominio
+
+Todos los agregados heredan de `AggregateRoot` (eventos de dominio) e implementan `IAuditableEntity` en un archivo
+parcial `XxxAudit.cs` con `CreatedAt` y `UpdatedAt`. Dos interceptores de EF Core (`Shared/Infrastructure/Persistence/
+EntityFrameworkCore/Interceptors`) se encargan de ellos al guardar: `AuditableEntityInterceptor` llena las fechas y
+`DispatchDomainEventsInterceptor` publica los eventos registrados.
 
 ## Opción rápida: Docker (MySQL + API con un comando)
 
