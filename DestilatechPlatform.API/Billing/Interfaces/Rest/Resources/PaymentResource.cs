@@ -2,7 +2,7 @@
 
 public record PaymentResource(
     int Id,
-    int UserId,
+    int TenantId,
     int PlanId,
     decimal Amount,
     string Currency,
