@@ -24,40 +24,6 @@ public class OrdersController(
     IOrderCommandService orderCommandService,
     IOrderQueryService orderQueryService) : ControllerBase
 {
-    [HttpGet]
-    [EndpointSummary("List the orders of an account")]
-    [EndpointDescription("Returns the order history of the account, newest first. Use customerId to filter by customer.")]
-    [ProducesResponseType(typeof(IEnumerable<OrderResource>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> GetOrders([FromQuery] int userId, [FromQuery] int? customerId,
-        CancellationToken cancellationToken)
-    {
-        if (userId <= 0)
-        {
-            return UserIdRequired();
-        }
-
-        var orders = customerId is > 0
-            ? await orderQueryService.Handle(new GetOrdersByCustomerIdQuery(customerId.Value, userId), cancellationToken)
-            : await orderQueryService.Handle(new GetAllOrdersByUserIdQuery(userId), cancellationToken);
-        return Ok(orders.Select(OrderResourceFromEntityAssembler.ToResourceFromEntity));
-    }
-
-    [HttpGet("{id:int}")]
-    [EndpointSummary("Get an order")]
-    [ProducesResponseType(typeof(OrderResource), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> GetOrderById(int id, [FromQuery] int userId, CancellationToken cancellationToken)
-    {
-        var order = await orderQueryService.Handle(new GetOrderByIdQuery(id, userId), cancellationToken);
-        if (order is null)
-        {
-            return NotFound();
-        }
-
-        return Ok(OrderResourceFromEntityAssembler.ToResourceFromEntity(order));
-    }
-
     [HttpPost]
     [EndpointSummary("Register an order")]
     [EndpointDescription("Registers an order in PENDING status and discounts its products from stock. "
@@ -66,18 +32,19 @@ public class OrdersController(
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     public async Task<ActionResult> RegisterOrder([FromBody] CreateOrderResource resource,
-        [FromQuery] int userId = 0, CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default)
     {
-        var accountId = userId > 0 ? userId : resource.UserId ?? 0;
+        var accountId = resource.TenantId;
         if (accountId <= 0)
         {
-            return UserIdRequired();
+            return TenantIdRequired();
         }
 
         var command = RegisterOrderCommandFromResourceAssembler.ToCommandFromResource(resource, accountId);
         var result = await orderCommandService.Handle(command, cancellationToken);
         return result.Match<ActionResult>(
-            order => CreatedAtAction(nameof(GetOrderById), new { id = order.Id, userId = accountId },
+            order => CreatedAtAction(nameof(TenantOrdersController.GetOrderById), "TenantOrders",
+                new { tenantId = accountId, orderId = order.Id },
                 OrderResourceFromEntityAssembler.ToResourceFromEntity(order)),
             error => ActionResultFromOrdersReplenishmentErrorAssembler.ToActionResultFromError(error, this));
     }
@@ -91,11 +58,12 @@ public class OrdersController(
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     public async Task<ActionResult> UpdateOrderStatus(int id, [FromBody] UpdateOrderStatusResource resource,
-        [FromQuery] int userId, CancellationToken cancellationToken)
+        CancellationToken cancellationToken)
     {
+        var userId = resource.TenantId;
         if (userId <= 0)
         {
-            return UserIdRequired();
+            return TenantIdRequired();
         }
 
         OrderStatus requestedStatus;
@@ -149,9 +117,9 @@ public class OrdersController(
             error => ActionResultFromOrdersReplenishmentErrorAssembler.ToActionResultFromError(error, this));
     }
 
-    private ActionResult UserIdRequired()
+    private ActionResult TenantIdRequired()
     {
         return ActionResultFromOrdersReplenishmentErrorAssembler.ToActionResultFromError(
-            OrdersReplenishmentError.InvalidData("The userId of the account is required."), this);
+            OrdersReplenishmentError.InvalidData("The tenantId is required."), this);
     }
 }

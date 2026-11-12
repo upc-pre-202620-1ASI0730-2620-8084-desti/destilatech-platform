@@ -5,7 +5,7 @@ namespace DestilatechPlatform.API.OrdersReplenishment.Interfaces.Rest.Resources;
 /// </summary>
 public record ReplenishmentOrderResource(
     int Id,
-    int UserId,
+    int TenantId,
     string Code,
     string SupplierName,
     string SupplierContact,

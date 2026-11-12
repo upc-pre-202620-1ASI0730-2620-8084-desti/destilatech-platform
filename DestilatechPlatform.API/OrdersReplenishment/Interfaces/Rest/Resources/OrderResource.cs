@@ -6,7 +6,7 @@ namespace DestilatechPlatform.API.OrdersReplenishment.Interfaces.Rest.Resources;
 /// <param name="NextStatus">Status the order can advance to, or <c>null</c> when it is delivered or cancelled.</param>
 public record OrderResource(
     int Id,
-    int UserId,
+    int TenantId,
     string Code,
     int CustomerId,
     string CustomerName,

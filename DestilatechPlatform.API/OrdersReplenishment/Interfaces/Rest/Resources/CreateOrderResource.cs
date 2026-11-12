@@ -5,7 +5,7 @@ namespace DestilatechPlatform.API.OrdersReplenishment.Interfaces.Rest.Resources;
 /// the API generates the code and takes names and prices from the inventory.
 /// </summary>
 public record CreateOrderResource(
-    int? UserId,
+    int TenantId,
     int CustomerId,
     IReadOnlyCollection<CreateOrderLineResource>? Lines,
     string? Notes);
