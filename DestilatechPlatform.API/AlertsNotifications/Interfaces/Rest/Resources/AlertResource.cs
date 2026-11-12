@@ -2,7 +2,7 @@
 
 public record AlertResource(
     int Id,
-    int AccountId,
+    int TenantId,
     string Type,
     int SourceId,
     string Message,

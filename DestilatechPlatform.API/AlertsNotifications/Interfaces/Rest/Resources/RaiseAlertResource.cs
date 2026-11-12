@@ -4,7 +4,7 @@ namespace DestilatechPlatform.API.AlertsNotifications.Interfaces.Rest.Resources;
 
 public record RaiseAlertResource(
     [Range(1, int.MaxValue, ErrorMessage = "InvalidAlertAccountId")]
-    int AccountId,
+    int TenantId,
     [Required(ErrorMessage = "RequiredAlertType")]
     string Type,
     [Range(1, int.MaxValue, ErrorMessage = "InvalidAlertSourceId")]
