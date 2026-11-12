@@ -12,24 +12,20 @@ namespace DestilatechPlatform.API.AnalyticsEstimations.Interfaces.Rest;
 /// Dashboard summary for the web application (US65).
 /// </summary>
 [ApiController]
-[Route("api/v1/dashboard")]
+[Route("api/v1/tenants/{tenantId:int}/dashboard-summary")]
 [Produces(MediaTypeNames.Application.Json)]
 [Tags("Dashboard")]
 public class DashboardController(IDashboardQueryService dashboardQueryService) : ControllerBase
 {
-    [HttpGet("summary")]
-    [EndpointSummary("Get the dashboard summary of an account")]
+    [HttpGet]
+    [EndpointSummary("Get the dashboard summary by tenant id")]
     [EndpointDescription("Producer: active batches, pending alerts and inventory levels. Retailer: low stock products, pending alerts and recent orders.")]
     [ProducesResponseType(typeof(DashboardSummaryResource), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> GetDashboardSummary([FromQuery] int userId, CancellationToken cancellationToken)
+    public async Task<ActionResult> GetDashboardSummary(int tenantId, CancellationToken cancellationToken)
     {
-        if (userId <= 0)
-            return ActionResultFromAnalyticsEstimationsErrorAssembler.ToActionResultFromError(
-                AnalyticsEstimationsError.InvalidData("The userId of the account is required."), this);
-
-        var result = await dashboardQueryService.Handle(new GetDashboardSummaryQuery(userId), cancellationToken);
+        var result = await dashboardQueryService.Handle(new GetDashboardSummaryQuery(tenantId), cancellationToken);
         return result.Match<ActionResult>(
             summary => Ok(DashboardSummaryResourceFromValueAssembler.ToResourceFromValue(summary)),
             error => ActionResultFromAnalyticsEstimationsErrorAssembler.ToActionResultFromError(error, this));
