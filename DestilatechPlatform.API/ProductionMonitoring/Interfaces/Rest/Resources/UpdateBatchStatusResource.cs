@@ -1,6 +1,7 @@
 namespace DestilatechPlatform.API.ProductionMonitoring.Interfaces.Rest.Resources;
 
 public record UpdateBatchStatusResource(
+    int TenantId,
     string Stage,
     string? Notes,
     int? ProductId,

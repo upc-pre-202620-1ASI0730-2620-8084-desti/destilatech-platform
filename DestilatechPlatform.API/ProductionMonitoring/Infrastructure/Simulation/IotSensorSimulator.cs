@@ -52,9 +52,9 @@ public class IotSensorSimulator(
     private async Task SendRoundAsync(HttpClient client, Random random, CancellationToken cancellationToken)
     {
         var batches = await client.GetFromJsonAsync<List<SimulatedBatch>>(
-            $"batches?userId={_options.UserId}", JsonOptions, cancellationToken) ?? [];
+            $"tenants/{_options.UserId}/batches", JsonOptions, cancellationToken) ?? [];
         var variables = await client.GetFromJsonAsync<List<SimulatedVariable>>(
-            $"process-variables?userId={_options.UserId}", JsonOptions, cancellationToken) ?? [];
+            $"tenants/{_options.UserId}/process-variables", JsonOptions, cancellationToken) ?? [];
 
         var monitoredBatchIds = batches
             .Where(batch => MonitoredStages.Contains(batch.Stage))
@@ -68,7 +68,7 @@ public class IotSensorSimulator(
 
         foreach (var variable in targets)
         {
-            var reading = new SimulatedReading(variable.SensorId!, $"sim-{variable.Id}-{DateTime.UtcNow:yyyyMMddHHmmss}",
+            var reading = new SimulatedReading(_options.UserId, variable.SensorId!, $"sim-{variable.Id}-{DateTime.UtcNow:yyyyMMddHHmmss}",
                 NextValue(variable, random), DateTimeOffset.UtcNow);
             await SendWithRetryAsync(client, variable.BatchId, reading, cancellationToken);
         }
@@ -81,7 +81,7 @@ public class IotSensorSimulator(
         {
             try
             {
-                var response = await client.PostAsJsonAsync($"batches/{batchId}/readings?userId={_options.UserId}",
+                var response = await client.PostAsJsonAsync($"batches/{batchId}/readings",
                     reading, JsonOptions, cancellationToken);
                 if (response.IsSuccessStatusCode)
                 {
@@ -131,6 +131,7 @@ public class IotSensorSimulator(
         string? SensorId);
 
     private record SimulatedReading(
+        [property: JsonPropertyName("tenant_id")] int TenantId,
         [property: JsonPropertyName("source_id")] string SourceId,
         [property: JsonPropertyName("source_key")] string SourceKey,
         decimal Value,
