@@ -1,6 +1,7 @@
 using System.Globalization;
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Commands;
 using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.ValueObjects;
+using DestilatechPlatform.API.Shared.Domain.Model.Aggregates.Internal;
 
 namespace DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates;
 
@@ -8,7 +9,7 @@ namespace DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Aggregates;
 /// Order placed with a supplier to replenish a product. When it is received,
 /// its units are added to stock.
 /// </summary>
-public partial class ReplenishmentOrder
+public partial class ReplenishmentOrder : AggregateRoot
 {
     private const string CodePrefix = "RP-";
 
