@@ -1,10 +1,11 @@
-﻿using DestilatechPlatform.API.Iam.Domain.Model.ValueObjects;
+﻿using DestilatechPlatform.API.Iam.Application.Internal.OutboundServices;
+using DestilatechPlatform.API.Iam.Domain.Model.ValueObjects;
 using DestilatechPlatform.API.Iam.Domain.Repositories;
 using DestilatechPlatform.API.Iam.Interfaces.Acl;
 
 namespace DestilatechPlatform.API.Iam.Application.Acl;
 
-public class IamContextFacade(IUserRepository userRepository) : IIamContextFacade
+public class IamContextFacade(IUserRepository userRepository, ITokenService tokenService) : IIamContextFacade
 {
     public async Task<bool> UserExistsAsync(int userId, CancellationToken cancellationToken = default)
     {
@@ -32,5 +33,11 @@ public class IamContextFacade(IUserRepository userRepository) : IIamContextFacad
             EBusinessType.Retailer => "RETAILER",
             _ => null
         };
+    }
+
+    public async Task<string?> IssueAccessTokenAsync(int userId, CancellationToken cancellationToken = default)
+    {
+        var user = await userRepository.FindByIdAsync(userId, cancellationToken);
+        return user is null ? null : tokenService.GenerateToken(user).Value;
     }
 }
