@@ -4,6 +4,7 @@ using DestilatechPlatform.API.InventoryStock.Domain.Model;
 using DestilatechPlatform.API.InventoryStock.Interfaces.Rest.Resources;
 using DestilatechPlatform.API.InventoryStock.Interfaces.Rest.Transform;
 using Microsoft.AspNetCore.Mvc;
+using DestilatechPlatform.API.Iam.Infrastructure.Pipeline.Middleware.Attributes;
 
 namespace DestilatechPlatform.API.InventoryStock.Interfaces.Rest;
 
@@ -11,6 +12,7 @@ namespace DestilatechPlatform.API.InventoryStock.Interfaces.Rest;
 /// Write endpoints of the stock items. The stock items of a tenant are listed in
 /// <see cref="TenantStockItemsController"/>.
 /// </summary>
+[Authorize]
 [ApiController]
 [Route("api/v1/stock-items")]
 [Produces(MediaTypeNames.Application.Json)]
