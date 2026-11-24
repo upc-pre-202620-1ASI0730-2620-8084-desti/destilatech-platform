@@ -6,4 +6,6 @@ namespace DestilatechPlatform.API.Iam.Domain.Repositories;
 public interface IUserRepository : IBaseRepository<User>
 {
     Task<bool> ExistsByEmailAsync(string email, CancellationToken cancellationToken = default);
+
+    Task<User?> FindByEmailAsync(string email, CancellationToken cancellationToken = default);
 }

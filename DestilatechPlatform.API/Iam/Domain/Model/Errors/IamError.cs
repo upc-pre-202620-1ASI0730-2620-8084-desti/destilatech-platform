@@ -4,5 +4,7 @@ public enum IamError
 {
     InvalidData,
     EmailAlreadyExists,
-    UserNotFound
+    UserNotFound,
+    WeakPassword,
+    InvalidCredentials
 }

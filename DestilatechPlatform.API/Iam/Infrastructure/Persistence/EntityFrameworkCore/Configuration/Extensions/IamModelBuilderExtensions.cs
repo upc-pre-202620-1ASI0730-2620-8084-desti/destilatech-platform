@@ -14,6 +14,7 @@ public static class IamModelBuilderExtensions
             entity.Property(u => u.FullName).IsRequired().HasMaxLength(120);
             entity.Property(u => u.Email).IsRequired().HasMaxLength(180);
             entity.HasIndex(u => u.Email).IsUnique();
+            entity.Property(u => u.PasswordHash).IsRequired().HasMaxLength(100);
             entity.Property(u => u.BusinessName).IsRequired().HasMaxLength(150);
             entity.Property(u => u.BusinessType).HasConversion<string>().HasMaxLength(20).IsRequired();
             entity.Property(u => u.PreferredPlanCode).HasMaxLength(50);
