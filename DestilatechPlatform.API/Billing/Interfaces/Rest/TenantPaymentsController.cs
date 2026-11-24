@@ -4,12 +4,14 @@ using DestilatechPlatform.API.Billing.Domain.Model.Queries;
 using DestilatechPlatform.API.Billing.Interfaces.Rest.Resources;
 using DestilatechPlatform.API.Billing.Interfaces.Rest.Transform;
 using Microsoft.AspNetCore.Mvc;
+using DestilatechPlatform.API.Iam.Infrastructure.Pipeline.Middleware.Attributes;
 
 namespace DestilatechPlatform.API.Billing.Interfaces.Rest;
 
 /// <summary>
 /// Payments of a tenant, as a sub-resource of the tenant: <c>/api/v1/tenants/{tenantId}/payments</c>.
 /// </summary>
+[Authorize]
 [ApiController]
 [Route("api/v1/tenants/{tenantId:int}/payments")]
 [Produces(MediaTypeNames.Application.Json)]
