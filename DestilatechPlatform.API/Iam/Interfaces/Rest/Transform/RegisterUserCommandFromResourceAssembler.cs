@@ -10,6 +10,7 @@ public static class RegisterUserCommandFromResourceAssembler
         return new RegisterUserCommand(
             resource.FullName ?? string.Empty,
             resource.Email ?? string.Empty,
+            resource.Password ?? string.Empty,
             resource.BusinessName ?? string.Empty,
             resource.BusinessType ?? string.Empty,
             resource.PreferredPlanCode);

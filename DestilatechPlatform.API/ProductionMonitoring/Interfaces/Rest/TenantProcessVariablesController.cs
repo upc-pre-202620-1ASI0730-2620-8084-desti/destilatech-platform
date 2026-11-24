@@ -4,6 +4,7 @@ using DestilatechPlatform.API.ProductionMonitoring.Domain.Model.Queries;
 using DestilatechPlatform.API.ProductionMonitoring.Interfaces.Rest.Resources;
 using DestilatechPlatform.API.ProductionMonitoring.Interfaces.Rest.Transform;
 using Microsoft.AspNetCore.Mvc;
+using DestilatechPlatform.API.Iam.Infrastructure.Pipeline.Middleware.Attributes;
 
 namespace DestilatechPlatform.API.ProductionMonitoring.Interfaces.Rest;
 
@@ -11,6 +12,7 @@ namespace DestilatechPlatform.API.ProductionMonitoring.Interfaces.Rest;
 /// Process variables of a tenant, as a sub-resource of the tenant:
 /// <c>/api/v1/tenants/{tenantId}/process-variables</c>.
 /// </summary>
+[Authorize]
 [ApiController]
 [Route("api/v1/tenants/{tenantId:int}/process-variables")]
 [Produces(MediaTypeNames.Application.Json)]

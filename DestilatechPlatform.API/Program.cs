@@ -38,6 +38,13 @@ using DestilatechPlatform.API.Iam.Interfaces.Acl;
 using DestilatechPlatform.API.Iam.Domain.Repositories;
 using DestilatechPlatform.API.Iam.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 using DestilatechPlatform.API.Iam.Infrastructure.Persistence.EntityFrameworkCore.Seeding;
+using DestilatechPlatform.API.Iam.Application.Internal.OutboundServices;
+using DestilatechPlatform.API.Iam.Infrastructure.Hashing.BCrypt.Services;
+using DestilatechPlatform.API.Iam.Infrastructure.Pipeline.Middleware.Extensions;
+using DestilatechPlatform.API.Iam.Infrastructure.Pipeline.Middleware.Filters;
+using DestilatechPlatform.API.Iam.Infrastructure.Tokens.Jwt.Configuration;
+using DestilatechPlatform.API.Iam.Infrastructure.Tokens.Jwt.Services;
+using DestilatechPlatform.API.Shared.Infrastructure.Interfaces.Asp.OpenApi;
 
 using DestilatechPlatform.API.Billing.Application.CommandServices;
 using DestilatechPlatform.API.Billing.Application.Internal.CommandServices;
@@ -80,7 +87,12 @@ builder.Services.AddLocalization();
 
 // Add services to the container.
 builder.Services.AddRouting(options => options.LowercaseUrls = false);
-builder.Services.AddControllers(options => options.Conventions.Add(new KebabCaseRouteNamingConvention()))
+builder.Services.AddControllers(options =>
+    {
+        options.Conventions.Add(new KebabCaseRouteNamingConvention());
+        // An account can only write in its own tenant (tenantId of the request body).
+        options.Filters.Add<TenantAccessFilter>();
+    })
     .AddDataAnnotationsLocalization(options =>
         options.DataAnnotationLocalizerProvider = (_, factory) => factory.Create(typeof(SharedResource)))
     .ConfigureApiBehaviorOptions(options =>
@@ -135,6 +147,9 @@ builder.Services.AddCors(options =>
 // Generate the OpenAPI document with ASP.NET Core's built-in support.
 builder.Services.AddOpenApi(options =>
 {
+    // JWT bearer security scheme for the operations protected with [Authorize]
+    options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+    options.AddOperationTransformer<BearerSecurityOperationTransformer>();
     // Alerts & Notifications localized documentation
     options.AddOperationTransformer(
         DestilatechPlatform.API.AlertsNotifications.Interfaces.Rest.Transform.LocalizedOpenApiAssembler
@@ -173,6 +188,18 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserCommandService, UserCommandService>();
 builder.Services.AddScoped<IUserQueryService, UserQueryService>();
 builder.Services.AddScoped<IIamContextFacade, IamContextFacade>();
+builder.Services.AddScoped<IHashingService, HashingService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+
+// TokenSettings Configuration. The secret comes from the TokenSettings__Secret environment variable (or the user
+// secrets in local development) and the API does not start without a secret of at least 32 bytes.
+builder.Services.AddOptions<TokenSettings>()
+    .Bind(builder.Configuration.GetSection(TokenSettings.SectionName))
+    .Validate(settings => System.Text.Encoding.UTF8.GetByteCount(settings.Secret) >= TokenSettings.MinimumSecretBytes,
+        $"TokenSettings:Secret must have at least {TokenSettings.MinimumSecretBytes} bytes. Set the TokenSettings__Secret environment variable.")
+    .Validate(settings => !string.IsNullOrWhiteSpace(settings.Issuer) && !string.IsNullOrWhiteSpace(settings.Audience),
+        "TokenSettings:Issuer and TokenSettings:Audience are required.")
+    .ValidateOnStart();
 
 // Billing Bounded Context Injection Configuration
 builder.Services.AddScoped<IPlanRepository, PlanRepository>();
@@ -261,6 +288,8 @@ using (var scope = app.Services.CreateScope())
     context.Database.Migrate();
     await PlanSeeder.SeedAsync(context);
     await UserSeeder.SeedAsync(context);
+    await UserSeeder.AssignDemoPasswordsAsync(context, services.GetRequiredService<IHashingService>(),
+        app.Configuration["DemoAccounts:Password"], app.Logger);
 }
 
 // Configure the HTTP request pipeline.
@@ -277,6 +306,9 @@ app.UseRequestLocalization(localizationOptions);
 
 // Apply CORS Policy
 app.UseCors("AllowAllPolicy");
+
+// Validate the bearer token and keep the signed-in account for the [Authorize] attribute
+app.UseRequestAuthorization();
 
 app.UseHttpsRedirection();
 

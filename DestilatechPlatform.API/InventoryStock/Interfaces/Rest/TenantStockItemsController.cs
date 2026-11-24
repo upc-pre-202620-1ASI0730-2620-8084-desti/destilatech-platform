@@ -4,12 +4,14 @@ using DestilatechPlatform.API.InventoryStock.Domain.Model.Queries;
 using DestilatechPlatform.API.InventoryStock.Interfaces.Rest.Resources;
 using DestilatechPlatform.API.InventoryStock.Interfaces.Rest.Transform;
 using Microsoft.AspNetCore.Mvc;
+using DestilatechPlatform.API.Iam.Infrastructure.Pipeline.Middleware.Attributes;
 
 namespace DestilatechPlatform.API.InventoryStock.Interfaces.Rest;
 
 /// <summary>
 /// Stock items of a tenant, as a sub-resource of the tenant: <c>/api/v1/tenants/{tenantId}/stock-items</c>.
 /// </summary>
+[Authorize]
 [ApiController]
 [Route("api/v1/tenants/{tenantId:int}/stock-items")]
 [Produces(MediaTypeNames.Application.Json)]

@@ -8,6 +8,7 @@ public record UserResource(
     string BusinessType,
     DateTimeOffset? CreatedAt,
     TrialPeriodResource TrialPeriod,
+    int TrialDaysRemaining,
     DateTimeOffset? AccessGrantedUntil,
     string? PreferredPlanCode
     );

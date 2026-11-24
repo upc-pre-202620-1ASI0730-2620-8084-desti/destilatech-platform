@@ -9,6 +9,7 @@ using DestilatechPlatform.API.OrdersReplenishment.Interfaces.Rest.Resources;
 using DestilatechPlatform.API.OrdersReplenishment.Interfaces.Rest.Transform;
 using DestilatechPlatform.API.Shared.Application.Model;
 using Microsoft.AspNetCore.Mvc;
+using DestilatechPlatform.API.Iam.Infrastructure.Pipeline.Middleware.Attributes;
 
 namespace DestilatechPlatform.API.OrdersReplenishment.Interfaces.Rest;
 
@@ -16,6 +17,7 @@ namespace DestilatechPlatform.API.OrdersReplenishment.Interfaces.Rest;
 /// Customer orders (US18, US19). Registering an order discounts its products from stock,
 /// and cancelling it returns them.
 /// </summary>
+[Authorize]
 [ApiController]
 [Route("api/v1/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]

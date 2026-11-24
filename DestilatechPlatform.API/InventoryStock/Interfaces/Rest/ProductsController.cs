@@ -4,6 +4,7 @@ using DestilatechPlatform.API.InventoryStock.Domain.Model;
 using DestilatechPlatform.API.InventoryStock.Interfaces.Rest.Resources;
 using DestilatechPlatform.API.InventoryStock.Interfaces.Rest.Transform;
 using Microsoft.AspNetCore.Mvc;
+using DestilatechPlatform.API.Iam.Infrastructure.Pipeline.Middleware.Attributes;
 
 namespace DestilatechPlatform.API.InventoryStock.Interfaces.Rest;
 
@@ -11,6 +12,7 @@ namespace DestilatechPlatform.API.InventoryStock.Interfaces.Rest;
 /// Write endpoints of the products. The tenant that owns the product travels in the request body;
 /// the products of a tenant are listed in <see cref="TenantProductsController"/>.
 /// </summary>
+[Authorize]
 [ApiController]
 [Route("api/v1/products")]
 [Produces(MediaTypeNames.Application.Json)]

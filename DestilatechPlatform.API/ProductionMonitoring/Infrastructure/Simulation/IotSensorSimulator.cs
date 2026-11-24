@@ -1,7 +1,9 @@
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using DestilatechPlatform.API.Iam.Interfaces.Acl;
 using Microsoft.Extensions.Options;
 
 namespace DestilatechPlatform.API.ProductionMonitoring.Infrastructure.Simulation;
@@ -13,9 +15,12 @@ namespace DestilatechPlatform.API.ProductionMonitoring.Infrastructure.Simulation
 /// <remarks>
 /// Each reading has a source_id (the sensor) and a source_key (the reading). After a temporary error the same
 /// payload is sent again with the same source_key, so the API does not register the reading twice.
+/// The API requires an access token, so before each round the simulator asks the IAM context for a token of the
+/// simulated account and sends it as a bearer token, like a real device would.
 /// </remarks>
 public class IotSensorSimulator(
     IHttpClientFactory httpClientFactory,
+    IServiceScopeFactory scopeFactory,
     IOptions<IotSensorSimulatorOptions> options,
     ILogger<IotSensorSimulator> logger) : BackgroundService
 {
@@ -51,6 +56,19 @@ public class IotSensorSimulator(
 
     private async Task SendRoundAsync(HttpClient client, Random random, CancellationToken cancellationToken)
     {
+        using (var scope = scopeFactory.CreateScope())
+        {
+            var iamContextFacade = scope.ServiceProvider.GetRequiredService<IIamContextFacade>();
+            var token = await iamContextFacade.IssueAccessTokenAsync(_options.UserId, cancellationToken);
+            if (token is null)
+            {
+                logger.LogWarning("IoT sensor simulator: the account {UserId} does not exist", _options.UserId);
+                return;
+            }
+
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
+
         var batches = await client.GetFromJsonAsync<List<SimulatedBatch>>(
             $"tenants/{_options.UserId}/batches", JsonOptions, cancellationToken) ?? [];
         var variables = await client.GetFromJsonAsync<List<SimulatedVariable>>(

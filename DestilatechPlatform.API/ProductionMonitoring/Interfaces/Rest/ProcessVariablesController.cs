@@ -4,6 +4,7 @@ using DestilatechPlatform.API.ProductionMonitoring.Domain.Model;
 using DestilatechPlatform.API.ProductionMonitoring.Interfaces.Rest.Resources;
 using DestilatechPlatform.API.ProductionMonitoring.Interfaces.Rest.Transform;
 using Microsoft.AspNetCore.Mvc;
+using DestilatechPlatform.API.Iam.Infrastructure.Pipeline.Middleware.Attributes;
 
 namespace DestilatechPlatform.API.ProductionMonitoring.Interfaces.Rest;
 
@@ -11,6 +12,7 @@ namespace DestilatechPlatform.API.ProductionMonitoring.Interfaces.Rest;
 /// Write endpoints of the process variables. The variables of a tenant are listed in
 /// <see cref="TenantProcessVariablesController"/>.
 /// </summary>
+[Authorize]
 [ApiController]
 [Route("api/v1/process-variables")]
 [Produces(MediaTypeNames.Application.Json)]

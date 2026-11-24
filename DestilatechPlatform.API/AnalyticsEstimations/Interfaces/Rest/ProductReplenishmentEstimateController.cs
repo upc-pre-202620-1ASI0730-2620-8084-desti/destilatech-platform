@@ -5,12 +5,14 @@ using DestilatechPlatform.API.AnalyticsEstimations.Domain.Model.Commands;
 using DestilatechPlatform.API.AnalyticsEstimations.Interfaces.Rest.Resources;
 using DestilatechPlatform.API.AnalyticsEstimations.Interfaces.Rest.Transform;
 using Microsoft.AspNetCore.Mvc;
+using DestilatechPlatform.API.Iam.Infrastructure.Pipeline.Middleware.Attributes;
 
 namespace DestilatechPlatform.API.AnalyticsEstimations.Interfaces.Rest;
 
 /// <summary>
 /// Replenishment estimate of one product (US29).
 /// </summary>
+[Authorize]
 [ApiController]
 [Route("api/v1/tenants/{tenantId:int}/products/{productId:int}/replenishment-estimate")]
 [Produces(MediaTypeNames.Application.Json)]

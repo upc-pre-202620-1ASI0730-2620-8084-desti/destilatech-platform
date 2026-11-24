@@ -9,12 +9,14 @@ using DestilatechPlatform.API.Resources;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using ProblemDetailsFactory = DestilatechPlatform.API.Shared.Interfaces.Rest.ProblemDetails.ProblemDetailsFactory;
+using DestilatechPlatform.API.Iam.Infrastructure.Pipeline.Middleware.Attributes;
 
 namespace DestilatechPlatform.API.AlertsNotifications.Interfaces.Rest;
 
 /// <summary>
 /// Alerts of a tenant, as a sub-resource of the tenant: <c>/api/v1/tenants/{tenantId}/alerts</c>.
 /// </summary>
+[Authorize]
 [ApiController]
 [Route("api/v1/tenants/{tenantId:int}/alerts")]
 [Produces(MediaTypeNames.Application.Json)]

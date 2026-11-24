@@ -7,9 +7,11 @@ using DestilatechPlatform.API.Billing.Domain.Model.Queries;
 using DestilatechPlatform.API.Billing.Interfaces.Rest.Resources;
 using DestilatechPlatform.API.Billing.Interfaces.Rest.Transform;
 using Microsoft.AspNetCore.Mvc;
+using DestilatechPlatform.API.Iam.Infrastructure.Pipeline.Middleware.Attributes;
 
 namespace DestilatechPlatform.API.Billing.Interfaces.Rest;
 
+[Authorize]
 [ApiController]
 [Route("api/v1/subscriptions")]
 [Produces(MediaTypeNames.Application.Json)]
