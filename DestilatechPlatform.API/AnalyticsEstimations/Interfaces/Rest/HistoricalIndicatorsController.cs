@@ -5,12 +5,14 @@ using DestilatechPlatform.API.AnalyticsEstimations.Domain.Model.Queries;
 using DestilatechPlatform.API.AnalyticsEstimations.Interfaces.Rest.Resources;
 using DestilatechPlatform.API.AnalyticsEstimations.Interfaces.Rest.Transform;
 using Microsoft.AspNetCore.Mvc;
+using DestilatechPlatform.API.Iam.Infrastructure.Pipeline.Middleware.Attributes;
 
 namespace DestilatechPlatform.API.AnalyticsEstimations.Interfaces.Rest;
 
 /// <summary>
 /// Historical indicators of an account (US30): stock level, entries, exits, sales and production.
 /// </summary>
+[Authorize]
 [ApiController]
 [Route("api/v1/tenants/{tenantId:int}/historical-indicators")]
 [Produces(MediaTypeNames.Application.Json)]
