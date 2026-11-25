@@ -19,6 +19,8 @@ Curso: Aplicaciones Web (1ASI0730) — UPC, ciclo 2026-20.
 | Microsoft.AspNetCore.OpenApi + Scalar | Documentación interactiva de la API |
 | Humanizer | Rutas en kebab-case y nombres en snake_case |
 | Stripe.net | Pasarela de pagos (modo prueba) del bounded context Billing |
+| BCrypt.Net-Next | Hash de las contraseñas (IAM) |
+| Microsoft.IdentityModel.JsonWebTokens | Tokens de acceso JWT HS256 (IAM) |
 
 IDE recomendado: **JetBrains Rider**.
 
@@ -27,7 +29,7 @@ IDE recomendado: **JetBrains Rider**.
 | Bounded context | Carpeta | Endpoints principales |
 | :--- | :--- | :--- |
 | Shared Kernel | `Shared/` | — (`AggregateRoot`, auditoría, base repository, unit of work, `Result<T>`, errores, interceptores, mediator) |
-| IAM | `Iam/` | `/api/v1/users` |
+| IAM | `Iam/` | `/api/v1/users` (registro), `/api/v1/tokens` (inicio de sesión) |
 | Billing | `Billing/` | `/api/v1/plans`, `/checkout-sessions`, `/subscriptions/{id}`, `/tenants/{tenantId}/subscriptions`, `/tenants/{tenantId}/payments` |
 | Alerts & Notifications | `AlertsNotifications/` | `/api/v1/alerts`, `/tenants/{tenantId}/alerts` |
 | Inventory & Stock | `InventoryStock/` | `/api/v1/products`, `/stock-items`, `/stock-movements` y sus listas en `/tenants/{tenantId}/...` |
@@ -51,6 +53,26 @@ sin filtros como `?userId=`:
 
 Los filtros propios de cada consulta siguen como query (`?days=30`, `?type=LOW_STOCK`, `?limit=100`).
 
+### Autenticación (IAM)
+
+Sigue el diseño del IAM del curso (`learning-center-platform`, ADR-008):
+
+| Paso | Endpoint | Respuesta |
+| :--- | :--- | :--- |
+| Registro con prueba gratuita de 14 días | `POST /api/v1/users` con `fullName`, `email`, `password` (mínimo 8 caracteres), `businessName`, `businessType` (`PRODUCER` o `RETAILER`) y `preferredPlanCode` opcional | `201` con la cuenta, `trialPeriod` y `trialDaysRemaining` |
+| Inicio de sesión | `POST /api/v1/tokens` con `email` y `password` | `200` con `user`, `token` (JWT) y `expiresAt` |
+| Cualquier otro endpoint | Cabecera `Authorization: Bearer <token>` | `401` sin token válido |
+
+- Las contraseñas se guardan con **BCrypt**; nunca se guardan en texto plano.
+- El token es un **JWT HS256** que valida emisor, audiencia y expiración (60 minutos, `TokenSettings:ExpirationMinutes`).
+- `RequestAuthorizationMiddleware` valida el token y deja la cuenta en `HttpContext.Items["User"]`; el atributo
+  `[Authorize]` de cada controller responde `401` si no hay cuenta. `[AllowAnonymous]` marca los endpoints públicos:
+  registro, inicio de sesión y `GET /api/v1/plans`. La documentación (`/scalar`, `/openapi`) también es pública.
+- Cada cuenta es un tenant: un `tenantId` de otra cuenta, en la ruta o en el cuerpo, responde `403`
+  (`AuthorizeAttribute` y `TenantAccessFilter`).
+- Los errores se devuelven como Problem Details (RFC 9457).
+- En Scalar, pulsa **Authorize** y pega el token para probar los endpoints protegidos.
+
 ### Auditoría y eventos de dominio
 
 Todos los agregados heredan de `AggregateRoot` (eventos de dominio) e implementan `IAuditableEntity` en un archivo
@@ -60,7 +82,12 @@ EntityFrameworkCore/Interceptors`) se encargan de ellos al guardar: `AuditableEn
 
 ## Opción rápida: Docker (MySQL + API con un comando)
 
-Requisito: Docker Desktop abierto.
+Requisito: Docker Desktop abierto. Crea un archivo `.env` junto a `docker-compose.yml` (no se sube al repositorio):
+
+```bash
+TOKEN_SECRET=una-cadena-aleatoria-de-al-menos-32-caracteres
+DEMO_ACCOUNTS_PASSWORD=la-contraseña-de-las-cuentas-de-demostración
+```
 
 ```bash
 docker compose up -d --build
@@ -98,6 +125,16 @@ Requisitos: .NET 10 SDK y MySQL 8 (por ejemplo, MySQL Server + MySQL Workbench).
 
 3. Abre la documentación: `http://localhost:5273/scalar`.
 
+Configura también, con user secrets, el secreto de los tokens (mínimo 32 caracteres; sin él la API no inicia) y la
+contraseña de las dos cuentas de demostración (`productor@destilatech.pe` y `comercializador@destilatech.pe`):
+
+```bash
+dotnet user-secrets set "TokenSettings:Secret" "UNA_CADENA_ALEATORIA_DE_AL_MENOS_32_CARACTERES"
+dotnet user-secrets set "DemoAccounts:Password" "LA_CONTRASEÑA_DE_DEMOSTRACIÓN"
+```
+
+Para generar un secreto aleatorio: `openssl rand -base64 48`.
+
 Para usar Stripe en modo prueba, guarda tu clave secreta también con user secrets:
 
 ```bash
@@ -125,7 +162,12 @@ docker run -p 8080:8080 -e ASPNETCORE_ENVIRONMENT=Production -e DATABASE_URL=...
 ```
 
 En producción la cadena de conexión se arma con las variables de entorno `DATABASE_URL`, `DATABASE_USER`,
-`DATABASE_PASSWORD` y `DATABASE_SCHEMA` (`appsettings.Production.json`).
+`DATABASE_PASSWORD` y `DATABASE_SCHEMA` (`appsettings.Production.json`). Además, el servicio necesita:
+
+| Variable | Uso |
+| :--- | :--- |
+| `TokenSettings__Secret` | Secreto de los JWT, de al menos 32 caracteres. Sin ella la API no inicia. |
+| `DemoAccounts__Password` | Contraseña de las cuentas de demostración. Sin ella no pueden iniciar sesión. |
 
 ## Conexión con la Web Application
 

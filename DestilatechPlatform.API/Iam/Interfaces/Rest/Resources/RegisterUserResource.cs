@@ -3,6 +3,7 @@
 public record RegisterUserResource(
     string FullName,
     string Email,
+    string Password,
     string BusinessName,
     string BusinessType,
     string? PreferredPlanCode

@@ -23,6 +23,9 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: "server=mysql;user=root;password=destilatech;database=destilatech"
+      # Read from the .env file next to this file (not versioned): TOKEN_SECRET and DEMO_ACCOUNTS_PASSWORD
+      TokenSettings__Secret: ${TOKEN_SECRET:?Set TOKEN_SECRET in the .env file}
+      DemoAccounts__Password: ${DEMO_ACCOUNTS_PASSWORD:-}
     ports:
       - "8080:8080"
     depends_on:

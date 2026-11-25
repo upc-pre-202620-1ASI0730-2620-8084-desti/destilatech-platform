@@ -400,6 +400,12 @@ namespace DestilatechPlatform.API.Migrations
                         .HasColumnType("varchar(120)")
                         .HasColumnName("full_name");
 
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("password_hash");
+
                     b.Property<string>("PreferredPlanCode")
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)")

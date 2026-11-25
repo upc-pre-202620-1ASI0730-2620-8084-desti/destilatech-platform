@@ -8,12 +8,14 @@ using DestilatechPlatform.API.OrdersReplenishment.Interfaces.Rest.Resources;
 using DestilatechPlatform.API.OrdersReplenishment.Interfaces.Rest.Transform;
 using DestilatechPlatform.API.Shared.Application.Model;
 using Microsoft.AspNetCore.Mvc;
+using DestilatechPlatform.API.Iam.Infrastructure.Pipeline.Middleware.Attributes;
 
 namespace DestilatechPlatform.API.OrdersReplenishment.Interfaces.Rest;
 
 /// <summary>
 /// Replenishment orders placed with suppliers. Receiving one adds its units to stock.
 /// </summary>
+[Authorize]
 [ApiController]
 [Route("api/v1/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]

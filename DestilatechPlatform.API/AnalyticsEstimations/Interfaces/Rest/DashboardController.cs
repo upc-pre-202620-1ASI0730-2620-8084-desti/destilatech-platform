@@ -5,12 +5,14 @@ using DestilatechPlatform.API.AnalyticsEstimations.Domain.Model.Queries;
 using DestilatechPlatform.API.AnalyticsEstimations.Interfaces.Rest.Resources;
 using DestilatechPlatform.API.AnalyticsEstimations.Interfaces.Rest.Transform;
 using Microsoft.AspNetCore.Mvc;
+using DestilatechPlatform.API.Iam.Infrastructure.Pipeline.Middleware.Attributes;
 
 namespace DestilatechPlatform.API.AnalyticsEstimations.Interfaces.Rest;
 
 /// <summary>
 /// Dashboard summary for the web application (US65).
 /// </summary>
+[Authorize]
 [ApiController]
 [Route("api/v1/tenants/{tenantId:int}/dashboard-summary")]
 [Produces(MediaTypeNames.Application.Json)]

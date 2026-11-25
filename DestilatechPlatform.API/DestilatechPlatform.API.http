@@ -1,6 +1,30 @@
-@DestilatechPlatform.API_HostAddress = http://localhost:5273
+@host = http://localhost:5273/api/v1
 
-GET {{DestilatechPlatform.API_HostAddress}}/weatherforecast/
-Accept: application/json
+### 1. Register an account (14-day free trial starts now)
+POST {{host}}/users
+Content-Type: application/json
 
-###
+{
+  "fullName": "Cuenta de Prueba",
+  "email": "cuenta.prueba@example.com",
+  "password": "Prueba1234",
+  "businessName": "Bodega de Prueba",
+  "businessType": "PRODUCER",
+  "preferredPlanCode": "PROFESSIONAL"
+}
+
+### 2. Sign in: copy the "token" of the response
+POST {{host}}/tokens
+Content-Type: application/json
+
+{
+  "email": "cuenta.prueba@example.com",
+  "password": "Prueba1234"
+}
+
+### 3. Protected endpoint: replace TOKEN and the tenant id (the "id" of the account)
+GET {{host}}/tenants/1/products
+Authorization: Bearer TOKEN
+
+### 4. Without a token the API answers 401
+GET {{host}}/tenants/1/products

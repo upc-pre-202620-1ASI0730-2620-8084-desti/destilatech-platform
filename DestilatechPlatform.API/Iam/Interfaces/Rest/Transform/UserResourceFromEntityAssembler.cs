@@ -15,6 +15,7 @@ public static class UserResourceFromEntityAssembler
             user.BusinessType.ToString().ToUpperInvariant(),
             user.CreatedAt,
             new TrialPeriodResource(user.TrialStartedAt, user.TrialEndsAt),
+            user.TrialDaysRemaining(DateTimeOffset.UtcNow),
             user.AccessGrantedUntil,
             user.PreferredPlanCode);
     }

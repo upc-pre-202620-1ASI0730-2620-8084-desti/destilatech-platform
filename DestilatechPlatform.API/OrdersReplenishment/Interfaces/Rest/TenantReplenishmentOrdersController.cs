@@ -4,6 +4,7 @@ using DestilatechPlatform.API.OrdersReplenishment.Domain.Model.Queries;
 using DestilatechPlatform.API.OrdersReplenishment.Interfaces.Rest.Resources;
 using DestilatechPlatform.API.OrdersReplenishment.Interfaces.Rest.Transform;
 using Microsoft.AspNetCore.Mvc;
+using DestilatechPlatform.API.Iam.Infrastructure.Pipeline.Middleware.Attributes;
 
 namespace DestilatechPlatform.API.OrdersReplenishment.Interfaces.Rest;
 
@@ -11,6 +12,7 @@ namespace DestilatechPlatform.API.OrdersReplenishment.Interfaces.Rest;
 /// Replenishment orders of a tenant, as a sub-resource of the tenant:
 /// <c>/api/v1/tenants/{tenantId}/replenishment-orders</c>.
 /// </summary>
+[Authorize]
 [ApiController]
 [Route("api/v1/tenants/{tenantId:int}/replenishment-orders")]
 [Produces(MediaTypeNames.Application.Json)]

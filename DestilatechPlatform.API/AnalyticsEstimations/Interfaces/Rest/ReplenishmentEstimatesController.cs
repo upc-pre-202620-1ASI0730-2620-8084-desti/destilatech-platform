@@ -6,12 +6,14 @@ using DestilatechPlatform.API.AnalyticsEstimations.Domain.Model.Queries;
 using DestilatechPlatform.API.AnalyticsEstimations.Interfaces.Rest.Resources;
 using DestilatechPlatform.API.AnalyticsEstimations.Interfaces.Rest.Transform;
 using Microsoft.AspNetCore.Mvc;
+using DestilatechPlatform.API.Iam.Infrastructure.Pipeline.Middleware.Attributes;
 
 namespace DestilatechPlatform.API.AnalyticsEstimations.Interfaces.Rest;
 
 /// <summary>
 /// Replenishment estimates of all the products of an account, used by the priority replenishment panel.
 /// </summary>
+[Authorize]
 [ApiController]
 [Route("api/v1/tenants/{tenantId:int}/replenishment-estimates")]
 [Produces(MediaTypeNames.Application.Json)]

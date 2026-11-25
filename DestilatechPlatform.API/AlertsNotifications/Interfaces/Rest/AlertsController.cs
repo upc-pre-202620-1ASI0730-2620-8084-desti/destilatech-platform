@@ -10,9 +10,11 @@ using DestilatechPlatform.API.Resources;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using ProblemDetailsFactory = DestilatechPlatform.API.Shared.Interfaces.Rest.ProblemDetails.ProblemDetailsFactory;
+using DestilatechPlatform.API.Iam.Infrastructure.Pipeline.Middleware.Attributes;
 
 namespace DestilatechPlatform.API.AlertsNotifications.Interfaces.Rest;
 
+[Authorize]
 [ApiController]
 [Route("api/v1/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
